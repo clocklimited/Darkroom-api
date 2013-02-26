@@ -22,7 +22,7 @@ function addFile(filepath) {
 mocha.reporter('spec').ui('bdd')
 
 addFile(join(__dirname, 'api.test.js'))
-// addFile(join(__dirname, 'resize.test.js'))
+addFile(join(__dirname, 'resize.test.js'))
 // addFile(join(__dirname, 'crop.test.js'))
 // addFile(join(__dirname, 'optimise.test.js'))
 
