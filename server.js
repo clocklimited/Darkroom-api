@@ -16,33 +16,30 @@ module.exports = function () {
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
 
-  server.on('after', restify.auditLogger(
-    { log: bunyan.createLogger(
-        { name: 'audit'
-        , stream: process.stdout
-        , serializers: bunyan.stdSerializers
-        })
-    })
-  )
-
-  server.get('/resize/:width/:height/:id', function (req, res, next) {
+  // GET /resize/:width/:height/:url
+  // GET /resize/:width/:height/http://google.com/test
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
     // darkroom.resize.pipe(req.body.image, req.body.parameters)
-    console.log(req.params)
     res.set('X-Application-Method', 'Resize Width and Height for Image')
     res.status(501)
     res.json(false)
     return next()
   })
 
-  server.get('/resize/:width/:id', function (req, res, next) {
+  // GET /resize/:width/:url
+  // GET /resize/:width/http://google.com/test
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
     // darkroom.resize.pipe(req.body.image, req.body.parameters)
+        console.log('hhs', req.params)
     res.set('X-Application-Method', 'Resize Width for Image')
     res.status(501)
     res.json(false)
     return next()
   })
 
-  server.get('/original/:id', function (req, res, next) {
+  // GET /original/:url
+  // GET /original/http://google.com/test
+  server.get(/^\/+original\/+(.*)$/, function (req, res, next) {
     // darkroom.optimise.pipe(req.body.image, req.body.parameters)
     res.set('X-Application-Method', 'Original Image')
     res.status(501)
@@ -50,7 +47,9 @@ module.exports = function () {
     return next()
   })
 
-  server.get('/crop/:id', function (req, res, next) {
+  // GET /crop/:url
+  // GET /crop/http://google.com/::?L
+  server.get(/^\/+crop\/+(.*)$/, function (req, res, next) {
     // darkroom.crop.pipe(req.body.image, req.body.parameters)
     res.set('X-Application-Method', 'Get Crop for Image')
     res.status(501)
@@ -58,7 +57,7 @@ module.exports = function () {
     return next()
   })
 
-  server.get('/:id', function (req, res, next) {
+  server.get('/:url', function (req, res, next) {
     res.status(501)
     res.set('X-Application-Method', 'Get Image')
     res.json(false)
