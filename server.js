@@ -48,7 +48,7 @@ module.exports = function () {
   })
 
   // GET /crop/:url
-  // GET /crop/http://google.com/::?L
+  // GET /crop/http://google.com/
   server.get(/^\/+crop\/+(.*)$/, function (req, res, next) {
     // darkroom.crop.pipe(req.body.image, req.body.parameters)
     res.set('X-Application-Method', 'Get Crop for Image')
