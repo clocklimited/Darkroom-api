@@ -1,7 +1,7 @@
 var restify = require('restify')
   , config = require('con.figure')(require('./config'))
   , bunyan = require('bunyan')
-  // , darkroom = require('darkroom')
+  , darkroom = require('darkroom')
 
 
 // var darkroom = darkroom()
@@ -19,7 +19,11 @@ module.exports = function () {
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
-    // darkroom.resize.pipe(req.body.image, req.body.parameters)
+    darkroom.resize.pipe(req.body.image
+    , { width: req.params[0]
+      , height: req.params[1]
+      }
+    ).pipe(res)
     res.set('X-Application-Method', 'Resize Width and Height for Image')
     res.status(501)
     res.json(false)
