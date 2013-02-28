@@ -1,8 +1,7 @@
 {
   "asi": true,
   "boss": true,
-  "browser": true,
-  "curly": true,
+  "curly": false,
   "devel": true,
   "maxdepth": 4,
   "maxstatements": 25,
@@ -22,22 +21,12 @@
   "nonew": true,
   "predef":
   [
-    "async",
-    "Firmin",
     "after",
     "afterEach",
     "before",
     "beforeEach",
-    "db",
     "describe",
-    "Ext",
-    "io",
-    "it",
-    "unescape",
-    "Munchkin",
-    "mktoMunchkinFunction",
-    "_",
-    "emit"
+    "it"
   ],
   "quotmark": "single",
   "smarttabs": true,
