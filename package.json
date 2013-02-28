@@ -10,7 +10,9 @@
   "dependencies": {
     "con.figure": "~0.0.0",
     "restify": "~2",
-    "bunyan": "~0.18.2"
+    "bunyan": "~0.18.2",
+    "fileupload": "~0.2.4",
+    "send": "~0.1.0"
   },
   "devDependencies": {
     "supertest": "~0.5.1",
