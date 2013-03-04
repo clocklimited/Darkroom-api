@@ -34,7 +34,6 @@ module.exports = function () {
   // Manipulate the url being passed.
   server.use(function(req, res, next) {
     var nParams = Object.keys(req.params).length
-    console.log(nParams)
     if (nParams === 0) return next()
     var data = req.params[nParams - 1]
     data = url.parse(data).path.split('/')
