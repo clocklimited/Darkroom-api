@@ -26,7 +26,7 @@ module.exports = function () {
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
-  server.on('after', restify.auditLogger({ log: log }))
+  // server.on('after', restify.auditLogger({ log: log }))
   server.use(restify.CORS(
     { headers: ['X-Requested-With'] }
   ))
@@ -42,7 +42,7 @@ module.exports = function () {
     return next()
   })
 
-  // // Set caching for browsers
+  // Set caching for browsers
   server.use(function(req, res, next) {
     res.set('Cache-Control', 'max-age=' + config.http.maxage)
     return next()
@@ -63,7 +63,7 @@ module.exports = function () {
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
     res.set('X-Application-Method', 'Resize Width and Height for Image')
-    res.status(200)
+
     var re = new darkroom.resize()
       , readStream = require('fs').createReadStream(__dirname + '/images/' + req.params.data + '/image')
 
@@ -73,7 +73,10 @@ module.exports = function () {
         , crop: req.params.crop
         }
       )
-    return next()
+
+    res.on('finish', function() {
+      return next()
+    })
   }
 
   // GET /resize/:width/:url
@@ -99,7 +102,7 @@ module.exports = function () {
   server.get(/^\/+original\/+(.*)$/, function (req, res, next) {
     // darkroom.optimise.pipe(req.body.image, req.body.parameters)
     res.set('X-Application-Method', 'Original Image')
-    fileupload.get(req.params[0] + '/image', function(err, data) {
+    fileupload.get(__dirname + '/images/' + req.params.data + '/image', function(err, data) {
       if (err) return next(err)
       res.write(data)
       res.end()
