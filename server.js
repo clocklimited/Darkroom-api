@@ -43,10 +43,10 @@ module.exports = function () {
   })
 
   // // Set caching for browsers
-  // server.use(function(req, res, next) {
-  //   res.set('Cache-Control', 'max-age=315360000')
-  //   return next()
-  // })
+  server.use(function(req, res, next) {
+    res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    return next()
+  })
 
   server.opts(/.*/, function(req, res, next) {
     res.set('Access-Control-Allow-Headers', 'accept-version, content-type, request-id, x-api-version, x-request-id, x-requested-with')
