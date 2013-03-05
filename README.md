@@ -12,6 +12,12 @@ Authentication between services and client will be achieved by using Oauth. This
     brew install cairo
     export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/X11/lib/pkgconfig
     npm install
+    git clone git@github.com:tomgco/darkroom.git node_modules/darkroom
+    cd node_modules/darkroom
+    npm install
+    npm link
+    cd ../../
+    npm link darkroom
 
 http://darkroom.io
 
