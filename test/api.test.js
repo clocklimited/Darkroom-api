@@ -1,5 +1,6 @@
 var darkroom = require('../server')()
   , request = require('supertest')
+  , _ = require('lodash')
 
 
 describe('API', function() {
@@ -19,18 +20,32 @@ describe('API', function() {
       request(darkroom)
         .post('/')
         .set('Accept', 'application/json')
+        .attach('file', 'test/fixtures/jpeg.jpeg')
         .expect('Content-Type', /json/)
         .expect(200)
-        .end(done)
+        .end(function (err, res) {
+          res.statusCode.should.equal(200)
+          res.body.should.have.property('src')
+          done()
+        })
     })
 
     it('should upload multiple images', function (done) {
       request(darkroom)
         .post('/')
+        .attach('file', 'test/fixtures/jpeg.jpeg')
+        .attach('file2', 'test/fixtures/png.png')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
-        .end(done)
+        .end(function (err, res) {
+          res.statusCode.should.equal(200)
+          res.body.should.be.an.instanceOf(Array)
+          _.each(res.body, function (file) {
+            file.should.have.property('src')
+          })
+          done()
+        })
     })
   })
 })
