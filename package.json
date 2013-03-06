@@ -12,14 +12,16 @@
     "restify": "~2",
     "bunyan": "~0.18.2",
     "fileupload": "~0.2.4",
-    "send": "~0.1.0"
+    "send": "~0.1.0",
+    "mime-magic": "~0.4.2"
   },
   "devDependencies": {
     "supertest": "~0.5.1",
     "mocha": "~1.8.1",
     "should": "~1.2.2",
     "async": "~0.2.5",
-    "lodash": "~1.0.1"
+    "lodash": "~1.0.1",
+    "png-size": "0.0.1"
   },
   "scripts": {
     "test": "mocha -r should test",

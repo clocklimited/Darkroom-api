@@ -5,6 +5,7 @@ var restify = require('restify')
   , _ = require('lodash')
   , url = require('url')
   , bunyan = require('bunyan')
+  , mime = require('mime-magic')
 
 
 // var darkroom = darkroom()
@@ -63,6 +64,7 @@ module.exports = function () {
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
     res.set('X-Application-Method', 'Resize Width and Height for Image')
+    res.set('Content-Type', 'image/png')
 
     var re = new darkroom.resize()
       , readStream = require('fs').createReadStream(__dirname + '/images/' + req.params.data + '/image')
@@ -95,17 +97,26 @@ module.exports = function () {
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
+  server.get(/^\/+([0-9]+)\/+(.*)$/, resizeImage)
+
+  // GET /resize/:width/:height/:url
+  // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, resizeImage)
+
 
   // GET /original/:url
   // GET /original/http://google.com/test
   server.get(/^\/+original\/+(.*)$/, function (req, res, next) {
     // darkroom.optimise.pipe(req.body.image, req.body.parameters)
     res.set('X-Application-Method', 'Original Image')
-    fileupload.get(__dirname + '/images/' + req.params.data + '/image', function(err, data) {
-      if (err) return next(err)
-      res.write(data)
-      res.end()
+    var file = __dirname + '/images/' + req.params.data + '/image'
+    fileupload.get(file, function(err, data) {
+      mime(file, function (err, type) {
+        if (err) return next(err)
+        res.set('Content-Type', type)
+        res.write(data)
+        res.end()
+      })
     })
     return next()
   })
