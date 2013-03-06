@@ -13,7 +13,11 @@
     "bunyan": "~0.18.2",
     "fileupload": "~0.2.4",
     "send": "~0.1.0",
+<<<<<<< HEAD
     "mime-magic": "~0.4.2"
+=======
+    "darkroom": "git://github.com/tomgco/darkroom.git"
+>>>>>>> b5f38fe1e2c3ca83c4a00350e08e2cea9f729cca
   },
   "devDependencies": {
     "supertest": "~0.5.1",
