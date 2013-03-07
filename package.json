@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "con.figure": "~0.0.0",
-    "restify": "~2",
+    "restify": "~2.3",
     "bunyan": "~0.18.2",
     "fileupload": "~0.2.4",
     "send": "~0.1.0",

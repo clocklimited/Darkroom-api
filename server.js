@@ -63,7 +63,7 @@ module.exports = function () {
   function resizeImage (req, res, next) {
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
-    res.set('X-Application-Method', 'Resize Width and Height for Image')
+    // res.set('X-Application-Method', 'Resize Width and Height for Image')
     res.set('Content-Type', 'image/png')
 
     var re = new darkroom.resize()
@@ -93,16 +93,24 @@ module.exports = function () {
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, resizeImage)
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
+    res.set('X-Application-Method', 'Resize Width and height for Image')
+    return next()
+  }, resizeImage)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+(.*)$/, resizeImage)
+  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
+    res.set('X-Application-Method', 'Resize Width and height for Image with no resize url chunk')
+    return next()
+  }, resizeImage)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, resizeImage)
-
+  server.get(/^\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
+    res.set('X-Application-Method', 'Resize Width for Image with no resize url chunk')
+    return next()
+  }, resizeImage)
 
   // GET /original/:url
   // GET /original/http://google.com/test
