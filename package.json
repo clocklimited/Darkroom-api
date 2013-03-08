@@ -11,9 +11,10 @@
     "con.figure": "~0.0.0",
     "restify": "~2.3",
     "bunyan": "~0.18.2",
-    "fileupload": "~0.2.4",
+    "fileupload": "git://github.com/domharrington/fileupload.git",
     "send": "~0.1.0",
-    "darkroom": "git://github.com/tomgco/darkroom.git"
+    "darkroom": "git+ssh://git@github.com:tomgco/darkroom.git",
+    "mime-magic": "~0.4.2"
   },
   "devDependencies": {
     "supertest": "~0.5.1",

@@ -1,12 +1,9 @@
 var restify = require('restify')
   , config = require('con.figure')(require('./config'))
-  , fileupload = require('fileupload').createFileUpload(__dirname + '/images')
-  , darkroom = require('darkroom')
-  , _ = require('lodash')
+  , upload = require('fileupload').createFileUpload(__dirname + '/images')
   , url = require('url')
   , bunyan = require('bunyan')
-  , mime = require('mime-magic')
-
+  , endpoint = require('./endpoint')
 
 // var darkroom = darkroom()
 module.exports = function () {
@@ -50,7 +47,10 @@ module.exports = function () {
   })
 
   server.opts(/.*/, function(req, res, next) {
-    res.set('Access-Control-Allow-Headers', 'accept-version, content-type, request-id, x-api-version, x-request-id, x-requested-with')
+    res.set('Access-Control-Allow-Headers'
+      , 'accept-version, content-type, request-id, '
+      + 'x-api-version, x-request-id, x-requested-with')
+
     res.set('Access-Control-Allow-Origin', '*')
     res.set('Access-Control-Allow-Methods', 'POST, GET')
     res.set('Access-Control-Max-Age', '3600')
@@ -58,124 +58,39 @@ module.exports = function () {
     return next()
   })
 
-
-
-  function resizeImage (req, res, next) {
-    req.params.width = req.params.width || req.params[0]
-    req.params.height = req.params.height || req.params[1]
-    // res.set('X-Application-Method', 'Resize Width and Height for Image')
-    res.set('Content-Type', 'image/png')
-
-    var re = new darkroom.resize()
-      , readStream = require('fs').createReadStream(__dirname + '/images/' + req.params.data + '/image')
-
-    readStream.pipe(re).pipe(res
-      , { width: +req.params.width
-        , height: +req.params.height
-        , crop: req.params.crop
-        }
-      )
-
-    res.on('finish', function() {
-      return next()
-    })
-  }
-
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
-    req.params.width = req.params[0]
-    req.params.height = 0
-    req.params.crop = false
-    res.set('X-Application-Method', 'Resize Width for Image')
-    return next()
-  }, resizeImage)
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, endpoint.resize.width)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
-    res.set('X-Application-Method', 'Resize Width and height for Image')
-    return next()
-  }, resizeImage)
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, endpoint.resize.both)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
-    res.set('X-Application-Method', 'Resize Width and height for Image with no resize url chunk')
-    return next()
-  }, resizeImage)
+  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, endpoint.resize.both)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+(.*)$/, function (req, res, next) {
-    res.set('X-Application-Method', 'Resize Width for Image with no resize url chunk')
-    return next()
-  }, resizeImage)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, endpoint.resize.width)
 
   // GET /original/:url
   // GET /original/http://google.com/test
-  server.get(/^\/+original\/+(.*)$/, function (req, res, next) {
-    // darkroom.optimise.pipe(req.body.image, req.body.parameters)
-    res.set('X-Application-Method', 'Original Image')
-    var file = __dirname + '/images/' + req.params.data + '/image'
-    fileupload.get(file, function(err, data) {
-      mime(file, function (err, type) {
-        if (err) return next(err)
-        res.set('Content-Type', type)
-        res.write(data)
-        res.end()
-      })
-    })
-    return next()
-  })
+  server.get(/^\/+original\/+(.*)$/, endpoint.original)
 
   // GET /crop/:url
   // GET /crop/http://google.com/
-  server.get(/^\/+crop\/+(.*)$/, function (req, res, next) {
-    // darkroom.crop.pipe(req.body.image, req.body.parameters)
-    res.set('X-Application-Method', 'Get Crop for Image')
-    res.status(501)
-    res.json(false)
-    return next()
-  })
+  server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
   server.get('/:url', function (req, res, next) {
     res.set('X-Application-Method', 'Get Image')
-    res.status(200)
-    var re = new darkroom.resize()
-
-    var readStream = require('fs').createReadStream(__dirname + '/images/' + req.url + '/image')
-
-    readStream.pipe(re).pipe(res)
+    res.status(501)
     return next()
   })
 
-  server.post('/', function(req, res, next) {
-    _.each(req.files, function(obj) {
-      obj.name = 'image'
-    })
-    res = res
-    next()
-  }, fileupload.middleware, function (req, res, next) {
-    var images = []
-      , imageArray = _.toArray(req.body)
-    _.flatten(imageArray)
-    _.each(imageArray, function(files) {
-      _.each(files, function(file) {
-        var id = file.path.substring(0, file.path.length - 1)
-        var object = { src: config.http.url + id
-          , id: id
-        }
-        images.push(object)
-      })
-    })
-    res.status(200)
-    res.json(images.length === 1 ? images[0] : images)
-    return next()
-  })
+  server.post('/', endpoint.utils.dedupeName, upload.middleware, endpoint.upload)
 
   server.get('/', function (req, res, next) {
-    res.status(501)
     res.json(200)
     return next()
   })

@@ -76,10 +76,6 @@ This returns with a default optimisation to an image at a specified level from 0
 
 Optimisation level (0-10), default of 4.
 
-## GET /original/{imageurl}
-
-Returns the original image
-
 ### Request
 
     { "src": "http://tomg.co/image.png"
@@ -89,6 +85,21 @@ Returns the original image
 ### Response
 
     { "image": "http://darkroom.io/opt/2/100x200_image.png"
+    }
+
+
+## GET /original/{imageurl}
+
+Returns the original image
+
+## GET /info/{imageurl}
+
+Returns the original images meta information.
+
+### Response
+
+    { "width": "1200"
+    , "height": "1500"
     }
 
 ## POST /crop/{imageurl}

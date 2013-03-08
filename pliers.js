@@ -17,6 +17,7 @@ function tasks(pliers) {
   pliers.filesets('tests', [join(__dirname, 'test', '*', '**/*.test.js')])
   pliers.filesets('serverJs',
     [ join(__dirname, 'lib/**/*.js')
+    , join(__dirname, 'endpoint/**/*.js')
     , join(__dirname, '*.js')
     , join(__dirname, 'test/**/*.js')
     ]
