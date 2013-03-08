@@ -4,4 +4,5 @@ module.exports =
 , upload: require('./upload')
 , original: require('./original')
 , utils: require('./utils')
+, info: require('./info')
 }

@@ -58,6 +58,10 @@ module.exports = function () {
     return next()
   })
 
+  // GET /info/:url
+  // GET /info/http://google.com/test
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, endpoint.info)
+
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, endpoint.resize.width)
