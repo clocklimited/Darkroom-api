@@ -31,6 +31,14 @@ var resizeImage = function (req, res, next) {
       }
     )
 
+  res.on('end', function (chunk) {
+    console.log('end!', chunk)
+  })
+
+  res.on('data', function (chunk) {
+    console.log('data!', chunk)
+  })
+
   res.on('finish', function() {
     return next()
   })

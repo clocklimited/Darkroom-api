@@ -60,7 +60,7 @@ module.exports = function () {
 
   // GET /info/:url
   // GET /info/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, endpoint.info)
+  server.get(/^\/+info\/+(.*)$/, endpoint.info)
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
@@ -92,7 +92,11 @@ module.exports = function () {
     return next()
   })
 
-  server.post('/', endpoint.utils.dedupeName, upload.middleware, endpoint.upload)
+  server.post('/'
+    , endpoint.utils.dedupeName
+    , upload.middleware
+    , endpoint.upload
+  )
 
   server.get('/', function (req, res, next) {
     res.json(200)
