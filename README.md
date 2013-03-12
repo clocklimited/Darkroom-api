@@ -13,6 +13,25 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/X11/lib/pkgconfig
     npm install
 
+## Ubuntu
+    sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+    git clone git@github.com:clocklimited/Darkroom-api.git
+    cd Darkroom-api
+    cd /tmp
+    wget http://cairographics.org/releases/cairo-1.12.2.tar.xz
+    tar xfv cairo-1.12.2.tar.xz
+    cd cairo-1.12.2
+    ./configure
+    make
+    sudo make install
+    cd -
+    npm install
+
+### The following needs to be ran before darkroom is started each time.
+
+    export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'  
+    export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH  
+
 http://darkroom.io
 
 # API
