@@ -36,7 +36,6 @@ git clone . $tmp
 cd $tmp
 rm -rf .git
 npm install --production
-node ./node_modules/pliers/pliers-cli.js build -a
 
 if [ -d "$upstartScript" ]; then
   sudo rm $upstartScript
