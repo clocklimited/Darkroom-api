@@ -30,7 +30,7 @@
 , "testing":
   { "http":
     { "host": "ewah.clockhosting.com"
-    , "url": "http://127.0.0.1:8790/"
+    , "url": "http://ewah.clockhosting.com:8790/"
     , "port": 8790
     }
   }
