@@ -15,14 +15,14 @@
     "send": "~0.1.0",
     "darkroom": "git+ssh://git@github.com:tomgco/darkroom.git",
     "mime-magic": "~0.4.2",
-    "pliers": "~0.1.6"
+    "pliers": "~0.1.6",
+    "lodash": "~1.0.1",
+    "async": "~0.2.5"
   },
   "devDependencies": {
     "supertest": "~0.5.1",
     "mocha": "~1.8.1",
     "should": "~1.2.2",
-    "async": "~0.2.5",
-    "lodash": "~1.0.1",
     "png-size": "0.0.1"
   },
   "scripts": {
