@@ -8,7 +8,7 @@ var restify = require('restify')
 // var darkroom = darkroom()
 module.exports = function () {
   var log = bunyan.createLogger(
-    { name: 'my_restify_application'
+    { name: 'darkroom'
     , level: process.env.LOG_LEVEL || 'debug'
     , stream: process.stdout
     , serializers: bunyan.stdSerializers
@@ -24,7 +24,12 @@ module.exports = function () {
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
-  // server.on('after', restify.auditLogger({ log: log }))
+
+  server.pre(function (request, response, next) {
+    request.log.info({req: request}, 'start')
+    return next()
+  })
+
   server.use(restify.CORS(
     { headers: ['X-Requested-With'] }
   ))
@@ -102,6 +107,27 @@ module.exports = function () {
     res.json(200)
     return next()
   })
+
+  server.on('error', function (req, res, next) {
+    req.log.error({res: res}, 'error')
+    return next()
+  })
+
+  server.on('uncaughtException', function (req, res, route, error) {
+    delete error.domainEmitter
+  ; delete error.domain
+  ; delete error.domainThrown
+    req.log.error({route: route, error: error}, 'error')
+  })
+
+  server.on('after', restify.auditLogger({
+    log: bunyan.createLogger({
+      name: 'audit',
+      body: true,
+      stream: process.stdout
+    })
+  }));
+
 
   return server
 }
