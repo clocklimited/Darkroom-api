@@ -29,7 +29,9 @@
   }
 , "testing":
   { "http":
-    { "port": 8790
+    { "host": "ewah.clockhosting.com"
+    , "url": "http://127.0.0.1:8790/"
+    , "port": 8790
     }
   }
 , "development":
