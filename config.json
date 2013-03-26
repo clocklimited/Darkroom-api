@@ -29,7 +29,7 @@
   }
 , "testing":
   { "http":
-    { "port": 18001
+    { "port": 8790
     }
   }
 , "development":
