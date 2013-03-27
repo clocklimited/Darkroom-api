@@ -49,8 +49,6 @@ sudo sed -i'' -e "s/{NODE_VERSION}/$nodeVersion/g" $upstartScript
 
 logPath=/var/log/application/$DOMAIN
 path=/var/application/$DOMAIN
-mkdir -p "$path/images"
-chgroup g+w -R $path
 set +e
 sudo stop node-$DOMAIN
 if [ -d "$path" ]; then
@@ -58,6 +56,8 @@ if [ -d "$path" ]; then
 else
   mkdir -p /var/application/
 fi
+mkdir -p "$path/images"
+chmod g+w -R $path
 sudo restart node-$DOMAIN || sudo start node-$DOMAIN
 set -e
 cd -
