@@ -1,6 +1,10 @@
 var darkroom = require('darkroom')
-  , upload = require('fileupload').createFileUpload(__dirname + '/../images')
+  // , config = require('con.figure')(require('./config')())
+  // , upload = require('fileupload').createFileUpload(__dirname + '/../images')
   , _ = require('lodash')
+  , request = require('request')
+  , StoreStream = require('darkroom-persistance').StoreStream
+  , CollectionStream = require('darkroom-persistance').CollectionStream
 
 module.exports = function (req, res, next) {
 
@@ -10,24 +14,27 @@ module.exports = function (req, res, next) {
   res.set('Content-Type', 'image/png')
 
   var crop = new darkroom.crop()
-
-  upload
-    .getAsReadStream(req.params.data + '/image')
+  , store = new StoreStream(__dirname, '/../image')
+  , collection = new CollectionStream(Object.keys(src).length)
+  // upload
+    // .getAsReadStream(req.params.data + '/image')
+  request(req.params.data)
     .pipe(crop)
-    .pipe(res,
+    .pipe(store,
       { crops: req.params.crops
       }
     )
+    .pipe(collection)
 
-  res.on('end', function (chunk) {
+  store.on('end', function (chunk) {
     console.log('end!', chunk)
   })
 
-  res.on('data', function (chunk) {
+  store.on('data', function (chunk) {
     console.log('data!', chunk)
   })
 
-  res.on('finish', function() {
+  collection.on('end', function() {
     return next()
   })
 }

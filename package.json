@@ -17,7 +17,8 @@
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
     "lodash": "~1.0.1",
-    "async": "~0.2.5"
+    "async": "~0.2.5",
+    "request": "~2.16.6"
   },
   "devDependencies": {
     "supertest": "~0.5.1",

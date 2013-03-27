@@ -1,0 +1,52 @@
+module.exports = function () {
+  return { 'common':
+  { 'http':
+    { 'host': '0.0.0.0'
+    , 'port': 17999
+    , 'url': 'http://127.0.0.1:17999/'
+    , 'maxage': 0
+    }
+  , 'mongo':
+    { 'host': '127.0.0.1'
+    , 'port': 27017
+    , 'database': 'test'
+    }
+  , 'log': false
+  , 'paths':
+    { 'data': function() { return __dirname + '/images' }
+    }
+  , 'version': '0.0.1'
+  }
+, 'production':
+  { 'http':
+    { 'host': 'example.com'
+    , 'port': 8080
+    , 'maxage': 315360000
+    }
+  }
+, 'staging':
+  { 'http':
+    { 'host': 'example.com'
+    , 'port': 8080
+    , 'maxage': 315360000
+    }
+  }
+, 'testing':
+  { 'http':
+    { 'host': 'ewah.clockhosting.com'
+    , 'url': 'http://ewah.clockhosting.com:8790/'
+    , 'port': 8790
+    , 'maxage': 315360000
+    }
+  }
+, 'development':
+  { 'http':
+    { 'port': 18000
+    }
+  , 'mongo':
+    { 'prop': true
+    }
+  , 'log': true
+  }
+}
+}

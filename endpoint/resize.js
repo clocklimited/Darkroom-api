@@ -1,5 +1,6 @@
 var darkroom = require('darkroom')
-, upload = require('fileupload').createFileUpload(__dirname + '/../images')
+// , upload = require('fileupload').createFileUpload(__dirname + '/../images')
+, request = require('request')
 
 exports.width = function (req, res, next) {
   req.params.crop = false
@@ -21,8 +22,7 @@ var resizeImage = function (req, res, next) {
 
   var re = new darkroom.resize()
 
-  upload
-    .getAsReadStream(req.params.data + '/image')
+  request(req.params.data)
     .pipe(re)
     .pipe(res,
       { width: +req.params.width
