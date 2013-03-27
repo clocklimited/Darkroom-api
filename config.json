@@ -32,6 +32,7 @@
     { "host": "ewah.clockhosting.com"
     , "url": "http://ewah.clockhosting.com:8790/"
     , "port": 8790
+    , "maxage": 315360000
     }
   }
 , "development":
