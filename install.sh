@@ -56,10 +56,9 @@ if [ -d "$path" ]; then
 else
   mkdir -p /var/application/
 fi
-mkdir -p "$path/images"
-chmod g+w -R $path
 sudo restart node-$DOMAIN || sudo start node-$DOMAIN
 set -e
 cd -
 
 mv $tmp $path
+chmod g+w -R $path
