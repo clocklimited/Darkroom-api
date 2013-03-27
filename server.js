@@ -38,10 +38,10 @@ module.exports = function () {
   server.use(function(req, res, next) {
     var nParams = Object.keys(req.params).length
     if (nParams === 0) return next()
-    var data = req.params[nParams - 1]
-    data = url.parse(data).path.split('/')
-    data = data[data.length - 1]
-    req.params.data = data
+    var dataPath = req.params[nParams - 1]
+    dataPath = url.parse(dataPath).path.split('/')
+    dataPath = dataPath[dataPath.length - 1]
+    req.params.data = dataPath
     return next()
   })
 
