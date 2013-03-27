@@ -116,7 +116,7 @@ module.exports = function () {
     delete error.domainEmitter
   ; delete error.domain
   ; delete error.domainThrown
-    req.log.error({route: route, request: req, body: res.body, error: error}, 'error')
+    req.log.error({route: route, body: res.body, error: error}, 'uncaughtException')
   })
 
   server.on('after', restify.auditLogger({
