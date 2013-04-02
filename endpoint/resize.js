@@ -1,5 +1,4 @@
 var darkroom = require('darkroom')
-  // , upload = require('fileupload').createFileUpload(__dirname + '/../images')
   , config = require('con.figure')(require('../config')())
   , dp = require('darkroom-persistance')
   , StoreStream = dp.StoreStream
@@ -27,8 +26,6 @@ var resizeImage = function (req, res, next) {
 
   // Currently resize images only deals with pngs
   res.set('Content-Type', 'image/png')
-
-  console.log(req.params)
 
   fs.exists(req.params.path, function (exists) {
     var re = new darkroom.resize()

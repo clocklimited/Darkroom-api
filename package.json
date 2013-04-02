@@ -19,7 +19,8 @@
     "pliers": "~0.1.6",
     "lodash": "~1.0.1",
     "async": "~0.2.5",
-    "request": "~2.16.6"
+    "request": "~2.16.6",
+    "mkdirp": "~0.3.5"
   },
   "devDependencies": {
     "supertest": "~0.5.1",

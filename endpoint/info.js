@@ -5,7 +5,7 @@ var upload = require('fileupload').createFileUpload(__dirname + '/../images')
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
 
-  request(req.params.data)
+  request(req.params.url)
     .pipe(info)
     .pipe(res,
       { width: +req.params.width

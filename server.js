@@ -36,14 +36,18 @@ module.exports = function () {
 
   // Manipulate the url being passed.
   server.use(function(req, res, next) {
-    var nParams = Object.keys(req.params).length
-    if (nParams === 0) return next()
-    var dataPath = req.params[nParams - 1]
-    req.params.url = dataPath
-    dataPath = url.parse(dataPath).path.split('/')
-    dataPath = dataPath[dataPath.length - 1]
-    req.params.data = dataPath
-    return next()
+    try {
+      var nParams = Object.keys(req.params).length
+      if (nParams === 0) return next()
+      var dataPath = req.params[nParams - 1]
+      req.params.url = dataPath
+      dataPath = url.parse(dataPath).path.split('/')
+      dataPath = dataPath[dataPath.length - 1]
+      req.params.data = dataPath
+      return next()
+    } catch (e) {
+      return next()
+    }
   })
 
   // Set caching for browsers
@@ -90,9 +94,12 @@ module.exports = function () {
 
   // GET /crop/:url
   // GET /crop/http://google.com/
-  server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
+  // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
+
 
   server.get(/^\/(.*)$/, endpoint.original)
+
+  server.post('/crop', endpoint.crop)
 
   server.post('/'
     , endpoint.utils.dedupeName
