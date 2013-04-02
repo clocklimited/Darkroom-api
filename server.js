@@ -1,10 +1,9 @@
 var restify = require('restify')
-  , config = require('con.figure')(require('./config')())
+  , config = require('con.figure')(require('./config'))
   , upload = require('fileupload').createFileUpload(__dirname + '/images')
   , url = require('url')
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
-
 
 // var darkroom = darkroom()
 module.exports = function () {
@@ -40,8 +39,8 @@ module.exports = function () {
     var nParams = Object.keys(req.params).length
     if (nParams === 0) return next()
     var dataPath = req.params[nParams - 1]
-    // dataPath = url.parse(dataPath).path.split('/')
-    // dataPath = dataPath[dataPath.length - 1]
+    dataPath = url.parse(dataPath).path.split('/')
+    dataPath = dataPath[dataPath.length - 1]
     req.params.data = dataPath
     return next()
   })
@@ -92,7 +91,11 @@ module.exports = function () {
   // GET /crop/http://google.com/
   server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
-  server.get(/^\/(.*)$/, endpoint.original)
+  server.get('/:url', function (req, res, next) {
+    res.set('X-Application-Method', 'Get Image')
+    res.status(501)
+    return next()
+  })
 
   // POST Mock interface for default crops.
   server.post('/crops', function(req, res, next) {

@@ -1,5 +1,5 @@
 var createServer = require('./server')
-  , config = require('con.figure')(require('./config')())
+  , config = require('con.figure')(require('./config'))
   , app = createServer()
 
 var clusterMaster = require('./lib/cluster-master')

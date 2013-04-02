@@ -1,11 +1,10 @@
 var upload = require('fileupload').createFileUpload(__dirname + '/../images')
   , darkroom = require('darkroom')
-  , request = require('request')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
-
-  request(req.params.data)
+  upload
+    .getAsReadStream(req.params.data + '/image')
     .pipe(info)
     .pipe(res,
       { width: +req.params.width
