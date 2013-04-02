@@ -1,6 +1,5 @@
-var upload = require('fileupload').createFileUpload(__dirname + '/../images')
+var request = require('request')
   , darkroom = require('darkroom')
-  , request = require('request')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()

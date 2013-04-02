@@ -26,7 +26,6 @@ module.exports = function (req, res, next) {
     , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: false })
 
   var onend = function () {
-    console.log(collection)
     res.json(collection)
     return next()
   }

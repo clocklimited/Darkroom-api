@@ -1,6 +1,5 @@
 var _ = require('lodash')
   , config = require('con.figure')(require('../config')())
-
 module.exports = function(req, res, next) {
   req.log.trace({ files: req.body }, 'endpoint.upload')
   var images = []
