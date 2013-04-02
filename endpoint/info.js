@@ -1,10 +1,11 @@
-var request = require('request')
+var dp = require('darkroom-persistance')
+  , retrieve = dp.RetrieveStream
   , darkroom = require('darkroom')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
 
-  request(req.params.url)
+  retrieve(req.params, { isFile: false })
     .pipe(info)
     .pipe(res,
       { width: +req.params.width

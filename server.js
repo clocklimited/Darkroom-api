@@ -96,22 +96,7 @@ module.exports = function () {
   // GET /crop/http://google.com/
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
-
-  server.get('/:url', function (req, res, next) {
-    res.set('X-Application-Method', 'Get Image')
-    res.status(501)
-    return next()
-  })
-
-  // POST Mock interface for default crops.
-  server.post('/crops', function(req, res, next) {
-    res.json(
-      { '400x400': 'http://darkroom.io/400x400_image.png'
-      , '400x200': 'http://darkroom.io/400x200_image.png'
-      , '400x300': 'http://darkroom.io/400x300_image.png'
-      })
-    return next()
-  })
+  server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/crop', endpoint.crop)
 
