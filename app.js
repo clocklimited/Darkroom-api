@@ -14,4 +14,8 @@ clusterMaster(function () {
     })
   })
 
-}, { logger: console })
+  serverDomain.on('error', function (error) {
+    app.log.error('domain error', error)
+  })
+
+}, { logger: app.log })

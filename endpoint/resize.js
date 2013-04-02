@@ -1,6 +1,13 @@
 var darkroom = require('darkroom')
-// , upload = require('fileupload').createFileUpload(__dirname + '/../images')
-, request = require('request')
+  // , upload = require('fileupload').createFileUpload(__dirname + '/../images')
+  , config = require('con.figure')(require('../config')())
+  , dp = require('darkroom-persistance')
+  , StoreStream = dp.StoreStream
+  , retrieve = dp.RetrieveStream
+  , filePath = require('../lib/filePath')
+  , path = require('path')
+  , fs = require('fs')
+  , stream = require('stream')
 
 exports.width = function (req, res, next) {
   req.params.crop = false
@@ -16,30 +23,33 @@ exports.both = function (req, res, next) {
 var resizeImage = function (req, res, next) {
   req.params.width = req.params.width || req.params[0]
   req.params.height = req.params.height || req.params[1]
+  req.params.path = filePath(req.params, path.join(config.paths.data(), req.params.data))
 
   // Currently resize images only deals with pngs
   res.set('Content-Type', 'image/png')
 
-  var re = new darkroom.resize()
+  fs.exists(req.params.path, function (exists) {
+    var re = new darkroom.resize()
+      , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
 
-  request(req.params.data)
-    .pipe(re)
-    .pipe(res,
-      { width: +req.params.width
-      , height: +req.params.height
-      , crop: req.params.crop
-      }
-    )
 
-  res.on('end', function (chunk) {
-    console.log('end!', chunk)
+    store.on('error', function (error) {
+      req.log.error('StoreStream:', error.message)
+    })
+
+    retrieve(req.params)
+      .pipe(re)
+      .pipe(store,
+        { width: +req.params.width
+        , height: +req.params.height
+        , crop: req.params.crop
+        }
+      )
+      .pipe(res)
+
+    res.on('finish', function(error) {
+      return next(error)
+    })
   })
 
-  res.on('data', function (chunk) {
-    console.log('data!', chunk)
-  })
-
-  res.on('finish', function() {
-    return next()
-  })
 }

@@ -5,14 +5,13 @@ var restify = require('restify')
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
 
-
 // var darkroom = darkroom()
 module.exports = function () {
   var log = bunyan.createLogger(
     { name: 'darkroom'
     , level: process.env.LOG_LEVEL || 'debug'
     , stream: process.stdout
-    , serializers: bunyan.stdSerializers
+    , serializers: restify.bunyan.stdSerializers
   })
 
   var server = restify.createServer(
@@ -26,10 +25,10 @@ module.exports = function () {
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
 
-  server.pre(function (request, response, next) {
-    request.log.info({req: request}, 'start')
-    return next()
-  })
+  // server.pre(function (request, response, next) {
+  //   request.log.info({req: request}, 'start')
+  //   return next()
+  // })
 
   server.use(restify.CORS(
     { headers: ['X-Requested-With'] }
@@ -40,8 +39,9 @@ module.exports = function () {
     var nParams = Object.keys(req.params).length
     if (nParams === 0) return next()
     var dataPath = req.params[nParams - 1]
-    // dataPath = url.parse(dataPath).path.split('/')
-    // dataPath = dataPath[dataPath.length - 1]
+    req.params.url = dataPath
+    dataPath = url.parse(dataPath).path.split('/')
+    dataPath = dataPath[dataPath.length - 1]
     req.params.data = dataPath
     return next()
   })
@@ -105,15 +105,15 @@ module.exports = function () {
     return next()
   })
 
-  server.on('error', function (e) {
-    console.log('server error:', e)
-  })
+  // server.on('error', function (e) {
+  //   console.log('server error:', e)
+  // })
 
   server.on('uncaughtException', function (req, res, route, error) {
-    delete error.domainEmitter
-  ; delete error.domain
-  ; delete error.domainThrown
-    req.log.error({route: route, body: res.body, error: error}, 'uncaughtException')
+  //   delete error.domainEmitter
+  // ; delete error.domain
+  // ; delete error.domainThrown
+    req.log.error(error, 'uncaughtException')
     res.send(error)
   })
 
