@@ -101,7 +101,7 @@ module.exports = function () {
   )
 
   server.get('/', function (req, res, next) {
-    res.json(200)
+    res.json({})
     return next()
   })
 

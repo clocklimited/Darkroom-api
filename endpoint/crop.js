@@ -1,40 +1,41 @@
 var darkroom = require('darkroom')
   // , config = require('con.figure')(require('./config')())
   // , upload = require('fileupload').createFileUpload(__dirname + '/../images')
-  , _ = require('lodash')
   , request = require('request')
-  , StoreStream = require('darkroom-persistance').StoreStream
-  , CollectionStream = require('darkroom-persistance').CollectionStream
+  , dp = require('darkroom-persistance')
+  , StoreStream = dp.StoreStream
+  , CollectionStream = dp.CollectionStream
+  , retrieve = dp.RetrieveStream
+  , stream = require('stream')
+  , fs = require('fs')
 
 module.exports = function (req, res, next) {
 
   var src = req.body.src
+    , collection = new CollectionStream(Object.keys(src).length)
 
   // Currently resize images only deals with pngs
   res.set('Content-Type', 'image/png')
 
-  var crop = new darkroom.crop()
-  , store = new StoreStream(__dirname, '/../image')
-  , collection = new CollectionStream(Object.keys(src).length)
-  // upload
-    // .getAsReadStream(req.params.data + '/image')
-  request(req.params.data)
-    .pipe(crop)
-    .pipe(store,
-      { crops: req.params.crops
-      }
-    )
-    .pipe(collection)
+  fs.exists(req.params.path, function (exists) {
+    var crop = new darkroom.crop()
+      , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
 
-  store.on('end', function (chunk) {
-    console.log('end!', chunk)
-  })
+    store.on('error', function (error) {
+      req.log.error('StoreStream:', error.message)
+    })
 
-  store.on('data', function (chunk) {
-    console.log('data!', chunk)
+    retrieve(req.params)
+      .pipe(crop)
+      .pipe(store,
+        { crops: req.params.crops
+        }
+      )
+      .pipe(collection)
   })
 
   collection.on('end', function() {
+    res.json(collection.toJSON())
     return next()
   })
 }

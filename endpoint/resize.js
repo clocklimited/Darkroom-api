@@ -28,16 +28,17 @@ var resizeImage = function (req, res, next) {
   // Currently resize images only deals with pngs
   res.set('Content-Type', 'image/png')
 
+  console.log(req.params)
+
   fs.exists(req.params.path, function (exists) {
     var re = new darkroom.resize()
       , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
-
 
     store.on('error', function (error) {
       req.log.error('StoreStream:', error.message)
     })
 
-    retrieve(req.params)
+    retrieve(req.params, { isFile: exists })
       .pipe(re)
       .pipe(store,
         { width: +req.params.width

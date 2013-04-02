@@ -127,7 +127,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero for /0/:url', function(done) {
     request(darkroom)
-      .get('/0/http://localhost/3bec4be4b95328cb281a47429c8aed8e')
+      .get('/0/http://127.0.0.1:17999/3bec4be4b95328cb281a47429c8aed8e')
       .expect('Content-Type', /image/)
       .expect(200)
       .end(function (error, res) {
@@ -140,7 +140,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero /0/0/:url', function(done) {
     request(darkroom)
-      .get('/0/0/http://localhost/3bec4be4b95328cb281a47429c8aed8e')
+      .get('/0/0/http://127.0.0.1:17999/3bec4be4b95328cb281a47429c8aed8e')
       .expect('Content-Type', /image/)
       .expect(200)
       .end(function (error, res) {
@@ -152,7 +152,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero /resize/0/0/:url', function(done) {
     request(darkroom)
-      .get('/resize/0/0/http://localhost/3bec4be4b95328cb281a47429c8aed8e')
+      .get('/resize/0/0/http://127.0.0.1:17999/3bec4be4b95328cb281a47429c8aed8e')
       .expect('Content-Type', /image/)
       .expect(200)
       .end(function (error, res) {

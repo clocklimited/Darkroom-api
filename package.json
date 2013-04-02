@@ -14,6 +14,7 @@
     "fileupload": "git://github.com/domharrington/fileupload.git",
     "send": "~0.1.0",
     "darkroom": "git+ssh://git@github.com:tomgco/darkroom.git",
+    "darkroom-persistence": "git+ssh://git@github.com:tomgco/darkroom-persistence.git",
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
     "lodash": "~1.0.1",
