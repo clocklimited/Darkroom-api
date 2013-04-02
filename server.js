@@ -94,6 +94,16 @@ module.exports = function () {
 
   server.get(/^\/(.*)$/, endpoint.original)
 
+  // POST Mock interface for default crops.
+  server.post('/crops', function(req, res, next) {
+    res.json(
+      { '400x400': 'http://darkroom.io/400x400_image.png'
+      , '400x200': 'http://darkroom.io/400x200_image.png'
+      , '400x300': 'http://darkroom.io/400x300_image.png'
+      })
+    return next()
+  })
+
   server.post('/'
     , endpoint.utils.dedupeName
     , upload.middleware
