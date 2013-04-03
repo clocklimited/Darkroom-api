@@ -20,9 +20,9 @@ module.exports = function (req, res, next) {
   req.params.data = srcUrl[srcUrl.length - 1]
 
   req.params.path = filePath(req.params, path.join(config.paths.data(), req.params.data))
+  req.body.crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
 
-  var crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
-    , collection = {} // new CollectionStream(Object.keys(crops).length)
+  var collection = {} // new CollectionStream(Object.keys(crops).length)
     , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: false })
 
   var onend = function () {

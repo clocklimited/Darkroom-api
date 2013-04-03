@@ -1,7 +1,7 @@
 module.exports = function () {
   return { 'common':
     { 'http':
-      { 'host': '0.0.0.0'
+      { 'host': '127.0.0.1'
       , 'port': 17999
       , 'url': 'http://127.0.0.1:17999/'
       , 'maxage': 0
@@ -13,7 +13,8 @@ module.exports = function () {
       }
     , 'log': false
     , 'paths':
-      { 'data': function() { return __dirname + '/images' }
+      { 'data': function() { return '/var/data/application/testing.darkroom.clockhosting.com/images/' }
+      , 'cache': function() { return '/var/data/cache/application/testing.darkroom.clockhosting.com/images/' }
       }
     , 'version': '0.0.1'
     }

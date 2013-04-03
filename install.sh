@@ -19,7 +19,7 @@ fi
 DOMAIN=$1
 # Ensure a domain argument
 if [ -z $DOMAIN ] ; then
-  echo You must provide a domain name. ie NODE_ENV=testing nave use 0.10.1 $0 testing.catfish.clockhosting.com
+  echo You must provide a domain name. ie NODE_ENV=testing nave use 0.10.1 $0 testing.darkroom.clockhosting.com
   exit 3
 fi
 
@@ -62,3 +62,5 @@ cd -
 
 mv $tmp $path
 chmod g+w -R $path
+mkdir -p /var/data/application/testing.darkroom.clockhosting.com/images
+mkdir -p /var/data/cache/application/testing.darkroom.clockhosting.com/images
