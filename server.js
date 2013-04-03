@@ -1,6 +1,6 @@
 var restify = require('restify')
   , config = require('con.figure')(require('./config')())
-  , upload = require('fileupload').createFileUpload(config.paths.data() + '/images')
+  , upload = require('fileupload').createFileUpload(config.paths.data())
   , url = require('url')
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
