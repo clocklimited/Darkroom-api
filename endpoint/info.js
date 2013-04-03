@@ -14,11 +14,11 @@ module.exports = function (req, res, next) {
       }
     )
 
-  info.on('error', function(e) {
+  info.on('error', function (e) {
     req.log.error({ error: e }, 'info.error')
   })
 
-  res.on('finish', function() {
+  res.on('finish', function () {
     return next()
   })
 }

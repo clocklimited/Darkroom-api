@@ -59,9 +59,9 @@ module.exports = function (req, res, next) {
       })
 
       dataSource
-        // .pipe(crop)
+        .pipe(crop)
         .pipe(store,
-          { crops: data
+          { crop: data
           }
         )
     })
