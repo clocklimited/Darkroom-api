@@ -1,4 +1,4 @@
 module.exports =
-{ data: '/var/data/application//images'
+{ data: {DATA}
 , cache: {CACHE}
 }
