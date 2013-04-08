@@ -59,9 +59,7 @@ else
 fi
 dataPath=/var/data/application/$DOMAIN/images
 cachePath=/var/data/cache/application/$DOMAIN/images
-$locations=$path/locations.js
-sed -i'' -e "s,{DATA},'$dataPath',g" $path
-sed -i'' -e "s,{CACHE},'$cachePath',g" $path
+locations=$path/locations.js
 set -e
 cd -
 
@@ -70,4 +68,6 @@ chmod g+w -R $path
 mkdir -p $dataPath
 mkdir -p $cachePath
 
+sed -i'' -e "s,{DATA},'$dataPath',g" $locations
+sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sudo restart node-$DOMAIN || sudo start node-$DOMAIN
