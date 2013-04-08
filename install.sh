@@ -55,6 +55,7 @@ if [ -d "$path" ]; then
   mv $path $path.$now
 else
   mkdir -p /var/application/
+  mkdir -p /var/data/
 fi
 sudo restart node-$DOMAIN || sudo start node-$DOMAIN
 set -e
@@ -62,5 +63,5 @@ cd -
 
 mv $tmp $path
 chmod g+w -R $path
-mkdir -p /var/data/application/testing.darkroom.clockhosting.com/images
-mkdir -p /var/data/cache/application/testing.darkroom.clockhosting.com/images
+mkdir -p /var/data/application/$DOMAIN/images
+mkdir -p /var/data/cache/application/$DOMAIN/images
