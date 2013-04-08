@@ -5,7 +5,6 @@ var config = require('con.figure')(require('../config')())
 module.exports = function (req, res, next) {
   res.set('X-Application-Method', 'Original Image')
   var file = req.params.data + '/image'
-  console.log(config.paths.data() + file)
   fileupload.get(file, function(err, data) {
     mime(config.paths.data() + file, function (err, type) {
       if (err) return next(err)
