@@ -31,7 +31,7 @@ module.exports = function (req, res, next) {
   }
 
   // Currently resize images only deals with pngs
-  res.set('Content-Type', 'image/png')
+  // res.set('Content-Type', 'image/png')
 
   req.params.crops.forEach(function (data) {
     var folderLocation = filePath(data, config.paths.data())

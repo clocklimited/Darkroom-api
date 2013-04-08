@@ -25,8 +25,8 @@ var resizeImage = function (req, res, next) {
   req.params.height = req.params.height || req.params[1]
   req.params.path = filePath(req.params, path.join(config.paths.cache(), req.params.data))
 
-  // Currently resize images only deals with pngs
-  res.set('Content-Type', 'image/png')
+  // Currently resize images only deals with jpeg
+  // res.set('Content-Type', 'image/jpeg')
   fs.exists(req.params.path, function (exists) {
     mkdirp(config.paths.cache() + req.params.data, function() {
       var re = new darkroom.resize()
