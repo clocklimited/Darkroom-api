@@ -57,11 +57,17 @@ else
   mkdir -p /var/application/
   mkdir -p /var/data/
 fi
-sudo restart node-$DOMAIN || sudo start node-$DOMAIN
+dataPath=/var/data/application/$DOMAIN/images
+cachePath=/var/data/cache/application/$DOMAIN/images
+$locations=$path/locations.js
+sed -i'' -e "s,{DATA},'$dataPath',g" $path
+sed -i'' -e "s,{CACHE},'$cachePath',g" $path
 set -e
 cd -
 
 mv $tmp $path
 chmod g+w -R $path
-mkdir -p /var/data/application/$DOMAIN/images
-mkdir -p /var/data/cache/application/$DOMAIN/images
+mkdir -p $dataPath
+mkdir -p $cachePath
+
+sudo restart node-$DOMAIN || sudo start node-$DOMAIN

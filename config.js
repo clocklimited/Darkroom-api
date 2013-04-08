@@ -1,3 +1,5 @@
+var locations = require('./locations')
+console.log(locations)
 module.exports = function () {
   return { 'common':
     { 'http':
@@ -13,8 +15,8 @@ module.exports = function () {
       }
     , 'log': false
     , 'paths':
-      { 'data': function() { return '/var/data/application/testing.darkroom.clockhosting.com/images/' }
-      , 'cache': function() { return '/var/data/cache/application/testing.darkroom.clockhosting.com/images/' }
+      { 'data': function() { return locations.data }
+      , 'cache': function() { return  locations.cache }
       }
     , 'version': '0.0.1'
     }
