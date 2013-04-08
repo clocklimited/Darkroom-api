@@ -23,6 +23,16 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'  
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH  
 
+# Deployment
+
+River:
+
+    PORT=8791 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.neverunderdressed.com
+
+Sunday World
+
+    PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
+
 http://darkroom.io
 
 # API
