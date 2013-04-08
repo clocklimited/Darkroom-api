@@ -37,8 +37,8 @@ module.exports = function () {
   , 'testing':
     { 'http':
       { 'host': 'ewah.clockhosting.com'
-      , 'url': 'http://ewah.clockhosting.com:8790/'
-      , 'port': 8790
+      , 'url': 'http://ewah.clockhosting.com:' + locations.port + '/'
+      , 'port': locations.port
       , 'maxage': 315360000
       }
     }
