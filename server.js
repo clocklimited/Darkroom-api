@@ -4,6 +4,7 @@ var restify = require('restify')
   , url = require('url')
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
+  , authorised = require('./lib/authorised')
 
 // var darkroom = darkroom()
 module.exports = function () {
@@ -25,6 +26,13 @@ module.exports = function () {
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
 
+  // server.use(restify.throttle(
+  //   { burst: 60
+  //   , rate: 30
+  //   , ip: true
+  //   } )
+  // )
+
   // server.pre(function (request, response, next) {
   //   request.log.info({req: request}, 'start')
   //   return next()
@@ -36,17 +44,32 @@ module.exports = function () {
 
   // Manipulate the url being passed.
   server.use(function(req, res, next) {
-    try {
-      var nParams = Object.keys(req.params).length
-      if (nParams === 0) return next()
-      var dataPath = req.params[nParams - 1]
-      req.params.url = dataPath
-      dataPath = url.parse(dataPath).path.split('/')
-      dataPath = dataPath[dataPath.length - 1]
-      req.params.data = dataPath
+    var nParams = Object.keys(req.params).length
+    if (nParams === 0) return next()
+    var dataPath = req.params[nParams - 1]
+    // req.params.url = dataPath
+    // dataPath = url.parse(dataPath).path.split('/')
+    // dataPath = dataPath[dataPath.length - 1]
+    var tokens = dataPath.split(/:|\/|\\/)
+    req.params.data = tokens.shift()
+    if (dataPath.indexOf(':') !== -1)
+      req.params.hash = tokens.shift()
+    req.params.name = tokens.shift()
+    req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
+    return next()
+  })
+
+  server.use(function (req, res, next) {
+    if (req.method !== 'GET')
       return next()
-    } catch (e) {
+    if (authorised(req)) {
+      res.set('Authorized-Request', req.url)
       return next()
+    } else {
+      var message = 'Checksum does not match'
+      if (req.params.hash === undefined)
+        message = 'Checksum is missing'
+      throw new restify.NotAuthorizedError(message + ' for action: ' + req.params.action)
     }
   })
 
@@ -96,6 +119,11 @@ module.exports = function () {
   // GET /crop/http://google.com/
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
+  // server.get('/', function (req, res, next) {
+  //   res.json({ homepage: true })
+  //   return next()
+  // })
+
   server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/crop', endpoint.crop)
@@ -106,10 +134,6 @@ module.exports = function () {
     , endpoint.upload
   )
 
-  server.get('/', function (req, res, next) {
-    res.json({})
-    return next()
-  })
 
   // server.on('error', function (e) {
   //   console.log('server error:', e)

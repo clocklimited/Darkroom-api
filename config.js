@@ -1,5 +1,4 @@
 var locations = require('./locations')
-console.log(locations)
 module.exports = function () {
   return { 'common':
     { 'http':

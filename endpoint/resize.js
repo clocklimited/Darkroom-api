@@ -23,33 +23,39 @@ exports.both = function (req, res, next) {
 var resizeImage = function (req, res, next) {
   req.params.width = req.params.width || req.params[0]
   req.params.height = req.params.height || req.params[1]
-  req.params.path = filePath(req.params, path.join(config.paths.cache(), req.params.data))
+  // console.log(req.params)
+  req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 
   // Currently resize images only deals with jpeg
   // res.set('Content-Type', 'image/jpeg')
   fs.exists(req.params.path, function (exists) {
-    mkdirp(config.paths.cache() + req.params.data, function() {
+    if (!exists) {
+      req.log.error(new Error(req.params.path + ' not found'))
+      if (req.params.data === 'http')
+        return next(new Error('Cannot use a remote resource'))
+      return next(new Error('Image does not exist'))
+    }
+    // mkdirp(config.paths.cache() + req.params.data, function() {
       var re = new darkroom.resize()
-        , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
+      //   , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
 
-      store.on('error', function (error) {
-        req.log.error('StoreStream:', error.message)
-      })
+      // store.on('error', function (error) {
+      //   req.log.error('StoreStream:', error.message)
+      // })
 
-      retrieve(req.params, { isFile: exists })
+      retrieve(req.params, { isFile: true })
         .pipe(re)
-        .pipe(store,
+        .pipe(res,
           { width: +req.params.width
           , height: +req.params.height
           , crop: req.params.crop
           }
         )
-        .pipe(res)
 
       res.on('finish', function(error) {
         return next(error)
       })
-    })
+    // })
   })
 
 }
