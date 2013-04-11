@@ -76,9 +76,9 @@ Images will be resized, omission of the width or height parameter will auto resi
 
 ### Response
 
-    { "200x400": "http://darkroom.io/200x400_image.png"
-    , "100x200": "http://darkroom.io/100x200_image.png"
-    , "50": "http://darkroom.io/50_image.png"
+    { "200x400": "51aca1f496317c0d2b475768c9303de3"
+    , "100x200": "51aca1f496317c0d2b475768c9303de3"
+    , "50": "51aca1f496317c0d2b475768c9303de3"
     }
 
 ### GET /resize/{width}/{height}/{imageurl}
@@ -133,10 +133,7 @@ This will preform a manual crop on image using the specified coordinates, for a 
 ### Request
 
     { "src": "http://tomg.co/image.png"
-    , "sizes":
-      [ { w: 200
-        , h: 400
-        , crops:
+    , crops: [
           { x1: 10
           , x2: 100
           , y1: 100
@@ -144,15 +141,13 @@ This will preform a manual crop on image using the specified coordinates, for a 
           , w: 100 // relation to original image
           , h: 200 // ""           ""
           }
-        }
-      , [100, 200] // auto cropped when resized
-      ]
+        ]
     }
 
 ### Response
 
-    { "200x400": "http://darkroom.io/200x400_image.png"
-    , "100x200": "http://darkroom.io/100x200_image.png"
+    { "200x400": "51aca1f496317c0d2b475768c9303de3"
+    , "100x200": "51aca1f496317c0aaaa75768c9303f5c"
     }
 
 ## GET /
