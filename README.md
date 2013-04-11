@@ -133,10 +133,7 @@ This will preform a manual crop on image using the specified coordinates, for a 
 ### Request
 
     { "src": "http://tomg.co/image.png"
-    , "sizes":
-      [ { w: 200
-        , h: 400
-        , crops:
+    , crops: [
           { x1: 10
           , x2: 100
           , y1: 100
@@ -144,9 +141,7 @@ This will preform a manual crop on image using the specified coordinates, for a 
           , w: 100 // relation to original image
           , h: 200 // ""           ""
           }
-        }
-      , [100, 200] // auto cropped when resized
-      ]
+        ]
     }
 
 ### Response
