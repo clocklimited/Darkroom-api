@@ -9,8 +9,17 @@ describe('Crop', function() {
     it('should return a working crop with a png', function(done) {
       var r = request(darkroom)
         .post(path)
-        .send({ src: 'http://img.clockte.ch/200x200.png'
-          , sizes: [100, 100]
+        .send(
+          { src: '3bec4be4b95328cb281a47429c8aed8e'
+          , crops: [
+              { x1: 10
+              , x2: 100
+              , y1: 100
+              , y2: 100
+              , w: 100
+              , h: 200
+              }
+            ]
           }
         )
         .set('Accept', 'application/json')
@@ -19,7 +28,7 @@ describe('Crop', function() {
         .end(function (error, res) {
           if (error) return done(error)
           res.body.results.should.have.length(1)
-          res.should.be.a('object').and.has.property('100x100')
+          res.body.should.be.a('object').and.has.property('100x100')
           r.app.close()
           done()
         })
@@ -28,8 +37,17 @@ describe('Crop', function() {
     it('should return a working crop with a jpeg', function(done) {
       var r = request(darkroom)
         .post(path)
-        .send({ src: 'http://img.clockte.ch/200x200.jpg'
-          , sizes: [100, 100]
+        .send(
+          { src: '3bec4be4b95328cb281a47429c8aed8e'
+          , crops: [
+              { x1: 10
+              , x2: 100
+              , y1: 100
+              , y2: 100
+              , w: 100
+              , h: 200
+              }
+            ]
           }
         )
         .set('Accept', 'application/json')
@@ -38,7 +56,7 @@ describe('Crop', function() {
         .end(function (error, res) {
           if (error) return done(error)
           res.body.results.should.have.length(1)
-          res.should.be.a('object').and.has.property('100x100')
+          res.body.should.be.a('object').and.has.property('100x100')
           r.app.close()
           done()
         })
@@ -47,20 +65,15 @@ describe('Crop', function() {
 
   it('should return an object containing the specified dimensions as object keys', function(done) {
     var body =
-      { src: 'http://img.clockte.ch/200x200.jpg'
-      , sizes:
-        [ { w: 200
-          , h: 400
-          , crops:
-            { x1: 10
-            , x2: 100
-            , y1: 100
-            , y2: 100
-            , w: 100
-            , h: 200
-            }
+      { src: '3bec4be4b95328cb281a47429c8aed8e'
+      , crops: [
+          { x1: 10
+          , x2: 100
+          , y1: 100
+          , y2: 100
+          , w: 100
+          , h: 200
           }
-        , [100, 200]
         ]
       }
 
@@ -84,7 +97,7 @@ describe('Crop', function() {
   it('should return a http error if sizes not provided', function(done) {
     var r = request(darkroom)
       .get(path)
-      .send({ src: 'http://img.clockte.ch/200x200.jpg' })
+      .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
@@ -98,18 +111,14 @@ describe('Crop', function() {
 
   it('should return an error if not all crop dimensions are specified', function(done) {
     var body =
-      { src: 'http://img.clockte.ch/200x200.jpg'
-      , sizes:
-        [ { w: 200
-          , h: 400
-          , crops:
-            { x1: 10
-            , x2: 100
-            // , y1: 100
-            // , y2: 100
-            , w: 100
-            , h: 200
-            }
+      { src: '3bec4be4b95328cb281a47429c8aed8e'
+      , crops: [
+          { x1: 10
+          , x2: 100
+          // , y1: 100
+          // , y2: 100
+          , w: 100
+          , h: 200
           }
         ]
       }

@@ -13,17 +13,16 @@ var darkroom = require('darkroom')
   , mkdirp = require('mkdirp')
 
 module.exports = function (req, res, next) {
-
   req.body = JSON.parse(req.body)
 
   var srcUrl = url.parse(req.body.src).path.split('/')
   req.params.data = srcUrl[srcUrl.length - 1]
 
-  req.params.path = filePath(req.params, path.join(config.paths.data(), req.params.data))
+  req.params.path = path.join(config.paths.data(), req.params.data, 'image')
   req.body.crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
 
   var collection = {} // new CollectionStream(Object.keys(crops).length)
-    , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: false })
+    , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
 
   var onend = function () {
     res.json(collection)
@@ -34,6 +33,7 @@ module.exports = function (req, res, next) {
   // res.set('Content-Type', 'image/png')
 
   req.params.crops.forEach(function (data) {
+    data.data = req.params.data
     var folderLocation = filePath(data, config.paths.data())
       , fileLocation = path.join(folderLocation, 'image')
 
@@ -42,7 +42,7 @@ module.exports = function (req, res, next) {
         , crop = new darkroom.crop()
 
       store.once('error', function (error) {
-        req.log.error('StoreStream:', error.message)
+        req.log.error('StoreStream:', error)
       })
 
       store.once('end', function () {
@@ -53,7 +53,7 @@ module.exports = function (req, res, next) {
         }
 
         key = values.join(':')
-        collection[key] = config.http.url + path.basename(folderLocation)
+        collection[key] = path.basename(folderLocation)
         if (Object.keys(collection).length >= req.params.crops.length)
           onend()
       })

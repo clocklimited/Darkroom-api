@@ -42,8 +42,10 @@ module.exports = function () {
     { headers: ['X-Requested-With'] }
   ))
 
-  // Manipulate the url being passed.
-  server.use(function(req, res, next) {
+  function checkRoute (req, res, next) {
+    if (req.method !== 'GET')
+      return next()
+
     var nParams = Object.keys(req.params).length
     if (nParams === 0) return next()
     var dataPath = req.params[nParams - 1]
@@ -56,12 +58,7 @@ module.exports = function () {
       req.params.hash = tokens.shift()
     req.params.name = tokens.shift()
     req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
-    return next()
-  })
 
-  server.use(function (req, res, next) {
-    if (req.method !== 'GET')
-      return next()
     if (authorised(req)) {
       res.set('Authorized-Request', req.url)
       return next()
@@ -69,9 +66,9 @@ module.exports = function () {
       var message = 'Checksum does not match'
       if (req.params.hash === undefined)
         message = 'Checksum is missing'
-      throw new restify.NotAuthorizedError(message + ' for action: ' + req.params.action)
+      return next(new restify.NotAuthorizedError(message + ' for action: ' + req.params.action))
     }
-  })
+  }
 
   // Set caching for browsers
   server.use(function(req, res, next) {
@@ -93,27 +90,28 @@ module.exports = function () {
 
   // GET /info/:url
   // GET /info/http://google.com/test
-  server.get(/^\/+info\/+(.*)$/, endpoint.info)
+  server.get(/^\/+info\/+(.*)$/, checkRoute, endpoint.info)
+
+
+  // GET /resize/:width/:height/:url
+  // GET /resize/:width/:height/http://google.com/test
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.both)
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, endpoint.resize.width)
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.width)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, endpoint.resize.both)
+  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.both)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, endpoint.resize.both)
-
-  // GET /resize/:width/:height/:url
-  // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+(.*)$/, endpoint.resize.width)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.width)
 
   // GET /original/:url
   // GET /original/http://google.com/test
-  server.get(/^\/+original\/+(.*)$/, endpoint.original)
+  server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
 
   // GET /crop/:url
   // GET /crop/http://google.com/
