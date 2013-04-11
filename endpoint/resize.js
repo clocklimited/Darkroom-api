@@ -23,6 +23,9 @@ exports.both = function (req, res, next) {
 var resizeImage = function (req, res, next) {
   req.params.width = req.params.width || req.params[0]
   req.params.height = req.params.height || req.params[1]
+  if (+req.params.height === 0 || +req.params.width === 0) {
+    req.params.crop = false
+  }
   // console.log(req.params)
   req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 

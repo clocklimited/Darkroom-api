@@ -35,7 +35,7 @@ Sunday World
 
 Esquire
 
-    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
+    SALT="m00sefacedawg" PORT=8793 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.esquireloyalty.clockhosting.com
 
 http://darkroom.io
 
