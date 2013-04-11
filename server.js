@@ -141,8 +141,12 @@ module.exports = function () {
   //   delete error.domainEmitter
   // ; delete error.domain
   // ; delete error.domainThrown
-    req.log.error(error, 'uncaughtException')
-    res.send(error)
+    if (process.env.PLIERS)
+      throw error
+    else {
+      req.log.error(error, 'uncaughtException')
+      res.send(error)
+    }
   })
 
   server.on('after', restify.auditLogger({
@@ -151,8 +155,7 @@ module.exports = function () {
       body: true,
       stream: process.stdout
     })
-  }));
-
+  }))
 
   return server
 }

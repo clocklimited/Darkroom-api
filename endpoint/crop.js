@@ -22,7 +22,7 @@ module.exports = function (req, res, next) {
   req.body.crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
 
   var collection = {} // new CollectionStream(Object.keys(crops).length)
-    , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
+    // , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
 
   var onend = function () {
     res.json(collection)
@@ -45,6 +45,10 @@ module.exports = function (req, res, next) {
         req.log.error('StoreStream:', error)
       })
 
+      crop.once('error', function (error) {
+        req.log.error('Crop', error)
+      })
+
       store.once('end', function () {
         var values = []
           , key = null
@@ -52,13 +56,16 @@ module.exports = function (req, res, next) {
           values.push(data[key])
         }
 
+        // delete values[data.data]
+        // console.log(collection)
+
         key = values.join(':')
         collection[key] = path.basename(folderLocation)
         if (Object.keys(collection).length >= req.params.crops.length)
           onend()
       })
 
-      dataSource
+      retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
         .pipe(crop)
         .pipe(store,
           { crop: data

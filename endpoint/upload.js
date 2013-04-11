@@ -8,7 +8,7 @@ module.exports = function(req, res, next) {
   _.each(imageArray, function(files) {
     _.each(files, function(file) {
       var id = file.path.substring(0, file.path.length - 1)
-      var object = { src: config.http.url + id
+      var object = { src: id
         , id: id
       }
       images.push(object)
