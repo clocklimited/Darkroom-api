@@ -18,7 +18,7 @@ module.exports = function () {
       , 'cache': function() { return  locations.cache }
       }
     , 'version': '0.0.1'
-    , 'salt': '{}darkroom-superfantastic-salt{}'
+    , 'salt': locations.salt
     }
   , 'production':
     { 'http':

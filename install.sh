@@ -71,4 +71,5 @@ mkdir -p $cachePath
 sed -i'' -e "s,{DATA},'$dataPath',g" $locations
 sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sed -i'' -e "s,{PORT},'$PORT',g" $locations
+sed -i'' -e "s,{SALT},'$SALT',g" $locations
 sudo restart node-$DOMAIN || sudo start node-$DOMAIN

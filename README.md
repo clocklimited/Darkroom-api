@@ -27,11 +27,15 @@ Authentication between services and client will be achieved by using Oauth. This
 
 River:
 
-    PORT=8791 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.neverunderdressed.com
+    SALT="{}darkroom-superfantastic-salt{}" PORT=8791 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.neverunderdressed.com
 
 Sunday World
 
-    PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
+    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
+
+Esquire
+
+    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
 
 http://darkroom.io
 
