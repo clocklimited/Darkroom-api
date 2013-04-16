@@ -126,6 +126,8 @@ module.exports = function () {
 
   server.post('/crop', endpoint.crop)
 
+  server.post('/remote', endpoint.remote)
+
   server.post('/'
     , endpoint.utils.dedupeName
     , upload.middleware

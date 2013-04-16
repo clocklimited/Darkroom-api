@@ -5,4 +5,5 @@ module.exports =
 , original: require('./original')
 , utils: require('./utils')
 , info: require('./info')
+, remote: require('./remote')
 }
