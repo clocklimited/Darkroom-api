@@ -11,6 +11,7 @@ var darkroom = require('darkroom')
   , filePath = require('../lib/filePath')
   , url = require('url')
   , mkdirp = require('mkdirp')
+  , async = require('async')
 
 module.exports = function (req, res, next) {
   req.body = JSON.parse(req.body)
@@ -24,15 +25,10 @@ module.exports = function (req, res, next) {
   var collection = {} // new CollectionStream(Object.keys(crops).length)
     // , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
 
-  var onend = function () {
-    res.json(collection)
-    return next()
-  }
-
   // Currently resize images only deals with pngs
   // res.set('Content-Type', 'image/png')
 
-  req.params.crops.forEach(function (data) {
+  async.eachSeries(req.params.crops, function (data, callback) {
     data.data = req.params.data
     var folderLocation = filePath(data, config.paths.data())
       , fileLocation = path.join(folderLocation, 'image')
@@ -43,10 +39,12 @@ module.exports = function (req, res, next) {
 
       store.once('error', function (error) {
         req.log.error('StoreStream:', error)
+        callback(error)
       })
 
       crop.once('error', function (error) {
         req.log.error('Crop', error)
+        callback(error)
       })
 
       store.once('end', function () {
@@ -61,8 +59,7 @@ module.exports = function (req, res, next) {
 
         key = values.join(':')
         collection[key] = path.basename(folderLocation)
-        if (Object.keys(collection).length >= req.params.crops.length)
-          onend()
+        callback()
       })
 
       retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
@@ -72,6 +69,10 @@ module.exports = function (req, res, next) {
           }
         )
     })
+  }, function (error) {
+    if (error)
+      req.log.error(error)
+    res.json(collection)
+    return next(error)
   })
-
 }

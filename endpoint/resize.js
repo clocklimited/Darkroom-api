@@ -3,11 +3,8 @@ var darkroom = require('darkroom')
   , dp = require('darkroom-persistance')
   , StoreStream = dp.StoreStream
   , retrieve = dp.RetrieveStream
-  , filePath = require('../lib/filePath')
   , path = require('path')
   , fs = require('fs')
-  , stream = require('stream')
-  , mkdirp = require('mkdirp')
 
 exports.width = function (req, res, next) {
   req.params.crop = false
@@ -38,27 +35,27 @@ var resizeImage = function (req, res, next) {
         return next(new Error('Cannot use a remote resource'))
       return next(new Error('Image does not exist'))
     }
-    // mkdirp(config.paths.cache() + req.params.data, function() {
       var re = new darkroom.resize()
-      //   , store = exists ? new stream.PassThrough() : new StoreStream(req.params.path)
+        // , store = exists ? new stream.PassThrough() : new StoreStream(path.join(config.paths.cache(), req.url))
+        , store = new StoreStream(path.join(config.paths.cache(), req.url))
 
-      // store.on('error', function (error) {
-      //   req.log.error('StoreStream:', error.message)
-      // })
+      store.on('error', function (error) {
+        req.log.error('StoreStream:', error.message)
+      })
 
       retrieve(req.params, { isFile: true })
         .pipe(re)
-        .pipe(res,
+        .pipe(store,
           { width: +req.params.width
           , height: +req.params.height
           , crop: req.params.crop
           }
         )
+        .pipe(res)
 
       res.on('finish', function(error) {
         return next(error)
       })
-    // })
-  })
+    })
 
 }

@@ -1,13 +1,20 @@
 var restify = require('restify')
   , config = require('con.figure')(require('./config')())
   , upload = require('fileupload').createFileUpload(config.paths.data())
-  , url = require('url')
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
   , authorised = require('./lib/authorised')
+  , async = require('async')
+  , serveCached = require('./lib/serveCached')
+  , cpus = require('os').cpus()
 
 // var darkroom = darkroom()
 module.exports = function () {
+  var cropQueue = async.queue(function (task, callback) {
+    task(callback)
+  }, cpus.length - 1)
+
+
   var log = bunyan.createLogger(
     { name: 'darkroom'
     , level: process.env.LOG_LEVEL || 'debug'
@@ -90,24 +97,23 @@ module.exports = function () {
 
   // GET /info/:url
   // GET /info/http://google.com/test
-  server.get(/^\/+info\/+(.*)$/, checkRoute, endpoint.info)
-
+  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, endpoint.info)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.both)
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.both)
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.width)
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.both)
+  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.both)
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, endpoint.resize.width)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
 
   // GET /original/:url
   // GET /original/http://google.com/test
@@ -117,14 +123,16 @@ module.exports = function () {
   // GET /crop/http://google.com/
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
-  // server.get('/', function (req, res, next) {
-  //   res.json({ homepage: true })
-  //   return next()
-  // })
+  server.get('/test', function (req, res, next) {
+    res.json({ homepage: true })
+    return next()
+  })
 
   server.get(/^\/(.*)$/, endpoint.original)
 
-  server.post('/crop', endpoint.crop)
+  server.post('/crop', function (req, res, next) {
+    cropQueue.push(endpoint.crop.bind(this, req, res), next)
+  })
 
   server.post('/remote', endpoint.remote)
 
