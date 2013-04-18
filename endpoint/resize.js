@@ -38,7 +38,7 @@ var resizeImage = function (req, res, next) {
     }
       var re = new darkroom.resize()
         // , store = exists ? new stream.PassThrough() : new StoreStream(path.join(config.paths.cache(), req.url))
-        , store = new StoreStream(path.join(config.paths.cache(), req.url))
+        , store = new StoreStream(req.cachePath)
 
       store.on('error', function (error) {
         req.log.error('StoreStream:', error.message)

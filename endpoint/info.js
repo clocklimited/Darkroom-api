@@ -7,7 +7,7 @@ var dp = require('darkroom-persistance')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
-    , store = new StoreStream(path.join(config.paths.cache(), req.url))
+    , store = new StoreStream(req.cachePath)
   req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 
   store.on('error', function (error) {
