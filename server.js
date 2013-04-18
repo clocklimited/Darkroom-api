@@ -10,10 +10,9 @@ var restify = require('restify')
 
 // var darkroom = darkroom()
 module.exports = function () {
-  var cropQueue = async.queue(function (task, callback) {
+  var q = async.queue(function (task, callback) {
     task(callback)
   }, cpus.length - 1)
-
 
   var log = bunyan.createLogger(
     { name: 'darkroom'
@@ -97,23 +96,33 @@ module.exports = function () {
 
   // GET /info/:url
   // GET /info/http://google.com/test
-  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, endpoint.info)
+  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    q.push(endpoint.info.bind(this, req, res), next)
+  })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.both)
+  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    q.push(endpoint.resize.both.bind(this, req, res), next)
+  })
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
+  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    q.push(endpoint.resize.width.bind(this, req, res), next)
+  })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.both)
+  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    q.push(endpoint.resize.both.bind(this, req, res), next)
+  })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    q.push(endpoint.resize.width.bind(this, req, res), next)
+  })
 
   // GET /original/:url
   // GET /original/http://google.com/test
@@ -131,7 +140,7 @@ module.exports = function () {
   server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/crop', function (req, res, next) {
-    cropQueue.push(endpoint.crop.bind(this, req, res), next)
+    q.push(endpoint.crop.bind(this, req, res), next)
   })
 
   server.post('/remote', endpoint.remote)

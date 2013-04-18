@@ -5,6 +5,7 @@ var darkroom = require('darkroom')
   , retrieve = dp.RetrieveStream
   , path = require('path')
   , fs = require('fs')
+  , restify = require('restify')
 
 exports.width = function (req, res, next) {
   req.params.crop = false
@@ -30,10 +31,10 @@ var resizeImage = function (req, res, next) {
   // res.set('Content-Type', 'image/jpeg')
   fs.exists(req.params.path, function (exists) {
     if (!exists) {
-      req.log.error(new Error(req.params.path + ' not found'))
+      req.log.error(new restify.BadDigestError(req.params.path + ' not found'))
       if (req.params.data === 'http')
-        return next(new Error('Cannot use a remote resource'))
-      return next(new Error('Image does not exist'))
+        return next(new restify.BadDigestError('Cannot use a remote resource'))
+      return next(new restify.BadDigestError('Image does not exist'))
     }
       var re = new darkroom.resize()
         // , store = exists ? new stream.PassThrough() : new StoreStream(path.join(config.paths.cache(), req.url))
