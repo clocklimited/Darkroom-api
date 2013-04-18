@@ -4,10 +4,14 @@ var dp = require('darkroom-persistance')
   , path = require('path')
   , config = require('con.figure')(require('../config')())
   , StoreStream = dp.StoreStream
+  , fs = require('fs')
+  , temp = require('temp')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
-    , store = new StoreStream(req.cachePath)
+    , tempName = temp.path({suffix: '.darkroom'})
+    , store = new StoreStream(tempName)
+
   req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 
   store.on('error', function (error) {
@@ -28,7 +32,9 @@ module.exports = function (req, res, next) {
     req.log.error(e, 'info.error')
   })
 
-  res.on('finish', function () {
-    return next()
+  res.on('finish', function (error) {
+    fs.rename(tempName, req.cachePath, function() {
+      return next(error)
+    })
   })
 }
