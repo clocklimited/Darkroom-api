@@ -11,11 +11,13 @@ var darkroom = require('darkroom')
 exports.width = function (req, res, next) {
   req.params.crop = false
   res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
+  res.set('Cache-Control', 'max-age=' + config.http.maxage)
   return resizeImage.call(this, req, res, next)
 }
 
 exports.both = function (req, res, next) {
   res.set('X-Application-Method', 'Resize both dimensions')
+  res.set('Cache-Control', 'max-age=' + config.http.maxage)
   return resizeImage.call(this, req, res, next)
 }
 
