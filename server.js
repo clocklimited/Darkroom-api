@@ -10,16 +10,20 @@ var restify = require('restify')
 
 // var darkroom = darkroom()
 module.exports = function () {
-  var q = async.queue(function (task, callback) {
-    task(callback)
-  }, cpus.length - 1)
-
   var log = bunyan.createLogger(
     { name: 'darkroom'
     , level: process.env.LOG_LEVEL || 'debug'
     , stream: process.stdout
     , serializers: restify.bunyan.stdSerializers
   })
+
+  var q = async.queue(function (task, callback) {
+    task(function(error) {
+      log.warn(error)
+      callback()
+    })
+  }, cpus.length - 1)
+
 
   var server = restify.createServer(
     { version: config.version
@@ -38,11 +42,6 @@ module.exports = function () {
   //   , ip: true
   //   } )
   // )
-
-  // server.pre(function (request, response, next) {
-  //   request.log.info({req: request}, 'start')
-  //   return next()
-  // })
 
   server.use(restify.CORS(
     { headers: ['X-Requested-With'] }
@@ -132,8 +131,8 @@ module.exports = function () {
   // GET /crop/http://google.com/
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
-  server.get('/test', function (req, res, next) {
-    res.json({ homepage: true })
+  server.get('/status', function (req, res, next) {
+    res.json({ queueLength: q.length() })
     return next()
   })
 

@@ -26,7 +26,6 @@ var resizeImage = function (req, res, next) {
     req.params.crop = false
   }
   var tempName = temp.path({suffix: '.darkroom'})
-  // console.log(req.params)
   req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 
   // Currently resize images only deals with jpeg
@@ -44,6 +43,7 @@ var resizeImage = function (req, res, next) {
 
       store.on('error', function (error) {
         req.log.error('StoreStream:', error.message)
+        return next(error)
       })
 
       retrieve(req.params, { isFile: true })
@@ -56,8 +56,12 @@ var resizeImage = function (req, res, next) {
         )
         .pipe(res)
 
-      res.on('finish', function(error) {
-        fs.rename(tempName, req.cachePath, function() {
+      res.on('close', function () {
+        return next(new Error('Response was closed before end.'))
+      })
+
+      res.on('finish', function () {
+        fs.rename(tempName, req.cachePath, function (error) {
           return next(error)
         })
       })

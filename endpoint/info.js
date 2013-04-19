@@ -32,6 +32,10 @@ module.exports = function (req, res, next) {
     req.log.error(e, 'info.error')
   })
 
+  res.on('close', function () {
+    return next(new Error('Response was closed before end.'))
+  })
+
   res.on('finish', function (error) {
     fs.rename(tempName, req.cachePath, function() {
       return next(error)
