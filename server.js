@@ -7,6 +7,7 @@ var restify = require('restify')
   , async = require('async')
   , serveCached = require('./lib/serveCached')
   , cpus = require('os').cpus()
+  , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
 
 // var darkroom = darkroom()
 module.exports = function () {
@@ -22,7 +23,7 @@ module.exports = function () {
       log.warn(error)
       callback()
     })
-  }, cpus.length - 1)
+  }, concurrency)
 
 
   var server = restify.createServer(
@@ -131,8 +132,14 @@ module.exports = function () {
   // GET /crop/http://google.com/
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
-  server.get('/status', function (req, res, next) {
-    res.json({ queueLength: q.length() })
+  server.get('/stats', function (req, res, next) {
+    res.json(
+      { queue:
+        { length: q.length()
+        , concurrency: concurrency
+        }
+      }
+    )
     return next()
   })
 
