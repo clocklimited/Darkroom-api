@@ -32,7 +32,7 @@ var resizeImage = function (req, res, next) {
   // res.set('Content-Type', 'image/jpeg')
   fs.exists(req.params.path, function (exists) {
     if (!exists) {
-      req.log.error(new restify.BadDigestError(req.params.path + ' not found'))
+      req.log.warn(new restify.BadDigestError(req.params.path + ' not found'))
       if (req.params.data === 'http')
         return next(new restify.BadDigestError('Cannot use a remote resource'))
       return next(new restify.BadDigestError('Image does not exist'))
@@ -42,7 +42,7 @@ var resizeImage = function (req, res, next) {
         , store = new StoreStream(tempName)
 
       store.on('error', function (error) {
-        req.log.error('StoreStream:', error.message)
+        req.log.warn('StoreStream:', error.message)
         return next(error)
       })
 

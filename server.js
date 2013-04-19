@@ -20,8 +20,7 @@ module.exports = function () {
 
   var q = async.queue(function (task, callback) {
     task(function(error) {
-      log.warn(error)
-      callback()
+      callback(error)
     })
   }, concurrency)
 
