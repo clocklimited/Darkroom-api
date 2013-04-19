@@ -65,17 +65,17 @@ else
 fi
 dataPath=/var/data/application/$DOMAIN/images/
 cachePath=/var/cache/application/$DOMAIN/images/
-mv $tmp $path
 echo "chmod g+w -R $path"
 echo "mkdir -p $dataPath"
 echo "mkdir -p $cachePath"
-set -e
-cd -
-
 sed -i'' -e "s,{DATA},'$dataPath',g" $locations
 sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sed -i'' -e "s,{PORT},'$PORT',g" $locations
 sed -i'' -e "s,{SALT},'$SALT',g" $locations
+mv $tmp $path
+set -e
+cd -
+
 
 npm install $NPMOPTS
 
