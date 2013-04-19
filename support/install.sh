@@ -39,6 +39,11 @@ if [ -z $PORT ] ; then
   exit 4
 fi
 
+if [ -z $SALT ] ; then
+  echo You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10.1 $0
+  exit 5
+fi
+
 tmp=`mktemp -d -u -t XXXXXXXX`
 upstartTmp=`mktemp -d -u -t XXXXXXXX`
 mkdir -p $upstartTmp
