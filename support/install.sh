@@ -51,6 +51,7 @@ cp -a . $tmp
 cd $tmp
 rm -rf .git
 
+npm install $NPMOPTS
 installUpstart darkroom
 
 logPath=/var/log/application/$DOMAIN
@@ -77,7 +78,6 @@ set -e
 cd -
 
 
-npm install $NPMOPTS
 
 echo ""
 echo "Please run the following two commands manually (you may need the help of someone with root access):"
