@@ -47,6 +47,14 @@ nodeVersion=`node -v`
 now=$(date +"%Y-%d-%m-%H%M%S")
 
 echo Copying to $tmp
+logPath=/var/log/application/$DOMAIN
+path=/var/application/$DOMAIN
+dataPath=/var/data/application/$DOMAIN/images/
+cachePath=/var/cache/application/$DOMAIN/images/
+sed -i'' -e "s,{DATA},'$dataPath',g" $locations
+sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
+sed -i'' -e "s,{PORT},'$PORT',g" $locations
+sed -i'' -e "s,{SALT},'$SALT',g" $locations
 cp -a . $tmp
 cd $tmp
 rm -rf .git
@@ -54,8 +62,6 @@ rm -rf .git
 npm install $NPMOPTS
 installUpstart darkroom
 
-logPath=/var/log/application/$DOMAIN
-path=/var/application/$DOMAIN
 
 set +e
 
@@ -64,15 +70,9 @@ if [ -d "$path" ]; then
 else
   mkdir -p /var/application/
 fi
-dataPath=/var/data/application/$DOMAIN/images/
-cachePath=/var/cache/application/$DOMAIN/images/
 echo "chmod g+w -R $path"
 echo "mkdir -p $dataPath"
 echo "mkdir -p $cachePath"
-sed -i'' -e "s,{DATA},'$dataPath',g" $locations
-sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
-sed -i'' -e "s,{PORT},'$PORT',g" $locations
-sed -i'' -e "s,{SALT},'$SALT',g" $locations
 mv $tmp $path
 set -e
 cd -
