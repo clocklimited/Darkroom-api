@@ -77,6 +77,8 @@ sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sed -i'' -e "s,{PORT},'$PORT',g" $locations
 sed -i'' -e "s,{SALT},'$SALT',g" $locations
 
+npm install $NPMOPTS
+
 echo ""
 echo "Please run the following two commands manually (you may need the help of someone with root access):"
 echo ""
