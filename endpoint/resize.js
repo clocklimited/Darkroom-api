@@ -58,11 +58,16 @@ var resizeImage = function (req, res, next) {
         )
         .pipe(res)
 
+      var closed = false
+
       res.on('close', function () {
+        closed = true
         return next(new Error('Response was closed before end.'))
       })
 
       res.on('finish', function () {
+        if (closed)
+          return false
         fs.rename(tempName, req.cachePath, function (error) {
           return next(error)
         })
