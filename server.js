@@ -133,6 +133,7 @@ module.exports = function () {
   // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
   server.get('/stats', function (req, res, next) {
+    res.set('Cache-Control', 'max-age=0')
     res.json(
       { queue:
         { length: q.length()

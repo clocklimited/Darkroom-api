@@ -29,6 +29,8 @@ River:
 
     SALT="{}darkroom-superfantastic-salt{}" PORT=8791 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.neverunderdressed.com
 
+    SALT="{}darkroom-superfantastic-salt{}" NPMOPTS='--production' NODE_ENV=staging PORT=7004 nave use 0.10 support/install.sh darkroom.staging.neverunderdressed.com
+
 Sunday World
 
     SALT="daakwomb-zuperphantaztic-zalt(.)(.)" PORT=8792 NODE_ENV=testing nave use 0.10 sh install.sh testing.darkroom.sundayworld.clockhosting.com
