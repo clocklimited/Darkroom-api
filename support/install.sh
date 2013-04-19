@@ -40,7 +40,7 @@ if [ -z $PORT ] ; then
 fi
 
 if [ -z $SALT ] ; then
-  echo You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10.1 $0
+  echo "You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10.1 $0"
   exit 5
 fi
 
