@@ -51,11 +51,12 @@ logPath=/var/log/application/$DOMAIN
 path=/var/application/$DOMAIN
 dataPath=/var/data/application/$DOMAIN/images/
 cachePath=/var/cache/application/$DOMAIN/images/
-locations=$path/locations.js
+locations=locations.js
 sed -i'' -e "s,{DATA},'$dataPath',g" $locations
 sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sed -i'' -e "s,{PORT},'$PORT',g" $locations
 sed -i'' -e "s,{SALT},'$SALT',g" $locations
+
 cp -a . $tmp
 cd $tmp
 rm -rf .git
