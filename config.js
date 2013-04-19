@@ -29,8 +29,9 @@ module.exports = function () {
     }
   , 'staging':
     { 'http':
-      { 'host': 'example.com'
-      , 'port': 8080
+      { 'host': 'darkroom.staging.neverunderdressed.com'
+      , 'url': 'http://darkroom.staging.neverunderdressed.com/'
+      , 'port': 7004
       , 'maxage': 315360000
       }
     }
