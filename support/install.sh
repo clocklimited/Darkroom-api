@@ -50,7 +50,6 @@ echo Copying to $tmp
 cp -a . $tmp
 cd $tmp
 rm -rf .git
-support/setup.sh
 
 installUpstart darkroom
 
