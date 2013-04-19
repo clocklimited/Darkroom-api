@@ -58,7 +58,7 @@ else
   mkdir -p /var/data/
 fi
 dataPath=/var/data/application/$DOMAIN/images/
-cachePath=/var/data/cache/application/$DOMAIN/images/
+cachePath=/var/cache/application/$DOMAIN/images/
 locations=$path/locations.js
 set -e
 cd -
