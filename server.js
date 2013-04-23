@@ -44,9 +44,13 @@ module.exports = function () {
   // )
 
   server.use(function(req, res, next) {
+    var closed = false
     res.on('close', function () {
+      closed = true
       return next(new Error('Response was closed before end.'))
     })
+    if (!closed)
+      return next()
   })
 
   server.use(restify.CORS(
