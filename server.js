@@ -24,7 +24,6 @@ module.exports = function () {
     })
   }, concurrency)
 
-
   var server = restify.createServer(
     { version: config.version
     , name: 'darkroom.io'
@@ -43,7 +42,20 @@ module.exports = function () {
   //   } )
   // )
 
+  if (process.env.VERBOSE) {
+    log.info('--- VERBOSE ---')
+    server.pre(function (req, res, next) {
+      req.log.info({ req: req.url }, 'start')
+      return next()
+    })
+
+    server.on('after', function (req, res, next) {
+      req.log.info({ req: req.url }, 'end')
+    })
+  }
+
   server.use(function(req, res, next) {
+    res.set('D-Cache', 'MISS')
     var closed = false
     res.on('close', function () {
       closed = true
@@ -106,31 +118,31 @@ module.exports = function () {
   // GET /info/:url
   // GET /info/http://google.com/test
   server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.push(endpoint.info.bind(this, req, res), next)
+    q.unshift(endpoint.info.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.push(endpoint.resize.both.bind(this, req, res), next)
+    q.unshift(endpoint.resize.both.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.push(endpoint.resize.width.bind(this, req, res), next)
+    q.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.push(endpoint.resize.both.bind(this, req, res), next)
+    q.unshift(endpoint.resize.both.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.push(endpoint.resize.width.bind(this, req, res), next)
+    q.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   // GET /original/:url
