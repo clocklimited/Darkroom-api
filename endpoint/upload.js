@@ -1,7 +1,7 @@
 var _ = require('lodash')
   , config = require('con.figure')(require('../config')())
 module.exports = function(req, res, next) {
-  req.log.trace({ files: req.body }, 'endpoint.upload')
+  res.set('Access-Control-Allow-Origin', '*')
   var images = []
     , imageArray = _.toArray(req.body)
   _.flatten(imageArray)
