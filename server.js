@@ -43,6 +43,12 @@ module.exports = function () {
   //   } )
   // )
 
+  server.use(function(req, res, next) {
+    res.on('close', function () {
+      return next(new Error('Response was closed before end.'))
+    })
+  })
+
   server.use(restify.CORS(
     { headers: ['X-Requested-With'] }
   ))
