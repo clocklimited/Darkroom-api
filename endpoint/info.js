@@ -6,6 +6,7 @@ var dp = require('darkroom-persistance')
   , StoreStream = dp.StoreStream
   , fs = require('fs')
   , temp = require('temp')
+  , mv = require('mv')
 
 module.exports = function (req, res, next) {
   var info = new darkroom.info()
@@ -42,7 +43,7 @@ module.exports = function (req, res, next) {
   res.on('finish', function () {
     if (closed)
       return false
-    fs.rename(tempName, req.cachePath, function(error) {
+    mv(tempName, req.cachePath, function(error) {
       if (error) req.log.warn(error, 'info.cacheStore')
       return next()
     })

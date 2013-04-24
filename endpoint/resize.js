@@ -7,6 +7,7 @@ var darkroom = require('darkroom')
   , fs = require('fs')
   , restify = require('restify')
   , temp = require('temp')
+  , mv = require('mv')
 
 exports.width = function (req, res, next) {
   req.params.crop = false
@@ -68,7 +69,7 @@ var resizeImage = function (req, res, next) {
       res.on('finish', function () {
         if (closed)
           return false
-        fs.rename(tempName, req.cachePath, function (error) {
+        mv(tempName, req.cachePath, function (error) {
           if (error) req.log.warn(error, 'resize.cacheStore')
           return next()
         })
