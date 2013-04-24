@@ -69,7 +69,8 @@ var resizeImage = function (req, res, next) {
         if (closed)
           return false
         fs.rename(tempName, req.cachePath, function (error) {
-          return next(error)
+          if (error) req.log.warn(error, 'resize.cacheStore')
+          return next()
         })
       })
     })

@@ -39,11 +39,12 @@ module.exports = function (req, res, next) {
     return next(new Error('Response was closed before end.'))
   })
 
-  res.on('finish', function (error) {
+  res.on('finish', function () {
     if (closed)
       return false
-    fs.rename(tempName, req.cachePath, function() {
-      return next(error)
+    fs.rename(tempName, req.cachePath, function(error) {
+      if (error) req.log.warn(error, 'info.cacheStore')
+      return next()
     })
   })
 }
