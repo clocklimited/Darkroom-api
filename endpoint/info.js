@@ -4,7 +4,6 @@ var dp = require('darkroom-persistance')
   , path = require('path')
   , config = require('con.figure')(require('../config')())
   , StoreStream = dp.StoreStream
-  , fs = require('fs')
   , temp = require('temp')
   , mv = require('mv')
 
