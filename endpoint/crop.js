@@ -12,6 +12,7 @@ var darkroom = require('darkroom')
   , url = require('url')
   , mkdirp = require('mkdirp')
   , async = require('async')
+  , restify = require('restify')
 
 module.exports = function (req, res, next) {
   req.body = JSON.parse(req.body)
@@ -21,6 +22,10 @@ module.exports = function (req, res, next) {
 
   req.params.path = path.join(config.paths.data(), req.params.data, 'image')
   req.body.crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
+
+  if (req.params.crops === undefined) return next(new restify.BadDigestError(
+    'Crops are undefined'
+  ))
 
   var collection = {} // new CollectionStream(Object.keys(crops).length)
     // , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
@@ -70,9 +75,12 @@ module.exports = function (req, res, next) {
         )
     })
   }, function (error) {
-    if (error)
+    if (error) {
       req.log.error(error)
-    res.json(collection)
-    return next(error)
+      return next(new restify.BadDigestError(error.message))
+    } else {
+      res.json(collection)
+      return next()
+    }
   })
 }

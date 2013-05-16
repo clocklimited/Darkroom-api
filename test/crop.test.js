@@ -27,8 +27,9 @@ describe('Crop', function() {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
-          res.body.results.should.have.length(1)
-          res.body.should.be.a('object').and.has.property('100x100')
+          Object.keys(res.body).should.have.length(1)
+          res.body.should.be.a('object')
+          res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
           r.app.close()
           done()
         })
@@ -55,8 +56,9 @@ describe('Crop', function() {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
-          res.body.results.should.have.length(1)
-          res.body.should.be.a('object').and.has.property('100x100')
+          Object.keys(res.body).should.have.length(1)
+          res.body.should.be.a('object')
+          res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
           r.app.close()
           done()
         })
@@ -85,10 +87,8 @@ describe('Crop', function() {
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
-        res.should.be.a('object')
-        res.should.have.property('200x400')
-        res.should.have.property('100x200')
-        res.should.have.property('50')
+        res.body.should.be.a('object')
+        res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
         r.app.close()
         done()
       })
@@ -96,20 +96,19 @@ describe('Crop', function() {
 
   it('should return a http error if sizes not provided', function(done) {
     var r = request(darkroom)
-      .get(path)
+      .post(path)
       .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
       .end(function (error, res) {
         if (error) return done(error)
-        res.body.results.should.have.length(0)
         r.app.close()
         done()
       })
   })
 
-  it('should return an error if not all crop dimensions are specified', function(done) {
+  it('should not return an error if not all crop dimensions are specified', function(done) {
     var body =
       { src: '3bec4be4b95328cb281a47429c8aed8e'
       , crops: [
@@ -124,15 +123,15 @@ describe('Crop', function() {
       }
 
       var r = request(darkroom)
-        .get(path)
+        .post(path)
         .send(body)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(400)
+        .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
           // TODO add tests for returned error message?
-          res.body.results.should.have.length(0)
+          // res.body.results.should.have.length(0)
           r.app.close()
           done()
         })
