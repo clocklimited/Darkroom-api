@@ -2,6 +2,7 @@ var restify = require('restify')
   , config = require('con.figure')(require('./config')())
   , upload = require('fileupload').createFileUpload(config.paths.data())
   , bunyan = require('bunyan')
+  , url = require('url')
   , endpoint = require('./endpoint')
   , authorised = require('./lib/authorised')
   , async = require('async')
@@ -73,17 +74,12 @@ module.exports = function () {
     if (req.method !== 'GET')
       return next()
 
-    var nParams = Object.keys(req.params).length
-    if (nParams === 0) return next()
-    var dataPath = req.params[nParams - 1]
-    // req.params.url = dataPath
-    // dataPath = url.parse(dataPath).path.split('/')
-    // dataPath = dataPath[dataPath.length - 1]
-    var tokens = dataPath.split(/:|\/|\\/)
+    if (Object.keys(req.params).length === 0) return next()
+    var dataPath = req.url
+    var tokens = dataPath.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
+    tokens.shift()
     req.params.data = tokens.shift()
-    if (dataPath.indexOf(':') !== -1)
-      req.params.hash = tokens.shift()
-    req.params.name = tokens.shift()
+    req.params.hash = tokens.shift()
     req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
 
     if (authorised(req)) {
