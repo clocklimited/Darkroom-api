@@ -9,6 +9,7 @@ installUpstart() {
   sed -i'' -e "s/{DOMAIN}/$DOMAIN/g" $upstartScript
   sed -i'' -e "s/{APP}/$APP/g" $upstartScript
   sed -i'' -e "s/{NODE_VERSION}/$nodeVersion/g" $upstartScript
+  sed -i'' -e "s/{NODE_USER}/$nodeUser/g" $upstartScript
 }
 
 # Break on failure
@@ -42,6 +43,11 @@ fi
 if [ -z $SALT ] ; then
   echo "You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10.1 $0"
   exit 5
+fi
+
+nodeUser=node
+if [ $NODE_ENV != "testing" ]; then
+  nodeUser=www-data 
 fi
 
 tmp=`mktemp -d -u -t XXXXXXXX`

@@ -41,6 +41,15 @@ Esquire
 
     SALT="m00sefacedawg" NPMOPTS='--production' NODE_ENV=testing PORT=8793 nave use 0.10 support/install.sh testing.darkroom.esquireloyalty.clockhosting.com
 
+FIM
+
+    SALT="{}floptastic-beastmother{}" NPMOPTS='--production' NODE_ENV=testing PORT=8794 nave use 0.10 support/install.sh testing.darkroom.fim.clockhosting.com
+
+SunPerks
+
+    SALT="thisIsARand0mNaCl" NPMOPTS='--production' NODE_ENV=testing PORT=8795 nave use 0.10 support/install.sh darkroom.testing.sunperks.clockhosting.com
+
+
 http://darkroom.io
 
 # API
