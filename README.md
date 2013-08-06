@@ -57,6 +57,10 @@ Neilsen - Thought Leadership
 
     SALT="{}darkroom-miles-mile-club{}" NPMOPTS='--production' NODE_ENV=testing PORT=8797 nave use 0.10 support/install.sh darkroom.testing.thoughtleadership.clockhosting.com
 
+NI NewsRetail
+
+    SALT='!_+(^-^)+_!-try-this-in-bash' NPMOPTS='--production' NODE_ENV=staging PORT=7005 nave use 0.10.15 support/install.sh darkroom.staging.newsretail.clockhosting.com
+
 
 http://darkroom.io
 
