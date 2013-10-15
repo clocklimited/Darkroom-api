@@ -8,7 +8,6 @@
   "maxcomplexity": 5,
   "eqeqeq": true,
   "eqnull": true,
-  "es5": true,
   "evil": false,
   "immed": false,
   "jquery": true,

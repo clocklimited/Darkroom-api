@@ -1,5 +1,5 @@
 var _ = require('lodash')
-  , config = require('con.figure')(require('../config')())
+  // , config = require('con.figure')(require('../config')())
 module.exports = function(req, res, next) {
   res.set('Access-Control-Allow-Origin', '*')
   var images = []

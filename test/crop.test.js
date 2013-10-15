@@ -1,7 +1,7 @@
 var darkroom = require('../server')()
   , request = require('supertest')
-  , async = require('async')
-  , _ = require('lodash')
+  // , async = require('async')
+  // , _ = require('lodash')
   , path = '/crop'
 
 describe('Crop', function() {

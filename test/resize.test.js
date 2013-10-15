@@ -1,6 +1,6 @@
 var darkroom = require('../server')()
   , request = require('supertest')
-  , should = require('should')
+  // , should = require('should')
 
 
 describe('Resize', function () {
