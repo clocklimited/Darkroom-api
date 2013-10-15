@@ -6,7 +6,7 @@ var restify = require('restify')
   , endpoint = require('./endpoint')
   , authorised = require('./lib/authorised')
   , async = require('async')
-  , serveCached = require('./lib/serveCached')
+  , serveCached = require('./lib/serve-cached')
   , cpus = require('os').cpus()
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
 
