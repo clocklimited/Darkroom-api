@@ -2,7 +2,6 @@ var restify = require('restify')
   , config = require('con.figure')(require('./config')())
   , upload = require('fileupload').createFileUpload(config.paths.data())
   , bunyan = require('bunyan')
-  , url = require('url')
   , endpoint = require('./endpoint')
   , authorised = require('./lib/authorised')
   , async = require('async')
@@ -92,12 +91,6 @@ module.exports = function () {
       return next(new restify.NotAuthorizedError(message + ' for action: ' + req.params.action))
     }
   }
-
-  // Set caching for browsers
-  // server.use(function(req, res, next) {
-  //   res.set('Cache-Control', 'max-age=' + config.http.maxage)
-  //   return next()
-  // })
 
   server.opts(/.*/, function(req, res, next) {
     res.set('Access-Control-Allow-Headers'
