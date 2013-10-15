@@ -2,25 +2,28 @@ var createServer = require('./server')
   , config = require('con.figure')(require('./config')())
   , app = createServer()
   , mkdirp = require('mkdirp')
+  , clustered = require('clustered')
 
 // Ensure dirs are setup
 mkdirp.sync(config.paths.data())
 mkdirp.sync(config.paths.cache())
 
-var clusterMaster = require('./lib/cluster-master')
-clusterMaster(function () {
+clustered(function () {
+    var domain = require('domain')
+      , serverDomain = domain.create()
 
-  var domain = require('domain')
-    , serverDomain = domain.create()
-
-  serverDomain.run(function () {
-    app.listen(process.env.PORT || config.http.port, function () {
-      console.log('%s listening at %s', app.name, app.url)
+    serverDomain.run(function () {
+      app.listen(process.env.PORT || config.http.port, function () {
+        app.log.info('%s listening at %s', app.name, app.url)
+      })
     })
-  })
 
-  serverDomain.on('error', function (error) {
-    app.log.error('domain error', error)
-  })
+    serverDomain.on('error', function (error) {
+      app.log.error('domain error', error)
+    })
 
-}, { logger: app.log })
+  }
+, { logger: app.log
+  , size: process.env.CPU_PROCESSES || config.siteProcesses
+  }
+)
