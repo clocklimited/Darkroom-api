@@ -24,6 +24,6 @@ clustered(function () {
 
   }
 , { logger: app.log
-  , size: process.env.CPU_PROCESSES || config.siteProcesses
+  , size: process.env.API_PROCESSES || config.apiProcesses
   }
 )
