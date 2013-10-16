@@ -6,6 +6,7 @@ installUpstart() {
   cp support/upstart-config.conf $upstartScript
   sed -i'' -e "s/{ENV}/$NODE_ENV/g" $upstartScript
   sed -i'' -e "s/{PORT}/$PORT/g" $upstartScript
+  sed -i'' -e "s/{API_PROCESSES}/$API_PROCESSES/g" $upstartScript
   sed -i'' -e "s/{DOMAIN}/$DOMAIN/g" $upstartScript
   sed -i'' -e "s/{APP}/$APP/g" $upstartScript
   sed -i'' -e "s/{NODE_VERSION}/$nodeVersion/g" $upstartScript
@@ -17,13 +18,13 @@ set -e
 
 # Ensure the environment is set
 if [ -z $NODE_ENV ] ; then
-  echo You must provide an environment. ie NODE_ENV=testing PORT=5277 nave use 0.10.1 $0
+  echo You must provide an environment. ie NODE_ENV=testing PORT=5277 nave use 0.10 $0
   exit 1
 fi
 
 # Ensure this is in a nave shell
 if [ -z $NAVE ] ; then
-  echo This must be run in a 'nave' shell. ie NODE_ENV=testing PORT=5277 nave use 0.10.1 $0
+  echo This must be run in a 'nave' shell. ie NODE_ENV=testing PORT=5277 nave use 0.10 $0
   echo Run 'sudo npm install -g nave' If you haven\'t got nave.
   exit 2
 fi
@@ -36,13 +37,18 @@ if [ -z $DOMAIN ] ; then
 fi
 
 if [ -z $PORT ] ; then
-  echo You must provide a base port. ie NODE_ENV=testing PORT=5277 nave use 0.10.1 $0
+  echo You must provide a base port. ie NODE_ENV=testing PORT=5277 nave use 0.10 $0
   exit 4
 fi
 
 if [ -z $SALT ] ; then
-  echo "You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10.1 $0"
+  echo "You must provide a salt (key). ie SALT=n0mn0mn0m NODE_ENV=testing PORT=5277 nave use 0.10 $0"
   exit 5
+fi
+
+if [ -z $API_PROCESSES ] ; then
+  echo You must provide a base amount of processes. ie API_PROCESSES=4 NODE_ENV=testing PORT=5277 nave use 0.10 $0
+  exit 6
 fi
 
 nodeUser=node
