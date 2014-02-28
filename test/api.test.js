@@ -22,6 +22,7 @@ describe('API', function() {
     it('should upload a single image', function (done) {
       request(darkroom)
         .post('/')
+        .set('x-darkroom-key', '{KEY}')
         .set('Accept', 'application/json')
         .attach('file', 'test/fixtures/jpeg.jpeg')
         .expect('Content-Type', /json/)
@@ -36,6 +37,7 @@ describe('API', function() {
     it('should upload multiple images', function (done) {
       request(darkroom)
         .post('/')
+        .set('x-darkroom-key', '{KEY}')
         .attach('file', 'test/fixtures/jpeg.jpeg')
         .attach('file2', 'test/fixtures/png.png')
         .set('Accept', 'application/json')

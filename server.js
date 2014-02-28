@@ -3,6 +3,7 @@ var restify = require('restify')
   , upload = require('fileupload').createFileUpload(config.paths.data())
   , bunyan = require('bunyan')
   , endpoint = require('./endpoint')
+  , keyAuth = require('./lib/key-auth')
   , authorised = require('./lib/authorised')
   , async = require('async')
   , serveCached = require('./lib/serve-cached')
@@ -163,6 +164,7 @@ module.exports = function () {
   server.post('/remote', endpoint.remote)
 
   server.post('/'
+    , keyAuth
     , endpoint.utils.dedupeName
     , upload.middleware
     , endpoint.upload

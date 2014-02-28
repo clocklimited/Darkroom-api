@@ -3,4 +3,5 @@ module.exports =
 , cache: {CACHE}
 , port: {PORT}
 , salt: {SALT}
+, key: '{KEY}'
 }

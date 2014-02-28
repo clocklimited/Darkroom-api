@@ -19,6 +19,7 @@ module.exports = function () {
       }
     , 'version': '0.0.1'
     , 'salt': locations.salt
+    , 'key': locations.key
     }
   , 'production':
     { 'http':
