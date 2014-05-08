@@ -31,7 +31,7 @@
     "should": "~1.2.2"
   },
   "scripts": {
-    "test": "mocha -r should test",
+    "test": "node test/tests",
     "start": "node server.js"
   },
   "author": "Tom Gallacher",
