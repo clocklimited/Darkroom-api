@@ -2,6 +2,7 @@ var config = require('con.figure')(require('../config')())
   , fileupload = require('fileupload').createFileUpload(config.paths.data())
   , mime = require('mime-magic')
   , restify = require('restify')
+  , path = require('path')
 
 module.exports = function (req, res, next) {
   res.set('X-Application-Method', 'Original Image')
@@ -10,7 +11,7 @@ module.exports = function (req, res, next) {
     if (err) {
       return next(new restify.ResourceNotFoundError('Not Found'))
     }
-    mime(config.paths.data() + file, function (err, type) {
+    mime(path.join(config.paths.data(), file), function (err, type) {
       if (err) return next(err)
       res.set('Content-Type', type)
       res.write(data)
