@@ -77,6 +77,12 @@ module.exports = function () {
     if (Object.keys(req.params).length === 0) return next()
     var dataPath = req.url
     var tokens = dataPath.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
+
+    // Error if an valid token is not found
+    if (!Array.isArray(tokens) || (tokens.length < 3)) {
+      return next(new restify.ResourceNotFoundError('Not Found'))
+    }
+
     tokens.shift()
     req.params.data = tokens.shift()
     req.params.hash = tokens.shift()

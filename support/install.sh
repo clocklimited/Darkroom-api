@@ -6,6 +6,7 @@ installUpstart() {
   cp support/upstart-config.conf $upstartScript
   sed -i'' -e "s/{ENV}/$NODE_ENV/g" $upstartScript
   sed -i'' -e "s/{PORT}/$PORT/g" $upstartScript
+  sed -i'' -e "s/{KEY}/$KEY/g" $upstartScript
   sed -i'' -e "s/{API_PROCESSES}/$API_PROCESSES/g" $upstartScript
   sed -i'' -e "s/{DOMAIN}/$DOMAIN/g" $upstartScript
   sed -i'' -e "s/{APP}/$APP/g" $upstartScript
@@ -53,7 +54,7 @@ fi
 
 nodeUser=node
 if [ $NODE_ENV != "testing" ]; then
-  nodeUser=www-data 
+  nodeUser=www-data
 fi
 
 tmp=`mktemp -d -u -t XXXXXXXX`
@@ -76,6 +77,7 @@ sed -i'' -e "s,{DATA},'$dataPath',g" $locations
 sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
 sed -i'' -e "s,{PORT},'$PORT',g" $locations
 sed -i'' -e "s,{SALT},'$SALT',g" $locations
+sed -i'' -e "s,{KEY},'$KEY',g" $locations
 rm -rf .git
 
 npm install $NPMOPTS
