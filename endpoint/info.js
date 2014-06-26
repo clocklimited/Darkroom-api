@@ -28,19 +28,25 @@ module.exports = function (req, res, next) {
     )
     .pipe(res)
 
+  var errorOccurred = false
+
   info.on('error', function (e) {
     req.log.error(e, 'info.error')
+    errorOccurred = true
+    return next(e)
   })
 
   var closed = false
 
   res.on('close', function () {
+    if (errorOccurred)
+      return
     closed = true
     return next(new Error('Response was closed before end.'))
   })
 
   res.on('finish', function () {
-    if (closed)
+    if (closed || errorOccurred)
       return false
     mv(tempName, req.cachePath, function(error) {
       if (error) req.log.warn(error, 'info.cacheStore')

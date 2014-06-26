@@ -47,7 +47,8 @@ module.exports = function (req, res, next) {
         callback(error)
       })
 
-      crop.once('error', function (error) {
+      // changed from “once” to “on” because with “once” the server would crash on an error
+      crop.on('error', function (error) {
         req.log.error('Crop', error)
         callback(error)
       })

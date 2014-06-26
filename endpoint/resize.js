@@ -52,6 +52,11 @@ var resizeImage = function (req, res, next) {
       return next(error)
     })
 
+    re.on('error', function (error) {
+      req.log.error('Resize', error)
+      callback(error)
+    })
+
     retrieve(req.params, { isFile: true })
       .pipe(re)
       .pipe(store,
