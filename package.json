@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.4.0",
   "description": "Darkroom API for image manipulation",
-  "main": "server.js",
+  "main": "app.js",
   "directories": {
     "test": "test"
   },
