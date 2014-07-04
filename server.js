@@ -167,6 +167,10 @@ module.exports = function () {
     q.push(endpoint.crop.bind(this, req, res), next)
   })
 
+  server.post('/composite', function (req, res, next) {
+    q.push(endpoint.composite.bind(this, req, res), next)
+  })
+
   server.post('/remote', endpoint.remote)
 
   server.post('/'

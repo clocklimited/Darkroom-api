@@ -20,8 +20,8 @@ Authentication between services and client will be achieved by using Oauth. This
 
 ### The following needs to be ran before darkroom is started each time.
 
-    export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'  
-    export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH  
+    export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
+    export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
 # Deployment
 
@@ -81,6 +81,22 @@ Creates an image on Darkroom.
 ### Response
 
     { "image": "http://darkroom.io/randomstring" }
+
+## POST /composite
+
+Creates a composite image - mainly used to watermark images
+
+### Body
+
+`baseSrc` - Image ID of the base image.
+`topSrc` - Image ID of the image you wish to overlay on top of the base image.
+`opacityPercentage` - Opacity percentage of the overlaid image
+
+    {"baseSrc": "99a597ad07d9fd8ffbea1b92384c2652", "topSrc": "b4f2c51d3397ec70921e4d3961f53a79", "opacityPercentage": "25"}
+
+### Response
+
+    {"compositeSrc":"b4f0923edb9c89c69d1ef5a4ceb2c263"}
 
 ## POST /resize/{imageurl}
 
