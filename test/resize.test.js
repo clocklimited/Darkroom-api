@@ -152,7 +152,6 @@ describe('Resize', function () {
       .get('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e:f400ef45eb8b8cccf387d3afaf791df9')
       .expect(200)
       .end(function (error, res) {
-        console.log(error)
         if (error) return done(error)
         res.statusCode.should.equal(200)
         done()
