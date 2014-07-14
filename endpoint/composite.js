@@ -20,6 +20,10 @@ module.exports = function (req, res, next) {
     , compositeFolderLocation = filePath(req.body, config.paths.data())
     , compositeFileLocation = path.join(compositeFolderLocation, 'image')
 
+  res.on('close', function () {
+    next()
+  })
+
   mkdirp(compositeFolderLocation, function() {
     var store = new StoreStream(compositeFileLocation)
 
