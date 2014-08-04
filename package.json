@@ -1,7 +1,7 @@
 {
   "name": "darkroom",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "directories": {
