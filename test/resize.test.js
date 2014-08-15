@@ -1,6 +1,6 @@
 var darkroom = require('../server')()
   , request = require('supertest')
-  // , should = require('should')
+  , hashHelper = require('./hash-helper')
 
 
 describe('Resize', function () {
@@ -127,7 +127,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero for /0/:url', function(done) {
     request(darkroom)
-      .get('/10/3bec4be4b95328cb281a47429c8aed8e:15d596f43828cd9e5bf379165d2132da')
+      .get('/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/10/3bec4be4b95328cb281a47429c8aed8e'))
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
@@ -138,7 +138,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero /0/0/:url', function(done) {
     request(darkroom)
-      .get('/10/10/3bec4be4b95328cb281a47429c8aed8e:5191bf1b7e0016d8cd1b7d08ad882448')
+      .get('/10/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/10/10/3bec4be4b95328cb281a47429c8aed8e'))
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
@@ -149,7 +149,7 @@ describe('Resize', function () {
 
   it('should return an image if resize dimension is zero /resize/0/0/:url', function(done) {
     request(darkroom)
-      .get('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e:f400ef45eb8b8cccf387d3afaf791df9')
+      .get('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e'))
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)

@@ -19,7 +19,7 @@ module.exports = function () {
     , serializers: restify.bunyan.stdSerializers
   })
 
-  var q = async.queue(function (task, callback) {
+  var queue = async.queue(function (task, callback) {
     task(function(error) {
       callback(error)
     })
@@ -114,31 +114,31 @@ module.exports = function () {
   // GET /info/:url
   // GET /info/http://google.com/test
   server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.unshift(endpoint.info.bind(this, req, res), next)
+    queue.unshift(endpoint.info.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.unshift(endpoint.resize.both.bind(this, req, res), next)
+    queue.unshift(endpoint.resize.both.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:url
   // GET /resize/:width/http://google.com/test
   server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.unshift(endpoint.resize.width.bind(this, req, res), next)
+    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.unshift(endpoint.resize.both.bind(this, req, res), next)
+    queue.unshift(endpoint.resize.both.bind(this, req, res), next)
   })
 
   // GET /resize/:width/:height/:url
   // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    q.unshift(endpoint.resize.width.bind(this, req, res), next)
+    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   // GET /original/:url
@@ -153,7 +153,7 @@ module.exports = function () {
     res.set('Cache-Control', 'max-age=0')
     res.json(
       { queue:
-        { length: q.length()
+        { length: queue.length()
         , concurrency: concurrency
         }
       }
@@ -164,7 +164,7 @@ module.exports = function () {
   server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/crop', function (req, res, next) {
-    q.push(endpoint.crop.bind(this, req, res), next)
+    queue.push(endpoint.crop.bind(this, req, res), next)
   })
 
   server.post('/composite', function (req, res, next) {

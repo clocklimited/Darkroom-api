@@ -1,9 +1,9 @@
 {
   "name": "darkroom",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Darkroom API for image manipulation",
-  "main": "server.js",
+  "main": "app.js",
   "directories": {
     "test": "test"
   },
@@ -13,8 +13,8 @@
     "bunyan": "~0.18.2",
     "fileupload": "git://github.com/domharrington/fileupload.git",
     "send": "~0.1.0",
-    "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#81bdb465daf7eb8c5dd0767162c39553fbd75560",
-    "darkroom-persistence": "git+ssh://git@github.com:tomgco/darkroom-persistence.git#0.0.1",
+    "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#0.0.1",
+    "darkroom-persistence": "git+ssh://git@github.com:clocklimited/darkroom-persistence.git#0.0.1",
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
     "lodash": "~1.0.1",
