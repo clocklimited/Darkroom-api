@@ -11,41 +11,42 @@ var darkroom = require('darkroom')
 module.exports = function (req, res, next) {
   req.body = JSON.parse(req.body)
   var baseSrcPath = path.join(config.paths.data(), req.body.baseSrc, 'image')
-    , topSrcPath = path.join(config.paths.data(), req.body.topSrc, 'image')
+    , watermarkSrcPath = path.join(config.paths.data(), req.body.watermarkSrc, 'image')
     , streamOptions =
         { url: req.body.baseSrc
         , path: baseSrcPath
         }
-    , composite = new darkroom.composite(topSrcPath, req.body.opacityPercentage)
-    , compositeFolderLocation = filePath(req.body, config.paths.data())
-    , compositeFileLocation = path.join(compositeFolderLocation, 'image')
+    , opts =
+    { opacity: req.body.opacityPercentage }
+    , watermark = new darkroom.watermark(watermarkSrcPath, opts)
+    , watermarkFolderLocation = filePath(req.body, config.paths.data())
+    , watermarkFileLocation = path.join(watermarkFolderLocation, 'image')
 
   res.on('close', function () {
     next()
   })
 
-  mkdirp(compositeFolderLocation, function() {
-    var store = new StoreStream(compositeFileLocation)
+  mkdirp(watermarkFolderLocation, function() {
+    var store = new StoreStream(watermarkFileLocation)
 
     store.once('error', function (error) {
       return showError(req, error, next)
     })
 
-    composite.once('error', function (error) {
+    watermark.once('error', function (error) {
       return showError(req, error, next)
     })
 
     store.once('end', function () {
-      res.json(200, { compositeSrc: path.basename(compositeFolderLocation) })
+      res.json(200, { compositeSrc: path.basename(watermarkFolderLocation) })
     })
 
     retrieve(streamOptions, { isFile: true })
-      .pipe(composite)
+      .pipe(watermark)
       .pipe(store)
 
   })
 }
-
 
 function showError(req, error, callback) {
   req.log.error(error)

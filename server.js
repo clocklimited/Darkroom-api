@@ -168,7 +168,11 @@ module.exports = function () {
   })
 
   server.post('/composite', function (req, res, next) {
-    q.push(endpoint.composite.bind(this, req, res), next)
+    queue.push(endpoint.composite.bind(this, req, res), next)
+  })
+
+  server.post('/watermark', function (req, res, next) {
+    queue.push(endpoint.watermark.bind(this, req, res), next)
   })
 
   server.post('/remote', endpoint.remote)

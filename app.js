@@ -3,10 +3,20 @@ var createServer = require('./server')
   , app = createServer()
   , mkdirp = require('mkdirp')
   , clustered = require('clustered')
+  , clusterSize = process.env.API_PROCESSES || config.apiProcesses
 
 // Ensure dirs are setup
 mkdirp.sync(config.paths.data())
 mkdirp.sync(config.paths.cache())
+
+if (process.env.NODE_ENV === undefined) {
+  app.log.fatal("NODE_ENV (env) not set, process may crash.")
+}
+
+if (isNaN(clusterSize)) {
+  app.log.fatal('Invalid cluster size: "%s", please set/update API_PROCESSES (env) or config.apiProcesses', clusterSize)
+  process.exit(1);
+}
 
 clustered(function () {
     var domain = require('domain')
@@ -24,6 +34,6 @@ clustered(function () {
 
   }
 , { logger: app.log
-  , size: process.env.API_PROCESSES || config.apiProcesses
+  , size: clusterSize
   }
 )

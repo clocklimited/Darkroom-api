@@ -1,6 +1,6 @@
 var darkroom = require('../server')()
   , request = require('supertest')
-  , path = '/composite'
+  , path = '/watermark'
   , imgSrcId = null
 
 before(function (done) {
@@ -15,15 +15,15 @@ before(function (done) {
     })
 })
 
-describe('Composite', function() {
+describe('Watermark', function() {
 
-  it('should return a new image src id for a composite image', function(done) {
+  it('should return a new image src id for a watermarked image', function(done) {
       var r = request(darkroom)
         .post(path)
         .send(
           { baseSrc: imgSrcId
-          , topSrc: imgSrcId
-          , opacityPercentage: '25'
+          , watermarkSrc: imgSrcId
+          , opacityPercentage: 25
           }
         )
         .set('Accept', 'application/json')
@@ -34,7 +34,7 @@ describe('Composite', function() {
           Object.keys(res.body).should.have.length(1)
           res.body.should.be.a('object')
           res.body.should.have.property('compositeSrc')
-          res.body.compositeSrc.should.equal('4857b83aa4dfc601f7d35e1546d17299')
+          res.body.compositeSrc.should.equal('06f3eeff749dbe47fdd2ebae5d2adf23')
           r.app.close()
           done()
         })
