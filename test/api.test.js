@@ -1,7 +1,7 @@
-var darkroom = require('../server')()
+var config = require('con.figure')(require('./config')())
+  , darkroom = require('../server')(config)
   , request = require('supertest')
   , _ = require('lodash')
-
 
 describe('API', function() {
   /**
@@ -22,7 +22,7 @@ describe('API', function() {
     it('throw error for invalid token', function (done) {
       request(darkroom)
         .get('/info/WANG')
-        .set('x-darkroom-key', '{KEY}')
+        .set('x-darkroom-key', 'key')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .end(function (err, res) {
@@ -36,12 +36,13 @@ describe('API', function() {
     it('should upload a single image', function (done) {
       request(darkroom)
         .post('/')
-        .set('x-darkroom-key', '{KEY}')
+        .set('x-darkroom-key', 'key')
         .set('Accept', 'application/json')
         .attach('file', 'test/fixtures/jpeg.jpeg')
+        .expect(200)
         .expect('Content-Type', /json/)
         .end(function (err, res) {
-          res.statusCode.should.equal(200)
+          if (err) return done(err)
           res.body.should.have.property('src')
           done()
         })
@@ -50,13 +51,14 @@ describe('API', function() {
     it('should upload multiple images', function (done) {
       request(darkroom)
         .post('/')
-        .set('x-darkroom-key', '{KEY}')
+        .set('x-darkroom-key', 'key')
         .attach('file', 'test/fixtures/jpeg.jpeg')
         .attach('file2', 'test/fixtures/png.png')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
+        .expect(200)
         .end(function (err, res) {
-          res.statusCode.should.equal(200)
+          if (err) return done(err)
           res.body.should.be.an.instanceOf(Array)
           _.each(res.body, function (file) {
             file.should.have.property('src')

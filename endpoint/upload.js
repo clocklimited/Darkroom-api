@@ -1,5 +1,5 @@
 var _ = require('lodash')
-  // , config = require('con.figure')(require('../config')())
+
 module.exports = function(req, res, next) {
   res.set('Access-Control-Allow-Origin', '*')
   var images = []
@@ -8,7 +8,7 @@ module.exports = function(req, res, next) {
   _.each(imageArray, function(files) {
     _.each(files, function(file) {
       var id = file.path.substring(0, file.path.length - 1)
-      var object = { src: id
+      , object = { src: id
         , id: id
       }
       images.push(object)

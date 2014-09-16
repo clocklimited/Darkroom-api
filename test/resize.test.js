@@ -1,7 +1,7 @@
-var darkroom = require('../server')()
+var config = require('con.figure')(require('./config')())
+  , darkroom = require('../server')(config)
   , request = require('supertest')
   , hashHelper = require('./hash-helper')
-
 
 describe('Resize', function () {
 

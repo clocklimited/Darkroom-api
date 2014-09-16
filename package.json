@@ -11,7 +11,7 @@
     "con.figure": "~0.0.0",
     "restify": "~2.3",
     "bunyan": "~0.18.2",
-    "fileupload": "git://github.com/domharrington/fileupload.git",
+    "fileupload": "~0.3.0",
     "send": "~0.1.0",
     "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#v1.3.2",
     "darkroom-persistence": "git+ssh://git@github.com:clocklimited/darkroom-persistence.git#0.0.1",

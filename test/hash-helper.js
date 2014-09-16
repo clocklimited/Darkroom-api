@@ -1,5 +1,5 @@
 var crypto = require('crypto')
-  , config = require('con.figure')(require('../config')())
+  , config = require('con.figure')(require('./config')())
 
 module.exports = function (requestString) {
   var md5sum = crypto.createHash('md5')

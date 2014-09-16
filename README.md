@@ -3,7 +3,6 @@ darkroom
 
 An image manipulation service.
 
-
 Authentication between services and client will be achieved by using Oauth. This will allow each request to be tied to a specific user account allowing per client granularity.
 
 # Installation
@@ -23,45 +22,6 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
-# Deployment
-
-River:
-
-    SALT="{}darkroom-superfantastic-salt{}" NPMOPTS='--production' NODE_ENV=testing PORT=8791 nave use 0.10 support/install.sh testing.darkroom.neverunderdressed.com
-
-    SALT="{}darkroom-superfantastic-salt{}" NPMOPTS='--production' NODE_ENV=staging PORT=7004 nave use 0.10 support/install.sh darkroom.staging.neverunderdressed.com
-
-Sunday World
-
-    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" NPMOPTS='--production' NODE_ENV=testing PORT=8792 nave use 0.10 support/install.sh testing.darkroom.sundayworld.clockhosting.com
-
-    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" NPMOPTS='--production' NODE_ENV=staging PORT=7004 nave use 0.10 support/install.sh darkroom.staging.sundayworld.clockhosting.com
-
-Esquire
-
-    SALT="m00sefacedawg" NPMOPTS='--production' NODE_ENV=testing PORT=8793 nave use 0.10 support/install.sh testing.darkroom.esquireloyalty.clockhosting.com
-
-FIM
-
-    SALT="{}floptastic-beastmother{}" NPMOPTS='--production' NODE_ENV=testing PORT=8794 nave use 0.10 support/install.sh testing.darkroom.fim.clockhosting.com
-
-SunPerks
-
-    SALT="thisIsARand0mNaCl" NPMOPTS='--production' NODE_ENV=testing PORT=8795 nave use 0.10 support/install.sh darkroom.testing.sunperks.clockhosting.com
-
-Dream Team
-
-    SALT="[]dream-periodically-until[]" NPMOPTS='--production' NODE_ENV=testing PORT=8796 nave use 0.10 support/install.sh darkroom.testing.dreamteam.clockhosting.com
-
-Neilsen - Thought Leadership
-
-    SALT="{}darkroom-miles-mile-club{}" NPMOPTS='--production' NODE_ENV=testing PORT=8797 nave use 0.10 support/install.sh darkroom.testing.thoughtleadership.clockhosting.com
-
-NI NewsRetail
-
-    SALT='!_+(^-^)+_!-try-this-in-bash' NPMOPTS='--production' NODE_ENV=staging PORT=7005 nave use 0.10.15 support/install.sh darkroom.staging.newsretail.clockhosting.com
-
-
 http://darkroom.io
 
 # API
@@ -73,14 +33,11 @@ http://darkroom.io
 Creates an image on Darkroom.
 
 ### Body
-
-`src` - URL of image to manipulate, or send as multipart form data.
-
-    { "src": "http://tomg.co/image.png" }
+Should be a multipart file upload.
 
 ### Response
 
-    { "image": "http://darkroom.io/randomstring" }
+     { "src": "1f20d81417d7b267b27d660b59a061d5", "id": "1f20d81417d7b267b27d660b59a061d5" }
 
 ## POST /composite
 
@@ -89,7 +46,7 @@ Creates a composite image - mainly used to watermark images
 ### Body
 
 `baseSrc` - Image ID of the base image.
-`topSrc` - Image ID of the image you wish to overlay on top of the base image.
+`topSrc` - Image ID of the image you wish to overlay on     top of the base image.
 `opacityPercentage` - Opacity percentage of the overlaid image
 
     {"baseSrc": "99a597ad07d9fd8ffbea1b92384c2652", "topSrc": "b4f2c51d3397ec70921e4d3961f53a79", "opacityPercentage": "25"}
@@ -198,3 +155,42 @@ This will preform a manual crop on image using the specified coordinates, for a 
 ## GET /
 
 Darkroom.io site.
+
+
+# Deployment
+
+River:
+
+    SALT="{}darkroom-superfantastic-salt{}" NPMOPTS='--production' NODE_ENV=testing PORT=8791 nave use 0.10 support/install.sh testing.darkroom.neverunderdressed.com
+
+    SALT="{}darkroom-superfantastic-salt{}" NPMOPTS='--production' NODE_ENV=staging PORT=7004 nave use 0.10 support/install.sh darkroom.staging.neverunderdressed.com
+
+Sunday World
+
+    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" NPMOPTS='--production' NODE_ENV=testing PORT=8792 nave use 0.10 support/install.sh testing.darkroom.sundayworld.clockhosting.com
+
+    SALT="daakwomb-zuperphantaztic-zalt(.)(.)" NPMOPTS='--production' NODE_ENV=staging PORT=7004 nave use 0.10 support/install.sh darkroom.staging.sundayworld.clockhosting.com
+
+Esquire
+
+    SALT="m00sefacedawg" NPMOPTS='--production' NODE_ENV=testing PORT=8793 nave use 0.10 support/install.sh testing.darkroom.esquireloyalty.clockhosting.com
+
+FIM
+
+    SALT="{}floptastic-beastmother{}" NPMOPTS='--production' NODE_ENV=testing PORT=8794 nave use 0.10 support/install.sh testing.darkroom.fim.clockhosting.com
+
+SunPerks
+
+    SALT="thisIsARand0mNaCl" NPMOPTS='--production' NODE_ENV=testing PORT=8795 nave use 0.10 support/install.sh darkroom.testing.sunperks.clockhosting.com
+
+Dream Team
+
+    SALT="[]dream-periodically-until[]" NPMOPTS='--production' NODE_ENV=testing PORT=8796 nave use 0.10 support/install.sh darkroom.testing.dreamteam.clockhosting.com
+
+Neilsen - Thought Leadership
+
+    SALT="{}darkroom-miles-mile-club{}" NPMOPTS='--production' NODE_ENV=testing PORT=8797 nave use 0.10 support/install.sh darkroom.testing.thoughtleadership.clockhosting.com
+
+NI NewsRetail
+
+    SALT='!_+(^-^)+_!-try-this-in-bash' NPMOPTS='--production' NODE_ENV=staging PORT=7005 nave use 0.10.15 support/install.sh darkroom.staging.newsretail.clockhosting.com

@@ -1,6 +1,6 @@
 var createServer = require('./server')
   , config = require('con.figure')(require('./config')())
-  , app = createServer()
+  , app = createServer(config)
   , mkdirp = require('mkdirp')
   , clustered = require('clustered')
   , clusterSize = process.env.API_PROCESSES || config.apiProcesses
@@ -10,7 +10,7 @@ mkdirp.sync(config.paths.data())
 mkdirp.sync(config.paths.cache())
 
 if (process.env.NODE_ENV === undefined) {
-  app.log.fatal("NODE_ENV (env) not set, process may crash.")
+  app.log.fatal('NODE_ENV (env) not set, process may crash.')
 }
 
 if (isNaN(clusterSize)) {

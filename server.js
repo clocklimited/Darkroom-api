@@ -1,34 +1,34 @@
 var restify = require('restify')
-  , config = require('con.figure')(require('./config')())
-  , upload = require('fileupload').createFileUpload(config.paths.data())
   , bunyan = require('bunyan')
-  , endpoint = require('./endpoint')
-  , keyAuth = require('./lib/key-auth')
-  , authorised = require('./lib/authorised')
   , async = require('async')
-  , serveCached = require('./lib/serve-cached')
   , cpus = require('os').cpus()
+  , createFileUpload = require('fileupload').createFileUpload
+  , createEndpoints = require('./endpoint')
+  , createKeyAuth = require('./lib/key-auth')
+  , createAuthorised = require('./lib/authorised')
+  , createServeCached = require('./lib/serve-cached')
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
 
-// var darkroom = darkroom()
-module.exports = function () {
-  var log = bunyan.createLogger(
-    { name: 'darkroom'
-    , level: process.env.LOG_LEVEL || 'debug'
-    , stream: process.stdout
-    , serializers: restify.bunyan.stdSerializers
-  })
-
-  var queue = async.queue(function (task, callback) {
+module.exports = function (config) {
+  var endpoint = createEndpoints(config)
+    , upload = createFileUpload(config.paths.data())
+    , authorised = createAuthorised(config)
+    , serveCached = createServeCached(config)
+    , log = bunyan.createLogger(
+      { name: 'darkroom'
+      , level: process.env.LOG_LEVEL || 'debug'
+      , stream: process.stdout
+      , serializers: restify.bunyan.stdSerializers
+    })
+  , queue = async.queue(function (task, callback) {
     task(function(error) {
       callback(error)
     })
   }, concurrency)
-
-  var server = restify.createServer(
+  , server = restify.createServer(
     { version: config.version
     , name: 'darkroom.io'
-    , log: log
+    , log: config.log && log
     }
   )
   // server.pre(restify.pre.sanitizePath())
@@ -36,14 +36,7 @@ module.exports = function () {
   server.use(restify.queryParser())
   server.use(restify.bodyParser())
 
-  // server.use(restify.throttle(
-  //   { burst: 60
-  //   , rate: 30
-  //   , ip: true
-  //   } )
-  // )
-
-  if (process.env.VERBOSE) {
+  if (config.log) {
     log.info('--- VERBOSE ---')
     server.pre(function (req, res, next) {
       req.log.info({ req: req.url }, 'start')
@@ -67,7 +60,7 @@ module.exports = function () {
   })
 
   server.use(restify.CORS(
-    { headers: ['X-Requested-With'] }
+    { headers: [ 'X-Requested-With' ] }
   ))
 
   function checkRoute (req, res, next) {
@@ -76,7 +69,7 @@ module.exports = function () {
 
     if (Object.keys(req.params).length === 0) return next()
     var dataPath = req.url
-    var tokens = dataPath.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
+      , tokens = dataPath.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
 
     // Error if an valid token is not found
     if (!Array.isArray(tokens) || (tokens.length < 3)) {
@@ -178,36 +171,29 @@ module.exports = function () {
   server.post('/remote', endpoint.remote)
 
   server.post('/'
-    , keyAuth
+    , createKeyAuth(config)
     , endpoint.utils.dedupeName
     , upload.middleware
     , endpoint.upload
   )
 
+  if (config.log) {
 
-  // server.on('error', function (e) {
-  //   console.log('server error:', e)
-  // })
-
-  server.on('uncaughtException', function (req, res, route, error) {
-  //   delete error.domainEmitter
-  // ; delete error.domain
-  // ; delete error.domainThrown
-    if (process.env.PLIERS)
-      throw error
-    else {
+    server.on('uncaughtException', function (req, res, route, error) {
       req.log.error(error, 'uncaughtException')
       res.send(error)
-    }
-  })
-
-  server.on('after', restify.auditLogger({
-    log: bunyan.createLogger({
-      name: 'audit',
-      body: true,
-      stream: process.stdout
+      req.log.error('Exiting process')
+      process.exit(1)
     })
-  }))
+
+    server.on('after', restify.auditLogger({
+      log: bunyan.createLogger(
+      { name: 'audit'
+      , body: true
+      , stream: process.stdout
+      })
+    }))
+  }
 
   return server
 }
