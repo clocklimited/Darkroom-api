@@ -77,12 +77,14 @@ module.exports = function(config) {
     req.params.crop = false
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
     res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    res.set('Last-Modified', new Date().toUTCString())
     return resizeImage.call(this, req, res, next)
   }
 
   resize.both = function (req, res, next) {
     res.set('X-Application-Method', 'Resize both dimensions')
     res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    res.set('Last-Modified', new Date().toUTCString())
     return resizeImage.call(this, req, res, next)
   }
 
