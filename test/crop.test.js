@@ -29,7 +29,7 @@ describe('Crop', function() {
         .end(function (error, res) {
           if (error) return done(error)
           Object.keys(res.body).should.have.length(1)
-          res.body.should.be.a('object')
+          res.body.should.be.instanceOf(Object)
           res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
           r.app.close()
           done()
@@ -58,7 +58,7 @@ describe('Crop', function() {
         .end(function (error, res) {
           if (error) return done(error)
           Object.keys(res.body).should.have.length(1)
-          res.body.should.be.a('object')
+          res.body.should.be.instanceOf(Object)
           res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
           r.app.close()
           done()
@@ -88,7 +88,7 @@ describe('Crop', function() {
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
-        res.body.should.be.a('object')
+        res.body.should.be.instanceOf(Object)
         res.body.should.have.property('10:100:100:100:100:200:3bec4be4b95328cb281a47429c8aed8e')
         r.app.close()
         done()

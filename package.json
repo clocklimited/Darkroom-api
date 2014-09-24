@@ -1,20 +1,17 @@
 {
-  "name": "darkroom",
+  "name": "darkroom-api",
   "private": true,
   "version": "0.6.2",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
-  "directories": {
-    "test": "test"
-  },
   "dependencies": {
     "con.figure": "~0.0.0",
     "restify": "~2.3",
     "bunyan": "~0.18.2",
     "fileupload": "~0.3.0",
     "send": "~0.1.0",
-    "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#v1.3.2",
-    "darkroom-persistence": "git+ssh://git@github.com:clocklimited/darkroom-persistence.git#0.0.1",
+    "darkroom": "clocklimited/darkroom.git#v1.3.2",
+    "darkroom-persistence": "clocklimited/darkroom-persistence.git#0.0.1",
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
     "lodash": "~1.0.1",
@@ -26,15 +23,15 @@
     "clustered": "0.2.0"
   },
   "devDependencies": {
+    "mocha": "^1.21.4",
+    "should": "^4.0.4",
     "supertest": "~0.5.1",
-    "mocha": "~1.8.1",
-    "should": "~1.2.2"
+    "temp": "^0.5.1"
   },
   "scripts": {
     "test": "node test/tests",
-    "start": "node server.js"
+    "start": "node app"
   },
   "author": "Tom Gallacher",
-  "license": "MIT",
-  "readmeFilename": "README.md"
+  "license": "MIT"
 }

@@ -13,7 +13,7 @@ describe('Optimise', function () {
         .end(function (error, res) {
           if (error) return done(error)
           res.body.results.should.have.length(1)
-          res.headers.should.be.a('object').and.has.property('100x100')
+          res.headers.should.be.instanceOf(Object).and.has.property('100x100')
           r.app.close()
           done()
         })
@@ -28,7 +28,7 @@ describe('Optimise', function () {
         .end(function (error, res) {
           if (error) return done(error)
           res.body.results.should.have.length(1)
-          res.should.be.a('object').and.has.property('100x100')
+          res.should.be.instanceOf(Object).and.has.property('100x100')
           r.app.close()
           done()
         })
@@ -44,7 +44,7 @@ describe('Optimise', function () {
       .end(function (error, res) {
         if (error) return done(error)
         res.body.results.should.have.length(1)
-        res.should.be.a('object').and.has.property('100x100')
+        res.should.be.instanceOf(Object).and.has.property('100x100')
         r.app.close()
         done()
       })

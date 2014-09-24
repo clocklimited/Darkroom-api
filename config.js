@@ -7,7 +7,8 @@ module.exports = function () {
       , 'url': 'http://127.0.0.1:17999/'
       , 'maxage': 0
       }
-    , 'log': false
+    , 'log': true
+    , "apiProcesses": 1
     , 'paths':
       { 'data': function() { return locations.data }
       , 'cache': function() { return  locations.cache }
@@ -16,4 +17,5 @@ module.exports = function () {
     , 'salt': locations.salt
     , 'key': locations.key
     }
+  }
 }

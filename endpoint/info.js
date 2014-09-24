@@ -9,7 +9,7 @@ var dp = require('darkroom-persistance')
 module.exports = function (config) {
   return function (req, res, next) {
     var info = new darkroom.info()
-      , tempName = temp.path({ suffix: '.darkroom'})
+      , tempName = temp.path({ suffix: '.darkroom' })
       , store = new StoreStream(tempName)
 
     req.params.path = path.join(config.paths.data(), req.params.data, 'image')
@@ -20,11 +20,11 @@ module.exports = function (config) {
 
     retrieve(req.params, { isFile: true })
       .pipe(info)
-      .pipe(store,
-        { width: +req.params.width
-        , height: +req.params.height
-        , crop: req.params.crop
-        }
+      .pipe(store
+        , { width: parseInt(req.params.width, 10)
+          , height: parseInt(req.params.height, 10)
+          , crop: req.params.crop
+          }
       )
       .pipe(res)
 

@@ -18,7 +18,7 @@ module.exports = function (config) {
     req.params.data = srcUrl[srcUrl.length - 1]
 
     req.params.path = path.join(config.paths.data(), req.params.data, 'image')
-    req.body.crops = !_.isArray(req.body.crops) ? [req.body.crops] : req.body.crops
+    req.body.crops = !_.isArray(req.body.crops) ? [ req.body.crops ] : req.body.crops
 
     if (req.params.crops === undefined) return next(new restify.BadDigestError(
       'Crops are undefined'
@@ -53,7 +53,7 @@ module.exports = function (config) {
         store.once('end', function () {
           var values = []
             , key = null
-          for(key in data) {
+          for (key in data) {
             values.push(data[key])
           }
 
@@ -67,9 +67,9 @@ module.exports = function (config) {
 
         retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
           .pipe(crop)
-          .pipe(store,
-            { crop: data
-            }
+          .pipe(store
+            , { crop: data
+              }
           )
       })
     }, function (error) {

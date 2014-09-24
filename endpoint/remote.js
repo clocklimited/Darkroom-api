@@ -11,7 +11,9 @@ module.exports = function (config) {
         , contentType = response.headers['content-type']
         , pathParts = response.request.uri.path.split('/')
         , imageName = pathParts[pathParts.length - 1]
-        , info = { imageSize: imageSize, imageName: imageName, contentType: contentType}
+        , info = { imageSize: imageSize, imageName: imageName, contentType: contentType }
+        , form
+        , fileHeaders
 
       if (body) {
         var upload = request.post(
@@ -27,8 +29,8 @@ module.exports = function (config) {
             res.json(body)
           }
         )
-        var form = upload.form()
-        var fileHeaders = '--' + form.getBoundary() + '\r\n'
+        form = upload.form()
+        fileHeaders = '--' + form.getBoundary() + '\r\n'
         fileHeaders += 'Content-Disposition: form-data; name="file"; '
         fileHeaders += 'filename="' + info.imageName + '"\r\n'
         fileHeaders += 'Content-Type: ' + info.contentType + '\r\n\r\n'

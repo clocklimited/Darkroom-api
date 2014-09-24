@@ -19,7 +19,7 @@ describe('Resize', function () {
   //       .end(function (error, res) {
   //         if (error) return done(error)
   //         res.body.results.should.have.length(1)
-  //         res.should.be.a('object').and.has.property('100x100')
+  //         res.should.be.instanceOf(Object).and.has.property('100x100')
   //         r.app.close()
   //         done()
   //       })
@@ -38,7 +38,7 @@ describe('Resize', function () {
   //       .end(function (error, res) {
   //         if (error) return done(error)
   //         res.body.results.should.have.length(1)
-  //         res.should.be.a('object').and.has.property('100x100')
+  //         res.should.be.instanceOf(Object).and.has.property('100x100')
   //         r.app.close()
   //         done()
   //       })
@@ -58,7 +58,7 @@ describe('Resize', function () {
   //     .end(function (error, res) {
   //       if (error) return done(error)
   //       res.body.results.should.have.length(1)
-  //       res.should.be.a('object').and.has.property('100x100')
+  //       res.should.be.instanceOf(Object).and.has.property('100x100')
   //       r.app.close()
   //       done()
   //     })
@@ -77,7 +77,7 @@ describe('Resize', function () {
   //     .end(function (error, res) {
   //       if (error) return done(error)
   //       res.body.results.should.have.length(1)
-  //       res.should.be.a('object').and.has.property('100')
+  //       res.should.be.instanceOf(Object).and.has.property('100')
   //       r.app.close()
   //       done()
   //     })
@@ -101,7 +101,7 @@ describe('Resize', function () {
   //     .end(function (error, res) {
   //       if (error) return done(error)
   //       res.body.results.should.have.length(1)
-  //       res.should.be.a('object').and.has.property('100')
+  //       res.should.be.instanceOf(Object).and.has.property('100')
   //       r.app.close()
   //       done()
   //     })

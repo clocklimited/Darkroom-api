@@ -86,7 +86,7 @@ describe('Watermark', function() {
       .end(function (error, res) {
         if (error) return done(error)
         Object.keys(res.body).should.have.length(1)
-        res.body.should.be.a('object')
+        res.body.should.be.instanceOf(Object)
         res.body.should.have.property('compositeSrc')
         res.body.compositeSrc.should.equal('06f3eeff749dbe47fdd2ebae5d2adf23')
         r.app.close()
