@@ -10,7 +10,7 @@
     "bunyan": "~0.18.2",
     "fileupload": "~0.3.0",
     "send": "~0.1.0",
-    "darkroom": "clocklimited/darkroom.git#v1.3.2",
+    "darkroom": "clocklimited/darkroom.git#v1.4.0",
     "darkroom-persistence": "clocklimited/darkroom-persistence.git#0.0.1",
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
