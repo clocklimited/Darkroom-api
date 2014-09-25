@@ -5,7 +5,7 @@ module.exports = function () {
       { 'host': '127.0.0.1'
       , 'port': 17999
       , 'url': 'http://127.0.0.1:17999/'
-      , 'maxage': 0
+      , 'maxage': 315360000
       }
     , 'log': true
     , "apiProcesses": 1
