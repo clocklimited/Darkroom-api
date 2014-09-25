@@ -3,7 +3,6 @@ var darkroom = require('darkroom')
   , StoreStream = dp.StoreStream
   , retrieve = dp.RetrieveStream
   , path = require('path')
-  // , fs = require('fs')
   , restify = require('restify')
   , temp = require('temp')
   , mv = require('mv')
@@ -32,10 +31,9 @@ module.exports = function (config) {
       req.params.crop = false
     }
 
-    var tempName = temp.path({suffix: '.darkroom'})
+    var tempName = temp.path({ suffix: '.darkroom' })
     req.params.path = path.join(config.paths.data(), req.params.data, 'image')
 
-    // fs.exists(req.params.path, function (exists) {
     mime(req.params.path, function (err, type) {
       if (err) {
         req.log.warn(new restify.ResourceNotFoundError(req.params.path + ' not found'))
@@ -47,7 +45,6 @@ module.exports = function (config) {
       res.set('Content-Type', type)
 
       var re = new darkroom.resize()
-        // , store = exists ? new stream.PassThrough() : new StoreStream(path.join(config.paths.cache(), req.url))
         , store = new StoreStream(tempName)
 
       store.on('error', function (error) {
@@ -57,14 +54,14 @@ module.exports = function (config) {
 
       re.on('error', function (error) {
         req.log.error('Resize', error)
-        callback(error)
+        next(error)
       })
       retrieve(req.params, { isFile: true })
         .pipe(re)
         .pipe(store,
           { width: +req.params.width
           , height: +req.params.height
-          , crop: req.params.crop
+          , quality: config.quality
           }
         )
         .pipe(res)
