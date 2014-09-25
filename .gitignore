@@ -13,8 +13,5 @@ results
 
 npm-debug.log
 node_modules/*
-images/*
 locations.js
-data/*
-cache/*
-locations.js
+binary/*

@@ -59,7 +59,6 @@ module.exports = function (config) {
         req.log.error('Resize', error)
         callback(error)
       })
-      console.log(111, req.params)
       retrieve(req.params, { isFile: true })
         .pipe(re)
         .pipe(store,
