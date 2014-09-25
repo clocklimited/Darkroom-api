@@ -2,6 +2,8 @@ var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
   , _ = require('lodash')
+  , mkdirp = require('mkdirp')
+  , rimraf = require('rimraf')
 
 describe('API', function() {
   /**
@@ -17,6 +19,17 @@ describe('API', function() {
   //     .expect(200)
   //     .end(done)
   // })
+
+  before(function () {
+    try {
+      rimraf.sync(config.paths.data())
+      rimraf.sync(config.paths.cache())
+      mkdirp.sync(config.paths.data())
+      mkdirp.sync(config.paths.cache())
+    } catch (e) {
+    }
+
+  })
 
   describe('#get', function() {
     it('throw error for invalid token', function (done) {

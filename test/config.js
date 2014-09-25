@@ -9,8 +9,8 @@ module.exports = function () {
         }
       , 'log': false
       , 'paths':
-        { 'data': function() { return '/tmp/dr' }
-        , 'cache': function() { return '/tmp/dr' }
+        { 'data': function() { return '/tmp/dr/data' }
+        , 'cache': function() { return '/tmp/dr/cache' }
         }
       , 'version': '0.0.1'
       , 'salt': 'salt'

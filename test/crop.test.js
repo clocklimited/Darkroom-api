@@ -1,8 +1,6 @@
 var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
-  // , async = require('async')
-  // , _ = require('lodash')
   , path = '/crop'
 
 describe('Crop', function() {
@@ -129,7 +127,7 @@ describe('Crop', function() {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
-        .end(function (error, res) {
+        .end(function (error) {
           if (error) return done(error)
           // TODO add tests for returned error message?
           // res.body.results.should.have.length(0)

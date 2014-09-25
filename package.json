@@ -23,7 +23,10 @@
     "clustered": "0.2.0"
   },
   "devDependencies": {
+    "gm": "^1.16.0",
+    "mkdirp": "^0.3.5",
     "mocha": "^1.21.4",
+    "rimraf": "^2.2.8",
     "should": "^4.0.4",
     "supertest": "~0.5.1",
     "temp": "^0.5.1"

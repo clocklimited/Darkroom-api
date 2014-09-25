@@ -1,4 +1,4 @@
-var restify = require('restify')
+  var restify = require('restify')
   , bunyan = require('bunyan')
   , async = require('async')
   , cpus = require('os').cpus()
@@ -43,7 +43,7 @@ module.exports = function (config) {
       return next()
     })
 
-    server.on('after', function (req, res, next) {
+    server.on('after', function (req) {
       req.log.info({ req: req.url }, 'end')
     })
   }
@@ -104,43 +104,20 @@ module.exports = function (config) {
     return next()
   })
 
-  // GET /info/:url
-  // GET /info/http://google.com/test
   server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
     queue.unshift(endpoint.info.bind(this, req, res), next)
   })
 
-  // GET /resize/:width/:height/:url
-  // GET /resize/:width/:height/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.resize.both.bind(this, req, res), next)
-  })
-
-  // GET /resize/:width/:url
-  // GET /resize/:width/http://google.com/test
-  server.get(/^\/+resize\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
-  })
-
-  // GET /resize/:width/:height/:url
-  // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
     queue.unshift(endpoint.resize.both.bind(this, req, res), next)
   })
 
-  // GET /resize/:width/:height/:url
-  // GET /resize/:width/:height/http://google.com/test
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
     queue.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   // GET /original/:url
-  // GET /original/http://google.com/test
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
-
-  // GET /crop/:url
-  // GET /crop/http://google.com/
-  // server.get(/^\/+crop\/+(.*)$/, endpoint.crop)
 
   server.get('/stats', function (req, res, next) {
     res.set('Cache-Control', 'max-age=0')
@@ -156,26 +133,20 @@ module.exports = function (config) {
 
   server.get(/^\/(.*)$/, endpoint.original)
 
-  server.post('/crop', function (req, res, next) {
-    queue.push(endpoint.crop.bind(this, req, res), next)
-  })
-
-  server.post('/composite', function (req, res, next) {
-    queue.push(endpoint.composite.bind(this, req, res), next)
-  })
-
-  server.post('/watermark', function (req, res, next) {
-    queue.push(endpoint.watermark.bind(this, req, res), next)
-  })
-
-  server.post('/remote', endpoint.remote)
-
   server.post('/'
     , createKeyAuth(config)
     , endpoint.utils.dedupeName
     , upload.middleware
     , endpoint.upload
   )
+
+  server.post('/crop', function (req, res, next) {
+    queue.push(endpoint.crop.bind(this, req, res), next)
+  })
+
+  server.post('/watermark', function (req, res, next) {
+    queue.push(endpoint.watermark.bind(this, req, res), next)
+  })
 
   if (config.log) {
 

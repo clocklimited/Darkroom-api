@@ -3,7 +3,6 @@ module.exports = function (config) {
   , crop: require('./crop')(config)
   , original: require('./original')(config)
   , info: require('./info')(config)
-  , remote: require('./remote')(config)
   , watermark: require('./watermark')(config)
   , upload: require('./upload')
   , utils: require('./utils')

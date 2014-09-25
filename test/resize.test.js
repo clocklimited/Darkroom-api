@@ -2,6 +2,7 @@ var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
   , hashHelper = require('./hash-helper')
+  , gm = require('gm')
 
 describe('Resize', function () {
 
@@ -136,25 +137,36 @@ describe('Resize', function () {
       })
   })
 
-  it('should return an image if resize dimension is zero /0/0/:url', function(done) {
+  it('should resize to a given size /100/50/:url', function(done) {
+    var uri = '/100/50/3bec4be4b95328cb281a47429c8aed8e'
+      , url = uri + ':' + hashHelper(uri)
     request(darkroom)
-      .get('/10/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/10/10/3bec4be4b95328cb281a47429c8aed8e'))
+      .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
-        done()
+        gm(config.paths.cache() + url.replace(':', '')).size(function(err, value) {
+          value.width.should.equal(100)
+          value.height.should.equal(50)
+          done()
+        })
       })
   })
 
-  it('should return an image if resize dimension is zero /resize/0/0/:url', function(done) {
+  it('should resize to a given size with only width /160/:url', function(done) {
+    var uri = '/160/3bec4be4b95328cb281a47429c8aed8e'
+      , url = uri + ':' + hashHelper(uri)
     request(darkroom)
-      .get('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/resize/10/10/3bec4be4b95328cb281a47429c8aed8e'))
+      .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
-        done()
+        gm(config.paths.cache() + url.replace(':', '')).size(function(err, value) {
+          value.width.should.equal(160)
+          done()
+        })
       })
   })
 
