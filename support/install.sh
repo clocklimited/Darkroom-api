@@ -73,11 +73,12 @@ locations=locations.js
 
 cp -a . $tmp
 cd $tmp
-sed -i'' -e "s,{DATA},'$dataPath',g" $locations
-sed -i'' -e "s,{CACHE},'$cachePath',g" $locations
-sed -i'' -e "s,{PORT},'$PORT',g" $locations
-sed -i'' -e "s,{SALT},'$SALT',g" $locations
-sed -i'' -e "s,{KEY},'$KEY',g" $locations
+sed -i'' -e "s,{DATA},'$dataPath',g" $locations.tpl
+sed -i'' -e "s,{CACHE},'$cachePath',g" $locations.tpl
+sed -i'' -e "s,{PORT},'$PORT',g" $locations.tpl
+sed -i'' -e "s,{SALT},'$SALT',g" $locations.tpl
+sed -i'' -e "s,{KEY},'$KEY',g" $locations.tpl
+mv $locations.tpl $locations
 rm -rf .git
 
 npm install $NPMOPTS
