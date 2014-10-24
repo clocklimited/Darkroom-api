@@ -13,7 +13,7 @@
     "bunyan": "~0.18.2",
     "fileupload": "git://github.com/domharrington/fileupload.git",
     "send": "~0.1.0",
-    "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#v1.3.2",
+    "darkroom": "git+ssh://git@github.com:clocklimited/darkroom.git#v1.3.3",
     "darkroom-persistence": "git+ssh://git@github.com:clocklimited/darkroom-persistence.git#0.0.1",
     "mime-magic": "~0.4.2",
     "pliers": "~0.1.6",
