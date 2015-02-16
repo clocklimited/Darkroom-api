@@ -63,7 +63,7 @@ module.exports = function (config) {
     { headers: [ 'X-Requested-With' ] }
   ))
 
-  function checkRoute (req, res, next) {
+  function checkRoute(req, res, next) {
     if (req.method !== 'GET')
       return next()
 

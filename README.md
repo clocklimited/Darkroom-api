@@ -55,11 +55,6 @@ Creates a composite image - mainly used to watermark images
 
     {"compositeSrc":"b4f0923edb9c89c69d1ef5a4ceb2c263"}
 
-## POST /resize/{imageurl}
-
-Images will be resized, omission of the width or height parameter will auto resize based on the aspect ratio of the source image.
-
-
 ### Body
 
 `src` - URL of image to manipulate, or send as multipart form data.
@@ -83,9 +78,9 @@ Images will be resized, omission of the width or height parameter will auto resi
     , "50": "51aca1f496317c0d2b475768c9303de3"
     }
 
-### GET /resize/{width}/{height}/{imageurl}
+### GET /{width}/{height}/{imageurl}
 or
-### GET /resize/{width}/{imageurl}
+### GET /{width}/{imageurl}
 
 With height being optional. This will return a (301 to an image / link to a CDN hosted version in a JSON structure)
 
