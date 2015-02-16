@@ -12,7 +12,6 @@ var darkroom = require('darkroom')
 module.exports = function (config) {
 
   resize.width = function (req, res, next) {
-    req.params.crop = false
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
     res.set('Cache-Control', 'max-age=' + config.http.maxage)
     return resizeImage.call(this, req, res, next)
@@ -27,9 +26,6 @@ module.exports = function (config) {
   var resizeImage = function (req, res, next) {
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
-    if (+req.params.height === 0 || +req.params.width === 0) {
-      req.params.crop = false
-    }
 
     var tempName = temp.path({ suffix: '.darkroom' })
     req.params.path = path.join(config.paths.data(), req.params.data, 'image')
@@ -58,11 +54,12 @@ module.exports = function (config) {
       })
       retrieve(req.params, { isFile: true })
         .pipe(re)
-        .pipe(store,
-          { width: +req.params.width
-          , height: +req.params.height
-          , quality: config.quality
-          }
+        .pipe(store
+          , { width: parseInt(req.params.width, 10)
+            , height: parseInt(req.params.height, 10)
+            , quality: config.quality
+            , mode: 'bestfit'
+            }
         )
         .pipe(res)
 
