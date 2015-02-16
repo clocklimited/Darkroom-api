@@ -9,7 +9,7 @@ module.exports = function () {
       , 'maxage': 315360000
       }
     , 'log': true
-    , quality: 75
+    , quality: 85
     , apiProcesses: 1
     , paths:
       { 'data': function() { return locations.data }
