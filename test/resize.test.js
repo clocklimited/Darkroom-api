@@ -3,132 +3,43 @@ var config = require('con.figure')(require('./config')())
   , request = require('supertest')
   , hashHelper = require('./hash-helper')
   , gm = require('gm')
+  , rimraf = require('rimraf')
+  , mkdirp = require('mkdirp')
 
 describe('Resize', function () {
+  var imgSrcId
 
-  // describe('FileTypes', function () {
-  //   it('should return a working crop with a png', function(done) {
-  //     var r = request(darkroom)
-  //       .post('/resize')
-  //       .send({ src: 'http://img.clockte.ch/200x200.png?text=Image%20Resize\nTest'
-  //         , sizes: [100, 100]
-  //         }
-  //       )
-  //       .set('Accept', 'application/json')
-  //       .expect('Content-Type', /json/)
-  //       .expect(200)
-  //       .end(function (error, res) {
-  //         if (error) return done(error)
-  //         res.body.results.should.have.length(1)
-  //         res.should.be.instanceOf(Object).and.has.property('100x100')
-  //         r.app.close()
-  //         done()
-  //       })
-  //   })
+  function clean() {
+    try {
+      rimraf.sync(config.paths.data())
+      rimraf.sync(config.paths.cache())
+      mkdirp.sync(config.paths.data())
+      mkdirp.sync(config.paths.cache())
+    } catch (e) {
+    }
+  }
 
-  //   it('should return a working crop with a jpeg', function(done) {
-  //     var r = request(darkroom)
-  //       .post('/resize')
-  //       .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //         , sizes: [100, 100]
-  //         }
-  //       )
-  //       .set('Accept', 'application/json')
-  //       .expect('Content-Type', /json/)
-  //       .expect(200)
-  //       .end(function (error, res) {
-  //         if (error) return done(error)
-  //         res.body.results.should.have.length(1)
-  //         res.should.be.instanceOf(Object).and.has.property('100x100')
-  //         r.app.close()
-  //         done()
-  //       })
-  //   })
-  // })
+  before(clean)
+  after(clean)
 
-  // it('should return an object containing a src attribute on post request', function(done) {
-  //   var r = request(darkroom)
-  //     .post('/resize')
-  //     .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //       , sizes: [100, 100]
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       res.body.results.should.have.length(1)
-  //       res.should.be.instanceOf(Object).and.has.property('100x100')
-  //       r.app.close()
-  //       done()
-  //     })
-  // })
+  before(function (done) {
 
-  // it('should return an object containing the specified dimension as an object key', function(done) {
-  //   var r = request(darkroom)
-  //     .post('/resize')
-  //     .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //       , sizes: [100]
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       res.body.results.should.have.length(1)
-  //       res.should.be.instanceOf(Object).and.has.property('100')
-  //       r.app.close()
-  //       done()
-  //     })
-  // })
-
-  // it('should return an multiple images is multiple crops are requested', function(done) {
-  //   var r = request(darkroom)
-  //     .post('/resize')
-  //     .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //       , sizes: [ [100]
-  //         , [150, 150]
-  //         , { w: 50
-  //           , h: 75
-  //           }
-  //         ]
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       res.body.results.should.have.length(1)
-  //       res.should.be.instanceOf(Object).and.has.property('100')
-  //       r.app.close()
-  //       done()
-  //     })
-  // })
-
-  // it('should return an http error if resize dimension is less than zero', function(done) {
-  //   var r = request(darkroom)
-  //     .get('/resize')
-  //     .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //       , sizes: [-100, -50]
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(400)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       res.body.results.should.have.length(0)
-  //       r.app.close()
-  //       done()
-  //     })
-  // })
+    request(darkroom)
+      .post('/')
+      .set('x-darkroom-key', 'key')
+      .set('Accept', 'application/json')
+      .attach('file', 'test/fixtures/jpeg.jpeg')
+      .end(function (err, res) {
+        imgSrcId = res.body.src
+        done()
+      })
+  })
 
   it('should return an image if resize dimension is zero for /0/:url', function(done) {
+    var uri = '/100/' + imgSrcId
+      , url = uri + ':' + hashHelper(uri)
     request(darkroom)
-      .get('/10/3bec4be4b95328cb281a47429c8aed8e:' + hashHelper('/10/3bec4be4b95328cb281a47429c8aed8e'))
+      .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
@@ -137,8 +48,42 @@ describe('Resize', function () {
       })
   })
 
-  it('should resize to a given size /100/50/:url', function(done) {
-    var uri = '/100/50/3bec4be4b95328cb281a47429c8aed8e'
+  it('should resize /100/50/:url to fit', function(done) {
+    var uri = '/100/50/' + imgSrcId
+      , url = uri + ':' + hashHelper(uri)
+    request(darkroom)
+      .get(url)
+      .expect(200)
+      .end(function (error, res) {
+        if (error) return done(error)
+        res.statusCode.should.equal(200)
+        gm(config.paths.cache() + url.replace(':', '')).size(function(err, value) {
+          value.width.should.equal(67)
+          value.height.should.equal(50)
+          done()
+        })
+      })
+  })
+
+  it('should accept mode /100/50/fit/:url ', function(done) {
+    var uri = '/100/50/fit/' + imgSrcId
+      , url = uri + ':' + hashHelper(uri)
+    request(darkroom)
+      .get(url)
+      .expect(200)
+      .end(function (error, res) {
+        if (error) return done(error)
+        res.statusCode.should.equal(200)
+        gm(config.paths.cache() + url.replace(':', '')).size(function(err, value) {
+          value.width.should.equal(67)
+          value.height.should.equal(50)
+          done()
+        })
+      })
+  })
+
+  it('should accept mode /100/50/cover/:url ', function(done) {
+    var uri = '/100/50/cover/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
     request(darkroom)
       .get(url)
@@ -155,8 +100,9 @@ describe('Resize', function () {
   })
 
   it('should resize to a given size with only width /160/:url', function(done) {
-    var uri = '/160/3bec4be4b95328cb281a47429c8aed8e'
+    var uri = '/160/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+
     request(darkroom)
       .get(url)
       .expect(200)
@@ -169,22 +115,4 @@ describe('Resize', function () {
         })
       })
   })
-
-  // it('should return an http error if resize dimension is larger than the src image', function(done) {
-  //   var r = request(darkroom)
-  //     .get('/resize')
-  //     .send({ src: 'http://img.clockte.ch/200x200.jpg?text=Image%20Resize\nTest'
-  //       , sizes: [1000]
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(400)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       res.body.results.should.have.length(0)
-  //       r.app.close()
-  //       done()
-  //     })
-  // })
 })

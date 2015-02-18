@@ -2,21 +2,36 @@ var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
   , path = '/watermark'
-  , imgSrcId = null
-
-before(function (done) {
-  request(darkroom)
-    .post('/')
-    .set('x-darkroom-key', 'key')
-    .set('Accept', 'application/json')
-    .attach('file', 'test/fixtures/jpeg.jpeg')
-    .end(function (err, res) {
-      imgSrcId = res.body.src
-      done()
-    })
-})
+  , mkdirp = require('mkdirp')
+  , rimraf = require('rimraf')
 
 describe('Watermark', function() {
+  var  imgSrcId = null
+
+  function clean() {
+    try {
+      rimraf.sync(config.paths.data())
+      rimraf.sync(config.paths.cache())
+      mkdirp.sync(config.paths.data())
+      mkdirp.sync(config.paths.cache())
+    } catch (e) {
+    }
+  }
+
+  before(clean)
+  after(clean)
+
+  before(function (done) {
+    request(darkroom)
+      .post('/')
+      .set('x-darkroom-key', 'key')
+      .set('Accept', 'application/json')
+      .attach('file', 'test/fixtures/jpeg.jpeg')
+      .end(function (err, res) {
+        imgSrcId = res.body.src
+        done()
+      })
+  })
 
   it('should not require a opacity', function(done) {
     var r = request(darkroom)
@@ -29,47 +44,12 @@ describe('Watermark', function() {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
-      .end(function (error, res) {
+      .end(function (error) {
         if (error) return done(error)
+        r.app.close()
         done()
       })
   })
-
-  // it('should 400 on bad base source', function(done) {
-  //   var r = request(darkroom)
-  //     .post(path)
-  //     .send(
-  //       { baseSrc: 'BAD'
-  //       , watermarkSrc: imgSrcId
-  //       , opacityPercentage: 25
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(400)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       done()
-  //     })
-  // })
-
-  // it('should 400 on bad watermark source', function(done) {
-  //   var r = request(darkroom)
-  //     .post(path)
-  //     .send(
-  //       { baseSrc: imgSrcId
-  //       , watermarkSrc: 'bad'
-  //       , opacityPercentage: 25
-  //       }
-  //     )
-  //     .set('Accept', 'application/json')
-  //     .expect('Content-Type', /json/)
-  //     .expect(400)
-  //     .end(function (error, res) {
-  //       if (error) return done(error)
-  //       done()
-  //     })
-  // })
 
   it('should return a new image src id for a watermarked image', function(done) {
     var r = request(darkroom)
