@@ -18,7 +18,7 @@ module.exports = function (config) {
           }
       , opts =
       { opacity: req.body.opacityPercentage }
-      , watermark = new darkroom.watermark(watermarkSrcPath, opts)
+      , watermark = new darkroom.Watermark(watermarkSrcPath, opts)
       , watermarkFolderLocation = filePath(req.body, config.paths.data())
       , watermarkFileLocation = path.join(watermarkFolderLocation, 'image')
 

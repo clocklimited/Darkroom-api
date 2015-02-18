@@ -108,8 +108,12 @@ module.exports = function (config) {
     queue.unshift(endpoint.info.bind(this, req, res), next)
   })
 
-  server.get(/^\/+([0-9]+)\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, serveCached, function (req, res, next) {
     queue.unshift(endpoint.resize.both.bind(this, req, res), next)
+  })
+
+  server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
   })
 
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {

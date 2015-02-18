@@ -8,7 +8,7 @@ var dp = require('darkroom-persistance')
 
 module.exports = function (config) {
   return function (req, res, next) {
-    var info = new darkroom.info()
+    var info = new darkroom.Info()
       , tempName = temp.path({ suffix: '.darkroom' })
       , store = new StoreStream(tempName)
 
@@ -21,8 +21,8 @@ module.exports = function (config) {
     retrieve(req.params, { isFile: true })
       .pipe(info)
       .pipe(store
-        , { width: parseInt(req.params.width, 10)
-          , height: parseInt(req.params.height, 10)
+        , { width: Number(req.params.width)
+          , height: Number(req.params.height)
           , crop: req.params.crop
           }
       )

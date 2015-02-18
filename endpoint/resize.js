@@ -23,9 +23,11 @@ module.exports = function (config) {
     return resizeImage.call(this, req, res, next)
   }
 
-  var resizeImage = function (req, res, next) {
+  function resizeImage(req, res, next) {
+    var modes = [ 'fit', 'stretch', 'cover' ]
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
+    req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
 
     var tempName = temp.path({ suffix: '.darkroom' })
     req.params.path = path.join(config.paths.data(), req.params.data, 'image')
@@ -40,7 +42,7 @@ module.exports = function (config) {
 
       res.set('Content-Type', type)
 
-      var re = new darkroom.resize()
+      var re = new darkroom.Resize()
         , store = new StoreStream(tempName)
 
       store.on('error', function (error) {
@@ -52,13 +54,14 @@ module.exports = function (config) {
         req.log.error('Resize', error)
         next(error)
       })
+
       retrieve(req.params, { isFile: true })
         .pipe(re)
         .pipe(store
-          , { width: parseInt(req.params.width, 10)
-            , height: parseInt(req.params.height, 10)
+          , { width: Number(req.params.width)
+            , height: Number(req.params.height)
             , quality: config.quality
-            , mode: 'bestfit'
+            , mode: req.params.mode
             }
         )
         .pipe(res)

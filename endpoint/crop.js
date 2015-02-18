@@ -37,7 +37,7 @@ module.exports = function (config) {
 
       mkdirp(folderLocation, function() {
         var store = new StoreStream(fileLocation)
-          , crop = new darkroom.crop()
+          , crop = new darkroom.Crop()
 
         store.once('error', function (error) {
           req.log.error('StoreStream:', error)
