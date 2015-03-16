@@ -9,6 +9,7 @@ var darkroom = require('darkroom')
   , mkdirp = require('mkdirp')
   , async = require('async')
   , restify = require('restify')
+  , imageName = require('../lib/image-name')
 
 module.exports = function (config) {
   return function (req, res, next) {
@@ -17,7 +18,7 @@ module.exports = function (config) {
     var srcUrl = url.parse(req.body.src).path.split('/')
     req.params.data = srcUrl[srcUrl.length - 1]
 
-    req.params.path = path.join(config.paths.data(), req.params.data, 'image')
+    req.params.path = path.join(config.paths.data(), req.params.data.substring(0, 3), req.params.data)
     req.body.crops = !_.isArray(req.body.crops) ? [ req.body.crops ] : req.body.crops
 
     if (req.params.crops === undefined) return next(new restify.BadDigestError(
@@ -33,7 +34,7 @@ module.exports = function (config) {
     async.eachSeries(req.params.crops, function (data, callback) {
       data.data = req.params.data
       var folderLocation = filePath(data, config.paths.data())
-        , fileLocation = path.join(folderLocation, 'image')
+        , fileLocation = path.join(folderLocation, imageName(data))
 
       mkdirp(folderLocation, function() {
         var store = new StoreStream(fileLocation)
@@ -61,7 +62,7 @@ module.exports = function (config) {
           // console.log(collection)
 
           key = values.join(':')
-          collection[key] = path.basename(folderLocation)
+          collection[key] = path.basename(fileLocation)
           callback()
         })
 

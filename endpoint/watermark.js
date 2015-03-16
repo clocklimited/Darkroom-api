@@ -6,12 +6,14 @@ var darkroom = require('darkroom')
   , restify = require('restify')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
+  , imageName = require('../lib/image-name')
 
 module.exports = function (config) {
   return function (req, res, next) {
     req.body = JSON.parse(req.body)
-    var baseSrcPath = path.join(config.paths.data(), req.body.baseSrc, 'image')
-      , watermarkSrcPath = path.join(config.paths.data(), req.body.watermarkSrc, 'image')
+
+    var baseSrcPath = path.join(config.paths.data(), req.body.baseSrc.substring(0,3), req.body.baseSrc)
+      , watermarkSrcPath = path.join(config.paths.data(), req.body.watermarkSrc.substring(0,3), req.body.watermarkSrc)
       , streamOptions =
           { url: req.body.baseSrc
           , path: baseSrcPath
@@ -20,7 +22,7 @@ module.exports = function (config) {
       { opacity: req.body.opacityPercentage }
       , watermark = new darkroom.Watermark(watermarkSrcPath, opts)
       , watermarkFolderLocation = filePath(req.body, config.paths.data())
-      , watermarkFileLocation = path.join(watermarkFolderLocation, 'image')
+      , watermarkFileLocation = path.join(watermarkFolderLocation, imageName(req.body))
 
     res.on('close', function () {
       next()
@@ -38,7 +40,7 @@ module.exports = function (config) {
       })
 
       store.once('end', function () {
-        res.json(200, { compositeSrc: path.basename(watermarkFolderLocation) })
+        res.json(200, { compositeSrc: path.basename(watermarkFileLocation) })
       })
 
       retrieve(streamOptions, { isFile: true })

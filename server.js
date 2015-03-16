@@ -3,6 +3,7 @@
   , async = require('async')
   , cpus = require('os').cpus()
   , createFileUpload = require('fileupload').createFileUpload
+  , fileAdaptor = require('./lib/file-upload-adapter')
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')

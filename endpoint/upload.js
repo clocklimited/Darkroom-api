@@ -7,7 +7,7 @@ module.exports = function(req, res, next) {
   _.flatten(imageArray)
   _.each(imageArray, function(files) {
     _.each(files, function(file) {
-      var id = file.path.substring(0, file.path.length - 1)
+      var id = file.basename
       , object = { src: id
         , id: id
       }
