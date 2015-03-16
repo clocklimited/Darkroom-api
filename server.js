@@ -3,7 +3,7 @@
   , async = require('async')
   , cpus = require('os').cpus()
   , createFileUpload = require('fileupload').createFileUpload
-  , fileAdaptor = require('./lib/file-upload-adapter')
+  , createFileAdaptor = require('./lib/file-upload-adapter')
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')
@@ -12,7 +12,8 @@
 
 module.exports = function (config) {
   var endpoint = createEndpoints(config)
-    , upload = createFileUpload(config.paths.data())
+    , fileAdaptor = createFileAdaptor(config.paths.data())
+    , upload = createFileUpload({ adapter: fileAdaptor })
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
     , log = bunyan.createLogger(

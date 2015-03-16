@@ -12,6 +12,7 @@
     "darkroom": "^3.0.1",
     "darkroom-persistence": "clocklimited/darkroom-persistence.git#0.0.1",
     "fileupload": "~0.3.0",
+    "mime": "~1.2",
     "lodash": "~1.0.1",
     "mime-magic": "~0.4.2",
     "mkdirp": "~0.3.5",
