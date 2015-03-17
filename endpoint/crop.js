@@ -9,7 +9,7 @@ var darkroom = require('darkroom')
   , mkdirp = require('mkdirp')
   , async = require('async')
   , restify = require('restify')
-  , imageName = require('../lib/image-name')
+  , dataHasher = require('../lib/data-hasher')
 
 module.exports = function (config) {
   return function (req, res, next) {
@@ -34,7 +34,7 @@ module.exports = function (config) {
     async.eachSeries(req.params.crops, function (data, callback) {
       data.data = req.params.data
       var folderLocation = filePath(data, config.paths.data())
-        , fileLocation = path.join(folderLocation, imageName(data))
+        , fileLocation = path.join(folderLocation, dataHasher(data))
 
       mkdirp(folderLocation, function() {
         var store = new StoreStream(fileLocation)

@@ -6,7 +6,7 @@ var darkroom = require('darkroom')
   , restify = require('restify')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
-  , imageName = require('../lib/image-name')
+  , dataHasher = require('../lib/data-hasher')
 
 module.exports = function (config) {
   return function (req, res, next) {
@@ -22,7 +22,7 @@ module.exports = function (config) {
       { opacity: req.body.opacityPercentage }
       , watermark = new darkroom.Watermark(watermarkSrcPath, opts)
       , watermarkFolderLocation = filePath(req.body, config.paths.data())
-      , watermarkFileLocation = path.join(watermarkFolderLocation, imageName(req.body))
+      , watermarkFileLocation = path.join(watermarkFolderLocation, dataHasher(req.body))
 
     res.on('close', function () {
       next()
