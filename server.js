@@ -12,8 +12,6 @@
 
 module.exports = function (config) {
   var endpoint = createEndpoints(config)
-    , fileAdaptor = createFileAdaptor(config.paths.data())
-    , upload = createFileUpload({ adapter: fileAdaptor })
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
     , log = bunyan.createLogger(
@@ -21,18 +19,20 @@ module.exports = function (config) {
       , level: process.env.LOG_LEVEL || 'debug'
       , stream: process.stdout
       , serializers: restify.bunyan.stdSerializers
-    })
-  , queue = async.queue(function (task, callback) {
-    task(function(error) {
-      callback(error)
-    })
-  }, concurrency)
-  , server = restify.createServer(
-    { version: config.version
-    , name: 'darkroom.io'
-    , log: config.log && log
-    }
-  )
+      })
+    , fileAdaptor = createFileAdaptor(config.paths.data(), config.log && log)
+    , upload = createFileUpload({ adapter: fileAdaptor })
+    , queue = async.queue(function (task, callback) {
+      task(function(error) {
+        callback(error)
+      })
+    }, concurrency)
+    , server = restify.createServer(
+      { version: config.version
+      , name: 'darkroom.io'
+      , log: config.log && log
+      }
+    )
   // server.pre(restify.pre.sanitizePath())
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
