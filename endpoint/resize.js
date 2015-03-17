@@ -1,5 +1,5 @@
 var darkroom = require('darkroom')
-  , dp = require('darkroom-persistance')
+  , dp = require('darkroom-persistence')
   , StoreStream = dp.StoreStream
   , retrieve = dp.RetrieveStream
   , path = require('path')

@@ -1,4 +1,4 @@
-var dp = require('darkroom-persistance')
+var dp = require('darkroom-persistence')
   , retrieve = dp.RetrieveStream
   , darkroom = require('darkroom')
   , path = require('path')

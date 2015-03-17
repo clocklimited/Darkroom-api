@@ -1,6 +1,6 @@
 var darkroom = require('darkroom')
   , path = require('path')
-  , dp = require('darkroom-persistance')
+  , dp = require('darkroom-persistence')
   , retrieve = dp.RetrieveStream
   , StoreStream = dp.StoreStream
   , restify = require('restify')

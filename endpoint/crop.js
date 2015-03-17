@@ -1,6 +1,6 @@
 var darkroom = require('darkroom')
   , _ = require('lodash')
-  , dp = require('darkroom-persistance')
+  , dp = require('darkroom-persistence')
   , StoreStream = dp.StoreStream
   , retrieve = dp.RetrieveStream
   , path = require('path')
