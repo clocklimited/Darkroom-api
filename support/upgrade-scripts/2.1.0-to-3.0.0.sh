@@ -127,10 +127,9 @@ find "${DR_PATH}" -type f -name image | while read old_image; do
   prefix=$(echo "${old_dir}" | cut -c 1-3)
 
   run_command "mv $old_image ${DR_PATH}/${prefix}/${old_dir}"
-#  run_command "rmdir ${DR_PATH}/${old_dir}"
 done
 
-# Removing old, empty directores that we might have missed (e.g. because they were already empty)
+# Removing old, empty directores, either because we moved files or they were already empty 
 >&2 echo "Step 3. Removing empty 2.1-style subdirectories."
 run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
 
