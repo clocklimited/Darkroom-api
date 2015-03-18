@@ -18,7 +18,7 @@ run_command() {
   if [[ ! -z "${PRETEND}" ]]; then
     echo "${cmd}"
   else
-    $("${cmd}")
+    $cmd
     return $?
   fi
 }
@@ -81,6 +81,17 @@ if [[ ! -d "$DR_PATH" ]]; then
   exit 1
 fi
 
+if [[ ! $(getent passwd "${DR_OWNER}") ]]; then
+  >&2 echo "ERROR: Target file owner ${DR_OWNER} does not exist"
+  exit 1
+fi
+
+if [[ ! $(getent group "${DR_GROUP}") ]]; then
+  >&2 echo "ERROR: Target file group ${DR_GROUP} does not exist"
+  exit 1
+fi
+
+
 # Check if we are on an NFS share. If we are, stop. This generates a ton of I/O and should be
 # done on the server.
 df -P -T "${DR_PATH}" | tail -n +2 | awk '{print $2}' | grep -q nfs
@@ -95,20 +106,27 @@ fi
 # Set IO to slowest "best effort" level
 run_command "ionice -c2 -n7 -p $$"
 
-# Make all paths up front
+echo "Step 1. Creating new subdirectories"
 for (( i = 0; i <= 4095; i++ )); do
-  run_command "mkdir ${DR_PATH}/$(printf "%.3x\n" $i)"
+  new_path="${DR_PATH}/$(printf "%.3x\n" $i)"
+  if [[ ! -d "${new_path}" ]]; then
+    run_command "mkdir ${new_path}"
+  fi
 done
 
-# Move files and clean up old subdirectories
-find $1 -type f -name image | while read old_image; do
+echo "Step 2. Moving files from 2.1 to 3.0 format"
+find "${DR_PATH}" -type f -name image | while read old_image; do
   old_dir=$(dirname ${old_image} | xargs -L1 basename)
   prefix=$(echo "${old_dir}" | cut -c 1-3)
 
   run_command "mv $old_image ${DR_PATH}/${prefix}/${old_dir}"
-  run_command "rmdir ${DR_PATH}/${old_dir}"
+#  run_command "rmdir ${DR_PATH}/${old_dir}"
 done
 
+# Removing old, empty directores that we might have missed (e.g. because they were already empty)
+echo "Step 3. Removing empty 2.1-style subdirectories."
+run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+
 # Fix ownership
->&2 echo "Attempting to change file ownership, this may fail"
+echo "Step 4. Setting file ownership on data files."
 run_command "sudo -n chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
