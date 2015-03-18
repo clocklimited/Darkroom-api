@@ -53,7 +53,20 @@ By using the image hash for the name means that less sub directories need to be 
 2. follow the instructions on upgrading **from version 2.1.0 to 3.0.0**
 
 ## From version 2.1.0 to 3.0.0
-1. Run the support/upgrade-scripts/2.1.0-to-3.0.0.sh script to move all of your existing Darkroom images from the current folder structure of `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
+1. Stop darkroom.
+2. Run the 2.1 to 3.0 migration script, `support/upgrade-scripts/2.1.0-to-3.0.0.sh`. Please check you have passed all necessary options.
+
+   Please note: **This step is irreversible once run**
+ 
+   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script. 
+
+  This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
+
+   Please check you have passed all necessary options to the script. Running without options or with `-h` will show the usage message.
+
+3. Start darkroom.
+
+3. Run the support/upgrade-scripts/2.1.0-to-3.0.0.sh script to move all of your existing Darkroom images from the current folder structure of `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
 
 
 # API
