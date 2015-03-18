@@ -106,7 +106,7 @@ fi
 # Set IO to slowest "best effort" level
 run_command "ionice -c2 -n7 -p $$"
 
-echo "Step 1. Creating new subdirectories"
+>&2 echo "Step 1. Creating new subdirectories"
 for (( i = 0; i <= 4095; i++ )); do
   new_path="${DR_PATH}/$(printf "%.3x\n" $i)"
   if [[ ! -d "${new_path}" ]]; then
@@ -114,7 +114,7 @@ for (( i = 0; i <= 4095; i++ )); do
   fi
 done
 
-echo "Step 2. Moving files from 2.1 to 3.0 format"
+>&2 echo "Step 2. Moving files from 2.1 to 3.0 format"
 find "${DR_PATH}" -type f -name image | while read old_image; do
   old_dir=$(dirname ${old_image} | xargs -L1 basename)
   prefix=$(echo "${old_dir}" | cut -c 1-3)
@@ -124,9 +124,9 @@ find "${DR_PATH}" -type f -name image | while read old_image; do
 done
 
 # Removing old, empty directores that we might have missed (e.g. because they were already empty)
-echo "Step 3. Removing empty 2.1-style subdirectories."
+>&2 echo "Step 3. Removing empty 2.1-style subdirectories."
 run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
 
 # Fix ownership
-echo "Step 4. Setting file ownership on data files."
+>&2 echo "Step 4. Setting file ownership on data files."
 run_command "sudo -n chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
