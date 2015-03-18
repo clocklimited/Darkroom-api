@@ -41,12 +41,13 @@ module.exports = function (config) {
   if (config.log) {
     log.info('--- VERBOSE ---')
     server.pre(function (req, res, next) {
-      req.log.info({ req: req.url }, 'start')
+      req.requestId = +Date.now() + Math.random()
+      req.log.info({ req: req.url, id: req.requestId }, 'start')
       return next()
     })
 
     server.on('after', function (req) {
-      req.log.info({ req: req.url }, 'end')
+      req.log.info({ req: req.url, id: req.requestId }, 'end')
     })
   }
 
