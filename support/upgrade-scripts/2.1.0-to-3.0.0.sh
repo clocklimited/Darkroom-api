@@ -18,7 +18,7 @@ run_command() {
   if [[ ! -z "${PRETEND}" ]]; then
     echo "${cmd}"
   else
-    $cmd
+    eval ${cmd}
     return $?
   fi
 }
@@ -128,14 +128,16 @@ if [[ -z "${USING_OSX}" ]]; then
   fi
 fi
 
-# Set IO to slowest "best effort" level
-if [[ -z "${PRETEND}" ]]; then
-  # We either need to provide PID or command. Since we run a lot of commands,
-  # this cannot be simulated in pretend mode and work if someone takes the output as a script.
-  run_command "ionice -c2 -n7 -p $$"
-else
-  >&2 echo "WARNING: In pretend mode, skipping call to ionice"
-  >&2 echo "         If you plan to run as a script, prefix your script invocation with: ionice -c2 -n7"
+# Linux: Set IO to slowest "best effort" level
+if [[ -z "${USING_OSX}" ]]; then
+  if [[ -z "${PRETEND}" ]]; then
+    # We either need to provide PID or command. Since we run a lot of commands,
+    # this cannot be simulated in pretend mode and work if someone takes the output as a script.
+    run_command "ionice -c2 -n7 -p $$"
+  else
+    >&2 echo "WARNING: In pretend mode, skipping call to ionice"
+    >&2 echo "         If you plan to run as a script, prefix your script invocation with: ionice -c2 -n7"
+  fi
 fi
 
 >&2 echo "Step 1. Creating new subdirectories"
@@ -156,17 +158,18 @@ done
 
 # Removing old, empty directores, either because we moved files or they were already empty 
 >&2 echo "Step 3. Removing empty 2.1-style subdirectories."
+>&2 echo "NOTE: A 'missing operand' error here means you have nothing to clean up."
 if [[ -z "${USING_OSX}" ]]; then
-  run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+  run_command "find ${DR_PATH} -mindepth 1 -type d -empty | grep -E .*/[0-9a-f]\{32\}\$ | sudo xargs rmdir"
 else
   # On OS X, omit sudo - files should be owned by the developer running the script.
-  run_command "find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+  run_command "find ${DR_PATH} -mindepth 1 -type d -empty | grep -E .*/[0-9a-f]\{32\}\$ | xargs rmdir"
 fi
 
 # Fix ownership
 >&2 echo "Step 4. Setting file ownership on data files."
 if [[ -z "${USING_OSX}" ]]; then
-  run_command "sudo -n chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
+  run_command "sudo chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
 else
   >&2 echo "Skipping this step - you are on OS X."
 fi
