@@ -27,12 +27,26 @@ run_command() {
 # Show usage statement
 #
 show_help() {
-  >&2 echo "Usage: $0 -d /path/to/darkroom/images [-p]"
-  >&2 echo "    -d dir      Path to darkroom 'images' directory"
-  >&2 echo "    -g group    Group to own darkroom files (Default: developer)"
-  >&2 echo "    -o owner    User to own darkroom files (Default: node)"
-  >&2 echo "    -p          Pretend mode: echos commands instead of executing them"
+  >&2 echo <<END
+Usage: $0 -d /path/to/darkroom/images [-p]
+    -d dir      Path to darkroom 'images' directory
+    -p          Pretend mode: echos commands instead of executing them
+
+    Linux-only options:
+    -g group    Group to own darkroom files (Default: developer)
+    -o owner    User to own darkroom files (Default: node)
+END
 }
+
+# Check if we are on a Mac
+
+if [[ $(uname -s) == 'Darwin' ]]; then
+  USING_OSX=1
+  >&2 echo "WARNING: You are on OS X. Assuming this is a development machine."
+  >&2 echo "         Do not apply output from pretend mode (-p) to a live server!"
+  >&2 echo "WARNING: File ownership changes/checks disabled."
+  >&2 echo "WARNING: NFS mount check disabled."
+fi
 
 # Set default file owner/group
 DR_OWNER=node
@@ -46,6 +60,10 @@ while getopts "d:g:ho:p" opt; do
       DR_PATH=${OPTARG}
       ;;
     g)
+      if [[ ! -z "${USING_OSX}" ]]; then
+        >&2 echo "ERROR: -g not supported on OS X"
+        exit 1
+      fi
       DR_GROUP=${OPTARG}
       ;;
     h)
@@ -53,6 +71,10 @@ while getopts "d:g:ho:p" opt; do
       exit 0
       ;;
     o)
+      if [[ ! -z "${USING_OSX}" ]]; then
+        >&2 echo "ERROR: -o not supported on OS X"
+        exit 1
+      fi
       DR_OWNER=${OPTARG}
       ;;
     p)
@@ -81,26 +103,29 @@ if [[ ! -d "$DR_PATH" ]]; then
   exit 1
 fi
 
-if [[ ! $(getent passwd "${DR_OWNER}") ]]; then
-  >&2 echo "ERROR: Target file owner ${DR_OWNER} does not exist"
-  exit 1
-fi
+# Check owner and group are valid for this system.
+# Do not perform this check on OS X systems, as that indictes a development machine where ownership should not be edited.
+if [[ -z "${USING_OSX}" ]]; then
+  if [[ ! $(getent passwd "${DR_OWNER}") ]]; then
+    >&2 echo "ERROR: Target file owner ${DR_OWNER} does not exist"
+    exit 1
+  fi
 
-if [[ ! $(getent group "${DR_GROUP}") ]]; then
-  >&2 echo "ERROR: Target file group ${DR_GROUP} does not exist"
-  exit 1
-fi
+  if [[ ! $(getent group "${DR_GROUP}") ]]; then
+    >&2 echo "ERROR: Target file group ${DR_GROUP} does not exist"
+    exit 1
+  fi
 
+  # Check if we are on an NFS share. If we are, stop. This generates a ton of I/O and should be
+  # done on the server.
+  df -P -T "${DR_PATH}" | tail -n +2 | awk '{print $2}' | grep -q nfs
 
-# Check if we are on an NFS share. If we are, stop. This generates a ton of I/O and should be
-# done on the server.
-df -P -T "${DR_PATH}" | tail -n +2 | awk '{print $2}' | grep -q nfs
-
-if [[ "$?" == 0 ]]; then
-  >&2 "ERROR: You are trying to run this on an NFS/GlusterFS client."
-  >&2 "       This script generates a lot of IO and will not be performant on networked file systems."
-  >&2 "       Please copy this script to the server and run there."
-  exit 1
+  if [[ "$?" == 0 ]]; then
+    >&2 "ERROR: You are trying to run this on an NFS/GlusterFS client."
+    >&2 "       This script generates a lot of IO and will not be performant on networked file systems."
+    >&2 "       Please copy this script to the server and run there."
+    exit 1
+  fi
 fi
 
 # Set IO to slowest "best effort" level
@@ -131,8 +156,17 @@ done
 
 # Removing old, empty directores, either because we moved files or they were already empty 
 >&2 echo "Step 3. Removing empty 2.1-style subdirectories."
-run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+if [[ -z "${USING_OSX}" ]]; then
+  run_command "sudo -n find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+else
+  # On OS X, omit sudo - files should be owned by the developer running the script.
+  run_command "find ${DR_PATH} -mindepth 1 -type d -regextype sed -regex .*/[0-9a-f]\{32\}\$ -empty -delete"
+fi
 
 # Fix ownership
 >&2 echo "Step 4. Setting file ownership on data files."
-run_command "sudo -n chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
+if [[ -z "${USING_OSX}" ]]; then
+  run_command "sudo -n chown ${DR_OWNER}:${DR_GROUP} -R ${DR_PATH}"
+else
+  >&2 echo "Skipping this step - you are on OS X."
+fi
