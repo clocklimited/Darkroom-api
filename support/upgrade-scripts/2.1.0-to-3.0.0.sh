@@ -104,7 +104,14 @@ if [[ "$?" == 0 ]]; then
 fi
 
 # Set IO to slowest "best effort" level
-run_command "ionice -c2 -n7 -p $$"
+if [[ -z "${PRETEND}" ]]; then
+  # We either need to provide PID or command. Since we run a lot of commands,
+  # this cannot be simulated in pretend mode and work if someone takes the output as a script.
+  run_command "ionice -c2 -n7 -p $$"
+else
+  >&2 echo "WARNING: In pretend mode, skipping call to ionice"
+  >&2 echo "         If you plan to run as a script, prefix your script invocation with: ionice -c2 -n7"
+fi
 
 >&2 echo "Step 1. Creating new subdirectories"
 for (( i = 0; i <= 4095; i++ )); do
