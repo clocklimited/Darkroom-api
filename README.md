@@ -1,4 +1,4 @@
-darkroom
+Darkroom
 ========
 
 An image manipulation service.
@@ -8,6 +8,9 @@ Authentication between services and client will be achieved by using Oauth. This
 # Installation
 ## Mac OS X 10.8
     # Install X11 from here: http://xquartz.macosforge.org/
+    git clone git@github.com:clocklimited/Darkroom-api.git
+    cd Darkroom-api
+    nave usemain 0.10.37
     brew install gm
     npm install
 
@@ -22,11 +25,55 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
-http://darkroom.io
+# Version 2.1.0
+Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
+
+# Version 3.0.0
+Changes the folder structure and naming of images when uploaded and cropped.
+
+With the previous convention of `data/<hash>/image` on **ext3** you have a maximum limitation of 32k images and crops within `data/`. This is not so much an issue on **ext4** but eventually performance will degrade.
+
+Version 3.0.0 changes the folder structure to `data/<3 char hash>/<hash>` meaning that `data/` will have a maximum of 4096 sub directories.
+
+By using the image hash for the name means that less sub directories need to be created which is an improvement gain on disk usage and memory.
+
+# Upgrading Darkroom on a Site
+## From a keyless version to 2.1.0
+
+1. Add a property for darkroomKey to your properties.js (or config.js)
+2. Add that property to admin-properties.js
+3. Update asset/lib/file-uploader.js `$el.fileupload(` to include an extra property in the options it is passed.
+
+        , beforeSend: function(xhr) {
+            xhr.setRequestHeader('x-darkroom-key', properties.darkroomKey);
+          }
+
+## From < 2.1.0 to 3.0.0
+1. follow the instructions on upgrading **from an older version to 2.1.0**
+2. follow the instructions on upgrading **from version 2.1.0 to 3.0.0**
+
+## From version 2.1.0 to 3.0.0
+1. Stop darkroom.
+2. Run the 2.1 to 3.0 migration script, `support/upgrade-scripts/2.1.0-to-3.0.0.sh`. Please check you have passed all necessary options.
+ 
+  This script will move files from `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
+
+   Please note: **This step is irreversible once run**
+ 
+   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script. 
+
+  This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
+
+ Running without options or with `-h` will show the usage message.
+
+3. Start darkroom.
+
+
+
 
 # API
 
-## Default response will be either an (301 to an image / JSON object pointing to a resource)
+Default response will be either an (301 to an image / JSON object pointing to a resource)
 
 ## POST /
 

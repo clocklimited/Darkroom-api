@@ -1,5 +1,5 @@
 var darkroom = require('darkroom')
-  , dp = require('darkroom-persistance')
+  , dp = require('darkroom-persistence')
   , StoreStream = dp.StoreStream
   , retrieve = dp.RetrieveStream
   , path = require('path')
@@ -30,7 +30,7 @@ module.exports = function (config) {
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
 
     var tempName = temp.path({ suffix: '.darkroom' })
-    req.params.path = path.join(config.paths.data(), req.params.data, 'image')
+    req.params.path = path.join(config.paths.data(), req.params.data.substring(0,3) , req.params.data)
 
     mime(req.params.path, function (err, type) {
       if (err) {

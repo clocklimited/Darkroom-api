@@ -3,6 +3,7 @@
   , async = require('async')
   , cpus = require('os').cpus()
   , createFileUpload = require('fileupload').createFileUpload
+  , createFileAdaptor = require('./lib/file-upload-adapter')
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')
@@ -11,7 +12,6 @@
 
 module.exports = function (config) {
   var endpoint = createEndpoints(config)
-    , upload = createFileUpload(config.paths.data())
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
     , log = bunyan.createLogger(
@@ -19,18 +19,20 @@ module.exports = function (config) {
       , level: process.env.LOG_LEVEL || 'debug'
       , stream: process.stdout
       , serializers: restify.bunyan.stdSerializers
-    })
-  , queue = async.queue(function (task, callback) {
-    task(function(error) {
-      callback(error)
-    })
-  }, concurrency)
-  , server = restify.createServer(
-    { version: config.version
-    , name: 'darkroom.io'
-    , log: config.log && log
-    }
-  )
+      })
+    , fileAdaptor = createFileAdaptor(config.paths.data(), config.log && log)
+    , upload = createFileUpload({ adapter: fileAdaptor })
+    , queue = async.queue(function (task, callback) {
+      task(function(error) {
+        callback(error)
+      })
+    }, concurrency)
+    , server = restify.createServer(
+      { version: config.version
+      , name: 'darkroom.io'
+      , log: config.log && log
+      }
+    )
   // server.pre(restify.pre.sanitizePath())
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
@@ -39,12 +41,13 @@ module.exports = function (config) {
   if (config.log) {
     log.info('--- VERBOSE ---')
     server.pre(function (req, res, next) {
-      req.log.info({ req: req.url }, 'start')
+      req.requestId = +Date.now() + Math.random()
+      req.log.info({ req: req.url, id: req.requestId }, 'start')
       return next()
     })
 
     server.on('after', function (req) {
-      req.log.info({ req: req.url }, 'end')
+      req.log.info({ req: req.url, id: req.requestId }, 'end')
     })
   }
 

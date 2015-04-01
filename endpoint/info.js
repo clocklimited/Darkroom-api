@@ -1,4 +1,4 @@
-var dp = require('darkroom-persistance')
+var dp = require('darkroom-persistence')
   , retrieve = dp.RetrieveStream
   , darkroom = require('darkroom')
   , path = require('path')
@@ -12,7 +12,7 @@ module.exports = function (config) {
       , tempName = temp.path({ suffix: '.darkroom' })
       , store = new StoreStream(tempName)
 
-    req.params.path = path.join(config.paths.data(), req.params.data, 'image')
+    req.params.path = path.join(config.paths.data(), req.params.data.substring(0,3), req.params.data)
 
     store.on('error', function (error) {
       req.log.error('StoreStream:', error.message)
