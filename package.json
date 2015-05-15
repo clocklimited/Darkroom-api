@@ -18,12 +18,12 @@
     "mkdirp": "^0.5.0",
     "mv": "^2.0.3",
     "pliers": "~0.1.6",
-    "restify": "^2.3.5",
+    "restify": "=2.3.5",
     "temp": "^0.8.1"
   },
   "devDependencies": {
     "gm": "^1.16.0",
-    "mocha": "^1.21.4",
+    "mocha": "^2.1.0",
     "rimraf": "^2.2.8",
     "should": "^4.0.4",
     "supertest": "~0.5.1"
