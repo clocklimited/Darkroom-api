@@ -1,19 +1,18 @@
-var createFileUpload = require('fileupload').createFileUpload
-  , mime = require('mime-magic')
-  , restify = require('restify')
+var mime = require('mime-magic')
+  , fs = require('fs')
   , path = require('path')
+  , restify = require('restify')
 
 module.exports = function (config) {
-  var fileupload = createFileUpload(config.paths.data())
   return function (req, res, next) {
 
     res.set('X-Application-Method', 'Original Image')
-    var file = req.params.data + '/image'
-    fileupload.get(file, function(err, data) {
-      if (err) {
-        return next(new restify.ResourceNotFoundError('Not Found'))
-      }
-      mime(path.join(config.paths.data(), file), function (err, type) {
+    var imageHash = req.params.data
+      , filePath = path.join(config.paths.data(), imageHash.substring(0, 3), imageHash)
+
+    fs.readFile(filePath, function (error, data) {
+      if (error) return next(new restify.ResourceNotFoundError('Not Found'))
+      mime(filePath, function (err, type) {
         if (err) return next(err)
         res.set('Content-Type', type)
         res.write(data)
@@ -23,3 +22,4 @@ module.exports = function (config) {
     })
   }
 }
+

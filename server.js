@@ -11,6 +11,8 @@
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
 
 module.exports = function (config) {
+  /* jshint maxstatements: 26 */
+
   var endpoint = createEndpoints(config)
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
@@ -66,7 +68,8 @@ module.exports = function (config) {
     { headers: [ 'X-Requested-With' ] }
   ))
 
-  function checkRoute(req, res, next) {
+  function checkRoute (req, res, next) {
+    /* jshint maxcomplexity: 7 */
     if (req.method !== 'GET')
       return next()
 
