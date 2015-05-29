@@ -6,6 +6,7 @@ module.exports = function () {
         , 'port': 17999
         , 'url': 'http://127.0.0.1:17999/'
         , 'maxage': 0
+        , 'pageNotFoundMaxage': 0
         }
       , 'log': false
       , 'paths':

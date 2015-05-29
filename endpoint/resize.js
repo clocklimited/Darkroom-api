@@ -34,9 +34,13 @@ module.exports = function (config) {
 
     mime(req.params.path, function (err, type) {
       if (err) {
-        req.log.warn(new restify.ResourceNotFoundError(req.params.path + ' not found'))
-        if (req.params.data === 'http')
+        //Something has gone wrong, set max age to only a few minutes to prevent DDOS on missing images.
+        res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
+        if (config.log) req.log.warn(new restify.ResourceNotFoundError(req.params.path + ' not found'))
+
+        if (req.params.data === 'http') {
           return next(new restify.BadDigestError('Cannot use a remote resource'))
+        }
         return next(new restify.ResourceNotFoundError('Image does not exist'))
       }
 
