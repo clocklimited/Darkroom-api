@@ -34,7 +34,7 @@ describe('Watermark', function() {
   })
 
   it('should not require a opacity', function(done) {
-    var r = request(darkroom)
+    request(darkroom)
       .post(path)
       .send(
         { baseSrc: imgSrcId
@@ -44,15 +44,11 @@ describe('Watermark', function() {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
-      .end(function (error) {
-        if (error) return done(error)
-        r.app.close()
-        done()
-      })
+      .end(done)
   })
 
   it('should return a new image src id for a watermarked image', function(done) {
-    var r = request(darkroom)
+    request(darkroom)
       .post(path)
       .send(
         { baseSrc: imgSrcId
@@ -69,7 +65,6 @@ describe('Watermark', function() {
         res.body.should.be.instanceOf(Object)
         res.body.should.have.property('compositeSrc')
         res.body.compositeSrc.should.equal('06f3eeff749dbe47fdd2ebae5d2adf23')
-        r.app.close()
         done()
       })
   })
