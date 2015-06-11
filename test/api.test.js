@@ -1,9 +1,12 @@
 var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
+  , superAgent = require('superagent')
   , _ = require('lodash')
   , mkdirp = require('mkdirp')
   , rimraf = require('rimraf')
+  , fs = require('fs')
+  , assert = require('assert')
 
 describe('API', function() {
   /**
@@ -59,6 +62,37 @@ describe('API', function() {
           res.body.should.have.property('src')
           done()
         })
+    })
+
+    it('should upload a single image via PUT', function (done) {
+      var originalEnd
+        , req = request(darkroom).put('/')
+          .set('x-darkroom-key', 'key')
+          .set('Accept', 'application/json')
+
+      originalEnd = req.end
+      req.end = function() {}
+
+      var stream = fs.createReadStream(__dirname + '/fixtures/jpeg.jpeg')
+
+      stream.pipe(req)
+
+      stream.on('end', function() {
+        originalEnd.call(req, function(err, req) {
+          assert.equal(req.statusCode, 200)
+          assert.deepEqual(Object.keys(req.body), [ 'src', 'id' ])
+          done()
+        })
+      })
+
+    })
+
+    it('should fail upload from empty PUT', function (done) {
+      request(darkroom).put('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .expect(400)
+        .end(done)
     })
 
     it('should upload multiple images', function (done) {

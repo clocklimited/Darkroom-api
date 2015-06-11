@@ -9,6 +9,10 @@
   , createAuthorised = require('./lib/authorised')
   , createServeCached = require('./lib/serve-cached')
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
+  , fs = require('fs')
+  , temp = require('temp')
+
+temp.track()
 
 module.exports = function (config) {
   /* jshint maxstatements: 26 */
@@ -38,7 +42,6 @@ module.exports = function (config) {
   // server.pre(restify.pre.sanitizePath())
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
-  server.use(restify.bodyParser())
 
   if (config.log) {
     log.info('--- VERBOSE ---')
@@ -143,18 +146,47 @@ module.exports = function (config) {
 
   server.get(/^\/(.*)$/, endpoint.original)
 
-  server.post('/'
+  server.post('/', restify.bodyParser()
     , createKeyAuth(config)
     , endpoint.utils.dedupeName
     , upload.middleware
     , endpoint.upload
   )
 
-  server.post('/crop', function (req, res, next) {
+  server.put('/'
+    , createKeyAuth(config)
+    , endpoint.utils.dedupeName
+    , function(req, res, next) {
+
+        var stream = temp.createWriteStream()
+
+        req.on('end', function() {
+          fileAdaptor.put(stream.path, function(err, file) {
+
+            if (err) {
+              if (err.name === 'SizeError') {
+                next(new restify.BadDigestError(err.message))
+              } else {
+                return next(err)
+              }
+            }
+            temp.cleanup()
+            req.body = { file: [ file ] }
+            next()
+          })
+        })
+
+        req.on('error', next)
+        req.pipe(stream)
+      }
+    , endpoint.upload
+  )
+
+  server.post('/crop', restify.bodyParser(), function (req, res, next) {
     queue.push(endpoint.crop.bind(this, req, res), next)
   })
 
-  server.post('/watermark', function (req, res, next) {
+  server.post('/watermark', restify.bodyParser(), function (req, res, next) {
     queue.push(endpoint.watermark.bind(this, req, res), next)
   })
 
