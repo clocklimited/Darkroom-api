@@ -6,6 +6,11 @@ var mime = require('mime-magic')
 module.exports = function (config) {
   return function (req, res, next) {
 
+    if (!req.params.data) {
+      res.end()
+      return next()
+    }
+
     res.set('X-Application-Method', 'Original Image')
     var imageHash = req.params.data
       , filePath = path.join(config.paths.data(), imageHash.substring(0, 3), imageHash)
@@ -22,4 +27,3 @@ module.exports = function (config) {
     })
   }
 }
-
