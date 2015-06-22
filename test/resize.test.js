@@ -38,11 +38,13 @@ describe('Resize', function () {
   it('should return an image if resize dimension is zero for /0/:url', function (done) {
     var uri = '/100/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+      , now = new Date()
     request(darkroom)
       .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
+        ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
         res.statusCode.should.equal(200)
         done()
       })
@@ -51,12 +53,14 @@ describe('Resize', function () {
   it('should resize /100/50/:url to fit', function (done) {
     var uri = '/100/50/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+      , now = new Date()
     request(darkroom)
       .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
+        ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
         gm(config.paths.cache() + url.replace(':', '')).size(function (err, value) {
           value.width.should.equal(67)
           value.height.should.equal(50)
@@ -68,12 +72,14 @@ describe('Resize', function () {
   it('should accept mode /100/50/fit/:url ', function (done) {
     var uri = '/100/50/fit/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+      , now = new Date()
     request(darkroom)
       .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
+        ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
         gm(config.paths.cache() + url.replace(':', '')).size(function (err, value) {
           value.width.should.equal(67)
           value.height.should.equal(50)
@@ -85,12 +91,14 @@ describe('Resize', function () {
   it('should accept mode /100/50/cover/:url ', function (done) {
     var uri = '/100/50/cover/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+      , now = new Date()
     request(darkroom)
       .get(url)
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
+        ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
         gm(config.paths.cache() + url.replace(':', '')).size(function (err, value) {
           value.width.should.equal(100)
           value.height.should.equal(50)
@@ -102,6 +110,7 @@ describe('Resize', function () {
   it('should resize to a given size with only width /160/:url', function (done) {
     var uri = '/160/' + imgSrcId
       , url = uri + ':' + hashHelper(uri)
+      , now = new Date()
 
     request(darkroom)
       .get(url)
@@ -109,6 +118,7 @@ describe('Resize', function () {
       .end(function (error, res) {
         if (error) return done(error)
         res.statusCode.should.equal(200)
+        ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
         gm(config.paths.cache() + url.replace(':', '')).size(function (err, value) {
           value.width.should.equal(160)
           done()
@@ -120,6 +130,7 @@ describe('Resize', function () {
     it('should return a high max age header of successful requests', function (done) {
       var uri = '/100/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
+        , now = new Date()
 
       config.http.maxage = 3600
       darkroom = require('../server')(config)
@@ -129,6 +140,7 @@ describe('Resize', function () {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
+          ;(100).should.be.above(new Date(res.headers['last-modified']) - now)
           res.headers['cache-control'].should.equal('max-age=' + config.http.maxage)
           done()
         })
