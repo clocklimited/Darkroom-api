@@ -7,8 +7,7 @@ module.exports = function (config) {
   return function (req, res, next) {
 
     if (!req.params.data) {
-      res.end()
-      return next()
+      return next(new restify.ResourceNotFoundError('Not Found'))
     }
 
     res.set('X-Application-Method', 'Original Image')

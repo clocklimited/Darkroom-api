@@ -1,7 +1,6 @@
 var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
-  , superAgent = require('superagent')
   , _ = require('lodash')
   , mkdirp = require('mkdirp')
   , rimraf = require('rimraf')
@@ -35,12 +34,30 @@ describe('API', function() {
   })
 
   describe('#get', function() {
-    it('throw error for invalid token', function (done) {
+    it('should 404 for invalid token', function (done) {
       request(darkroom)
         .get('/info/WANG')
         .set('x-darkroom-key', 'key')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          res.statusCode.should.equal(404)
+          done()
+        })
+    })
+
+    it('should 404 for site root', function (done) {
+      request(darkroom)
+        .get('/')
+        .end(function (err, res) {
+          res.statusCode.should.equal(404)
+          done()
+        })
+    })
+
+    it('should 404 for non API endpoints', function (done) {
+      request(darkroom)
+        .get('/favicon.ico')
         .end(function (err, res) {
           res.statusCode.should.equal(404)
           done()
