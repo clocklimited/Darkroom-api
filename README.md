@@ -25,6 +25,31 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
+# Development machine setup
+You need to create a `locations.js` file using `locations.js.tpl` as a template.
+Replace the placeholders with sensible values e.g.:
+
+```
+module.exports =
+{ data: './data'
+, cache: './cache'
+, salt: 'salt'
+, key: 'key'
+}
+```
+
+Make sure you have those directories created: `mkdir ./{data,cache}`
+Start the application: `npm start | bunyan`
+
+Update the properties in the application you're working on to talk to your local darkroom:
+
+```
+, darkroomApiUrl: 'http://0.0.0.0:17999'
+, adminDarkroomApiUrl: 'http://0.0.0.0:17999'
+, darkroomSalt: 'salt'
+, darkroomKey: 'key'
+```
+
 # Version 2.1.0
 Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
 
