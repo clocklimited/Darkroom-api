@@ -9,7 +9,6 @@
   , createAuthorised = require('./lib/authorised')
   , createServeCached = require('./lib/serve-cached')
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
-  , fs = require('fs')
   , temp = require('temp')
 
 temp.track()
