@@ -6,18 +6,28 @@ var darkroom = require('darkroom')
   , restify = require('restify')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
-  , dataHasher = require('../lib/data-hasher')
   , mime = require('mime-magic')
   , fs = require('fs')
+  , temp = require('temp')
+  , mv = require('mv')
+  , compact = require('lodash.compact')
 
-module.exports = function (config) {
-  return function (req, res, next) {
+module.exports = circleEndpoint
 
-    var baseSrc = path.join(config.paths.data(), req.params.data.substring(0,3), req.params.data)
-      , streamOptions =
-          { url: req.params.data
-          , path: baseSrc
-          }
+circleEndpoint.serveCached = serveCached
+
+function circleEndpoint(config) {
+
+  return processCircle
+
+  function processCircle(req, res, next) {
+
+    if (req.params.width && req.params.height && !req.resized) {
+      return resizeImage(req, res, processCircle.bind(null, req, res, next))
+    }
+
+    var baseSrc = getBaseSrc()
+      , streamOptions = { path: baseSrc }
       , circleOptions =
         { x0: req.params.x0
         , y0: req.params.y0
@@ -29,14 +39,12 @@ module.exports = function (config) {
         }
       , circle = new darkroom.Circle(circleOptions)
       , circleFolderLocation = filePath(req.params, config.paths.data())
-      , circleFileLocation = path.join(circleFolderLocation, dataHasher(req.params))
+      , tempName = temp.path({ suffix: '.darkroom' })
 
-    res.on('close', function () {
-      next()
-    })
+    res.on('close', next)
 
     mkdirp(circleFolderLocation, function() {
-      var store = new StoreStream(circleFileLocation)
+      var store = new StoreStream(tempName)
 
       store.once('error', function (error) {
         return showError(req, error, next)
@@ -46,30 +54,108 @@ module.exports = function (config) {
         return showError(req, error, next)
       })
 
-      store.once('end', function () {
-        fs.readFile(circleFileLocation, function (error, data) {
-          if (error) return next(new restify.ResourceNotFoundError('Not Found'))
-          mime(circleFileLocation, function (err, type) {
-            if (err) return next(err)
-            res.set('Content-Type', type)
-            res.write(data)
-            res.end()
-            return next()
-          })
+      var closed
+
+      res.on('close', function () {
+        closed = true
+        return next(new Error('Response was closed before end.'))
+      })
+
+      res.on('finish', function () {
+        if (closed)
+          return false
+        mv(tempName, req.cachePath, function (error) {
+          if (error) req.log.warn(error, 'circle.cacheStore')
+          return next()
         })
       })
 
       retrieve(streamOptions, { isFile: true })
-        .on('error', function (err) {
-          return next(err)
-        })
+        .on('error', next)
         .pipe(circle)
         .pipe(store)
+        .pipe(res)
     })
+
+    function getBaseSrc() {
+      return req.resized || path.join(config.paths.data(), req.params.data.substring(0,3), req.params.data)
+    }
   }
 
   function showError(req, error, callback) {
     req.log.error(error)
     return callback(new restify.BadDigestError(error.message))
+  }
+
+  function resizeImage(req, res, cb) {
+    var re = new darkroom.Resize()
+      , tempName = temp.path({ suffix: '.darkroom' })
+      , store = new StoreStream(tempName)
+
+    store.on('error', function (error) {
+      req.log.warn('StoreStream:', error.message)
+      return cb(error)
+    })
+
+    re.on('error', function (error) {
+      req.log.error('Resize', error)
+      cb(error)
+    })
+
+    var resizedPath = path.join(config.paths.data(), req.params.data.substring(0,3) , req.params.data)
+
+    retrieve({ path: resizedPath }, { isFile: true })
+      .pipe(re)
+      .pipe(store
+        , { width: Number(req.params.width)
+          , height: Number(req.params.height)
+          , quality: config.quality
+          , mode: req.params.mode
+          })
+
+    store.once('finish', function () {
+      req.resized = tempName
+      return cb()
+    })
+  }
+
+}
+
+function serveCached(config) {
+
+  return function (req, res, next) {
+    var parts =
+      [ config.paths.cache()
+      , req.params.action
+      , req.params.data + req.params.hash
+      , req.params.height
+      , req.params.width
+      , req.params.colour
+      ]
+
+    parts = compact(parts)
+
+    req.cachePath = path.join.apply(path, parts)
+
+    // Create the directory with the last remaining parameter
+    // removed from the end
+    mkdirp(path.join.apply(path, parts.slice(0, parts.length - 1)), function() {
+
+      fs.stat(req.cachePath, function (error, stats) {
+        mime(req.cachePath, function (err, type) {
+          if (err) return next()
+
+          if (!error && stats.isFile()) {
+            res.set('Cache-Control', 'max-age=' + config.http.maxage)
+            res.set('Last-Modified', new Date(stats.mtime).toUTCString())
+            res.set('Content-Type', type)
+            res.set('D-Cache', 'HIT')
+            return fs.createReadStream(req.cachePath).pipe(res)
+          } else {
+            return next()
+          }
+        })
+      })
+    })
   }
 }

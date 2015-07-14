@@ -112,7 +112,7 @@ module.exports = function (config) {
     return next()
   })
 
-  server.get(/^\/+circle\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+  server.get(/^\/+circle\/+(.*)$/, checkRoute, endpoint.circleCache, function (req, res, next) {
     queue.unshift(endpoint.circle.bind(this, req, res), next)
   })
 

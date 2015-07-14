@@ -8,6 +8,7 @@ module.exports = function (config) {
   , upload: require('./upload')
   , utils: require('./utils')
   , circle: require('./circle')(config)
+  , circleCache: require('./circle').serveCached(config)
   }
 
 }

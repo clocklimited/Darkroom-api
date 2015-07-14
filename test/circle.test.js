@@ -5,6 +5,7 @@ var config = require('con.figure')(require('./config')())
   , baseUrl = '/circle/'
   , mkdirp = require('mkdirp')
   , rimraf = require('rimraf')
+  , gm = require('gm')
   , assert = require('assert-diff')
   , hashHelper = require('./hash-helper')
 
@@ -63,5 +64,35 @@ describe('Circle', function() {
       .get(uri + ':' + hashHelper(uri) + '?' + qs)
       .expect(200)
       .end(done)
+  })
+
+  function binaryParser(res, cb) {
+    res.setEncoding('binary')
+    res.data = ''
+    res.on('data', function (chunk) {
+      res.data += chunk
+    })
+    res.on('end', function () {
+      cb(null, new Buffer(res.data, 'binary'))
+    })
+  }
+
+  it('allow you to resize an image', function(done) {
+    var uri = baseUrl + imgSrcId
+      , qs = querystring.stringify({ colour: '#9966FF', height: '225', width: '300' })
+
+    request(darkroom)
+      .get(uri + ':' + hashHelper(uri) + '?' + qs)
+      .expect(200)
+      .parse(binaryParser)
+      .end(function (err, res) {
+        if (err) return done(err)
+        gm(new Buffer(res.body)).size(function (err, size) {
+          if (err) return done(err)
+
+          assert.deepEqual(size, { width: 300, height: 225 })
+          done()
+        })
+      })
   })
 })
