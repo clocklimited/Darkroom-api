@@ -189,6 +189,10 @@ module.exports = function (config) {
     queue.push(endpoint.watermark.bind(this, req, res), next)
   })
 
+  server.post('/circle', restify.bodyParser(), function (req, res, next) {
+    queue.push(endpoint.circle.bind(this, req, res), next)
+  })
+
   if (config.log) {
 
     server.on('uncaughtException', function (req, res, route, error) {
