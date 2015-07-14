@@ -7,21 +7,29 @@ var darkroom = require('darkroom')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
   , dataHasher = require('../lib/data-hasher')
+  , mime = require('mime-magic')
+  , fs = require('fs')
 
 module.exports = function (config) {
   return function (req, res, next) {
-    req.body = JSON.parse(req.body)
 
-    var baseSrc = path.join(config.paths.data(), req.body.src.substring(0,3), req.body.src)
+    var baseSrc = path.join(config.paths.data(), req.params.data.substring(0,3), req.params.data)
       , streamOptions =
-          { url: req.body.src
+          { url: req.params.data
           , path: baseSrc
           }
-      , circleOptions = { x0: req.body.x0, y0: req.body.y0, x1: req.body.x1, y1: req.body.y1, colour: req.body.colour }
+      , circleOptions =
+        { x0: req.params.x0
+        , y0: req.params.y0
+        , x1: req.params.x1
+        , y1: req.params.y1
+        , w: req.params.w
+        , h: req.params.h
+        , colour: req.params.colour
+        }
       , circle = new darkroom.Circle(circleOptions)
-
-      , circleFolderLocation = filePath(req.body, config.paths.data())
-      , circleFileLocation = path.join(circleFolderLocation, dataHasher(req.body))
+      , circleFolderLocation = filePath(req.params, config.paths.data())
+      , circleFileLocation = path.join(circleFolderLocation, dataHasher(req.params))
 
     res.on('close', function () {
       next()
@@ -39,7 +47,16 @@ module.exports = function (config) {
       })
 
       store.once('end', function () {
-        res.json(200, { circleSrc: path.basename(circleFileLocation) })
+        fs.readFile(circleFileLocation, function (error, data) {
+          if (error) return next(new restify.ResourceNotFoundError('Not Found'))
+          mime(circleFileLocation, function (err, type) {
+            if (err) return next(err)
+            res.set('Content-Type', type)
+            res.write(data)
+            res.end()
+            return next()
+          })
+        })
       })
 
       retrieve(streamOptions, { isFile: true })

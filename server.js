@@ -112,6 +112,10 @@ module.exports = function (config) {
     return next()
   })
 
+  server.get(/^\/+circle\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
+    queue.unshift(endpoint.circle.bind(this, req, res), next)
+  })
+
   server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
     queue.unshift(endpoint.info.bind(this, req, res), next)
   })
@@ -187,10 +191,6 @@ module.exports = function (config) {
 
   server.post('/watermark', restify.bodyParser(), function (req, res, next) {
     queue.push(endpoint.watermark.bind(this, req, res), next)
-  })
-
-  server.post('/circle', restify.bodyParser(), function (req, res, next) {
-    queue.push(endpoint.circle.bind(this, req, res), next)
   })
 
   if (config.log) {

@@ -1,10 +1,12 @@
 var config = require('con.figure')(require('./config')())
   , darkroom = require('../server')(config)
   , request = require('supertest')
-  , path = '/circle'
+  , querystring = require('querystring')
+  , baseUrl = '/circle/'
   , mkdirp = require('mkdirp')
   , rimraf = require('rimraf')
   , assert = require('assert-diff')
+  , hashHelper = require('./hash-helper')
 
 describe('Circle', function() {
   var imgSrcId = null
@@ -34,51 +36,32 @@ describe('Circle', function() {
       })
   })
 
-  it('should return a new image src id for a circular cropped image', function(done) {
+  it('should return a circular cropped image', function(done) {
+    var uri = baseUrl + imgSrcId
+
     request(darkroom)
-      .post(path)
-      .send({ src: imgSrcId })
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
+      .get(uri + ':' + hashHelper(uri))
       .expect(200)
-      .end(function (error, res) {
-        if (error) return done(error)
-
-        assert.deepEqual(res.body, { circleSrc: '68f70128d8146528c6c0488e9229c1ce' })
-
-        done()
-      })
+      .end(done)
   })
 
   it('allow you to pass in circular co-ordinates', function(done) {
+    var uri = baseUrl + imgSrcId
+      , qs = querystring.stringify({ src: imgSrcId, x0: '100', y0: '100', x1: '0', y1: '0', h: '100', w: '100' })
+
     request(darkroom)
-      .post(path)
-      .send({ src: imgSrcId, x0: '100', y0: '100', x1: '0', y1: '0' })
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
+      .get(uri + ':' + hashHelper(uri) + '?' + qs)
       .expect(200)
-      .end(function (error, res) {
-        if (error) return done(error)
-
-        assert.deepEqual(res.body, { circleSrc: '1c2ecaee76ddbf169f76f3e29ca89936' })
-
-        done()
-      })
+      .end(done)
   })
 
   it('allow you to pass in a background colour', function(done) {
+    var uri = baseUrl + imgSrcId
+      , qs = querystring.stringify({ colour: '#9966FF' })
+
     request(darkroom)
-      .post(path)
-      .send({ src: imgSrcId, colour: '#9966FF' })
-      .set('Accept', 'application/json')
-      .expect('Content-Type', /json/)
+      .get(uri + ':' + hashHelper(uri) + '?' + qs)
       .expect(200)
-      .end(function (error, res) {
-        if (error) return done(error)
-
-        assert.deepEqual(res.body, { circleSrc: '1c2ecaee76ddbf169f76f3e29ca89936' })
-
-        done()
-      })
+      .end(done)
   })
 })
