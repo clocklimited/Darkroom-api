@@ -45,6 +45,7 @@ module.exports = function (config) {
       }
 
       res.set('Content-Type', type)
+      res.set('Last-Modified', new Date().toUTCString())
 
       var re = new darkroom.Resize()
         , store = new StoreStream(tempName)
