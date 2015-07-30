@@ -10,7 +10,7 @@ Authentication between services and client will be achieved by using Oauth. This
     # Install X11 from here: http://xquartz.macosforge.org/
     git clone git@github.com:clocklimited/Darkroom-api.git
     cd Darkroom-api
-    nave usemain 0.10.37
+    nave usemain 0.10.40
     brew install gm
     npm install
 
@@ -25,8 +25,13 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
-# Version 2.1.0
-Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
+# Version 4.0.0
+
+As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.
+
+It will still mostly work with GraphicsMagick 1.3.18+ but the resize({ mode: 'fit '}) will not work due to this [#36](https://github.com/clocklimited/Darkroom-api/issues/36)
+
+v4 will not work well with GraphicsMagick pre 1.3.18
 
 # Version 3.0.0
 Changes the folder structure and naming of images when uploaded and cropped.
@@ -68,8 +73,8 @@ By using the image hash for the name means that less sub directories need to be 
 
 3. Start darkroom.
 
-
-
+# Version 2.1.0
+Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
 
 # API
 
