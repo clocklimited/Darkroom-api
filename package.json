@@ -9,7 +9,7 @@
     "bunyan": "^1.4.0",
     "clustered": "^0.2.0",
     "con.figure": "0.0.0",
-    "darkroom": "^3.0.1",
+    "darkroom": "^4.0.0",
     "darkroom-persistence": "^1.0.2",
     "fileupload": "^0.3.0",
     "lodash": "^3.9.3",
@@ -17,8 +17,8 @@
     "mime-magic": "^5.14.0",
     "mkdirp": "^0.5.1",
     "mv": "^2.0.3",
-    "restify": "=2.3.5",
     "pliers": "^1.2.1",
+    "restify": "=2.3.5",
     "temp": "^0.8.3"
   },
   "devDependencies": {
