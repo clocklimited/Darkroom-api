@@ -14,7 +14,7 @@ var restify = require('restify')
 temp.track()
 
 module.exports = function (config) {
-  /* jshint maxstatements: 26 */
+  /* jshint maxstatements: 27 */
 
   var endpoint = createEndpoints(config)
     , authorised = createAuthorised(config)

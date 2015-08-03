@@ -25,13 +25,20 @@
   "devDependencies": {
     "assert-diff": "^1.0.1",
     "gm": "^1.18.1",
+    "istanbul": "^0.3.17",
+    "jscs": "^1.8.1",
+    "jshint": "^2.8.0",
     "mocha": "^2.2.5",
     "rimraf": "^2.4.0",
     "should": "^6.0.3",
     "supertest": "^1.0.1"
   },
   "scripts": {
-    "test": "mocha -r should",
+    "lint": "jshint .",
+    "checkStyle": "jscs .",
+    "pretest": "npm run lint && npm run checkStyle",
+    "test": "istanbul cover _mocha -- -r should",
+    "posttest": "istanbul check-coverage --statements 70 --branches 60 --functions 70 --lines 70 && rm -rf coverage",
     "start": "node app"
   },
   "author": "Tom Gallacher",
