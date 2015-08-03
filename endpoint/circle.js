@@ -131,6 +131,10 @@ function serveCached(config) {
       , req.params.height
       , req.params.width
       , req.params.colour
+      , req.params.x0
+      , req.params.y0
+      , req.params.x1
+      , req.params.y1
       ]
 
     parts = compact(parts)
