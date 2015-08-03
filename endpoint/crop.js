@@ -79,6 +79,7 @@ module.exports = function (config) {
           .pipe(crop)
           .pipe(store
             , { crop: data
+              , gravity: req.params.gravity
               }
           )
       })

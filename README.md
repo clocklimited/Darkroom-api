@@ -3,12 +3,14 @@ Darkroom
 
 An image manipulation service.
 
+Authentication between services and client will be achieved by using Oauth. This will allow each request to be tied to a specific user account allowing per client granularity.
+
 # Installation
 ## Mac OS X 10.8
     # Install X11 from here: http://xquartz.macosforge.org/
     git clone git@github.com:clocklimited/Darkroom-api.git
     cd Darkroom-api
-    nave usemain 0.10.37
+    nave usemain 0.10.40
     brew install gm
     npm install
 
@@ -48,8 +50,13 @@ Update the properties in the application you're working on to talk to your local
 , darkroomKey: 'key'
 ```
 
-# Version 2.1.0
-Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
+# Version 4.0.0
+
+As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.
+
+It will still mostly work with GraphicsMagick 1.3.18+ but the resize({ mode: 'fit '}) will not work due to this [#36](https://github.com/clocklimited/Darkroom-api/issues/36)
+
+v4 will not work well with GraphicsMagick pre 1.3.18
 
 # Version 3.0.0
 Changes the folder structure and naming of images when uploaded and cropped.
@@ -78,12 +85,12 @@ By using the image hash for the name means that less sub directories need to be 
 ## From version 2.1.0 to 3.0.0
 1. Stop darkroom.
 2. Run the 2.1 to 3.0 migration script, `support/upgrade-scripts/2.1.0-to-3.0.0.sh`. Please check you have passed all necessary options.
- 
+
   This script will move files from `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
 
    Please note: **This step is irreversible once run**
- 
-   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script. 
+
+   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script.
 
   This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
 
@@ -91,8 +98,8 @@ By using the image hash for the name means that less sub directories need to be 
 
 3. Start darkroom.
 
-
-
+# Version 2.1.0
+Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
 
 # API
 

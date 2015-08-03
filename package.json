@@ -1,7 +1,7 @@
 {
   "name": "darkroom-api",
   "private": true,
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "dependencies": {
@@ -9,7 +9,7 @@
     "bunyan": "^1.4.0",
     "clustered": "^0.2.0",
     "con.figure": "0.0.0",
-    "darkroom": "^3.0.1",
+    "darkroom": "^4.0.0",
     "darkroom-persistence": "^1.0.2",
     "fileupload": "^0.3.0",
     "lodash": "^3.9.3",
