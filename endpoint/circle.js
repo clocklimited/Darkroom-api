@@ -33,8 +33,6 @@ function circleEndpoint(config) {
         , y0: req.params.y0
         , x1: req.params.x1
         , y1: req.params.y1
-        , w: req.params.w
-        , h: req.params.h
         , colour: req.params.colour
         }
       , circle = new darkroom.Circle(circleOptions)
@@ -138,6 +136,15 @@ function serveCached(config) {
       ]
 
     parts = compact(parts)
+
+    // If there are no additional actions happening apart
+    // from a circular image being made onto an original
+    // image, then I add an additional path onto the end.
+    //
+    // Otherwise the file becomes data + hash, and then
+    // subsequent actions attempt to create a folder of
+    // data + hash and it errors
+    if (parts.length === 3) parts.push('original')
 
     req.cachePath = path.join.apply(path, parts)
 
