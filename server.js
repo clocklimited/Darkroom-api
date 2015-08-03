@@ -1,4 +1,4 @@
-  var restify = require('restify')
+var restify = require('restify')
   , bunyan = require('bunyan')
   , async = require('async')
   , cpus = require('os').cpus()
