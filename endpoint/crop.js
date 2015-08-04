@@ -34,7 +34,7 @@ module.exports = function (config) {
     // Currently resize images only deals with pngs
     // res.set('Content-Type', 'image/png')
 
-    var cropCount = 1
+      , cropCount = 1
 
     async.eachSeries(req.params.crops, function (data, callback) {
       data.data = req.params.data

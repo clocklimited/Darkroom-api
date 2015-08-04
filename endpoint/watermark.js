@@ -44,9 +44,7 @@ module.exports = function (config) {
       })
 
       retrieve(streamOptions, { isFile: true })
-        .on('error', function () {
-          console.log(111, arguments)
-        })
+        .on('error', next)
         .pipe(watermark)
         .pipe(store)
     })
