@@ -25,6 +25,31 @@ Authentication between services and client will be achieved by using Oauth. This
     export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
     export LD_LIBRARY_PATH='/usr/local/lib':$LD_LIBRARY_PATH
 
+# Development machine setup
+You need to create a `locations.js` file using `locations.js.tpl` as a template.
+Replace the placeholders with sensible values e.g.:
+
+```
+module.exports =
+{ data: './data'
+, cache: './cache'
+, salt: 'salt'
+, key: 'key'
+}
+```
+
+Make sure you have those directories created: `mkdir ./{data,cache}`
+Start the application: `npm start | bunyan`
+
+Update the properties in the application you're working on to talk to your local darkroom:
+
+```
+, darkroomApiUrl: 'http://0.0.0.0:17999'
+, adminDarkroomApiUrl: 'http://0.0.0.0:17999'
+, darkroomSalt: 'salt'
+, darkroomKey: 'key'
+```
+
 # Version 4.0.0
 
 As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.
@@ -60,12 +85,12 @@ By using the image hash for the name means that less sub directories need to be 
 ## From version 2.1.0 to 3.0.0
 1. Stop darkroom.
 2. Run the 2.1 to 3.0 migration script, `support/upgrade-scripts/2.1.0-to-3.0.0.sh`. Please check you have passed all necessary options.
- 
+
   This script will move files from `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
 
    Please note: **This step is irreversible once run**
- 
-   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script. 
+
+   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script.
 
   This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
 

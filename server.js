@@ -1,4 +1,4 @@
-  var restify = require('restify')
+var restify = require('restify')
   , bunyan = require('bunyan')
   , async = require('async')
   , cpus = require('os').cpus()
@@ -9,13 +9,12 @@
   , createAuthorised = require('./lib/authorised')
   , createServeCached = require('./lib/serve-cached')
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
-  , fs = require('fs')
   , temp = require('temp')
 
 temp.track()
 
 module.exports = function (config) {
-  /* jshint maxstatements: 26 */
+  /* jshint maxstatements: 27 */
 
   var endpoint = createEndpoints(config)
     , authorised = createAuthorised(config)
@@ -111,6 +110,10 @@ module.exports = function (config) {
     res.set('Access-Control-Max-Age', '3600')
     res.send(200)
     return next()
+  })
+
+  server.get(/^\/+circle\/+(.*)$/, checkRoute, endpoint.circleCache, function (req, res, next) {
+    queue.unshift(endpoint.circle.bind(this, req, res), next)
   })
 
   server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
