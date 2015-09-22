@@ -63,7 +63,11 @@ function circleEndpoint(config) {
         if (closed)
           return false
         mv(tempName, req.cachePath, function (error) {
-          if (error) req.log.warn(error, 'circle.cacheStore')
+          if (error) {
+            req.log.error(error, 'circle.cacheStore')
+            return next(error)
+          }
+
           return next()
         })
       })

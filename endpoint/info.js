@@ -49,7 +49,11 @@ module.exports = function (config) {
       if (closed || errorOccurred)
         return false
       mv(tempName, req.cachePath, function(error) {
-        if (error) req.log.warn(error, 'info.cacheStore')
+        if (error) {
+          req.log.error(error, 'info.cacheStore')
+          return next(error)
+        }
+
         return next()
       })
     })
