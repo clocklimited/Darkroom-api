@@ -47,7 +47,7 @@ describe('Circle', function() {
   })
 
   it('allow you to pass in circular co-ordinates', function(done) {
-    var qs = querystring.stringify({ x0: '100', y0: '100', x1: '0', y1: '0', h: '100', w: '100' })
+    var qs = querystring.stringify({ x0: '100', y0: '100', x1: '0', y1: '0', height: '100', width: '100' })
       , uri = baseUrl + imgSrcId
 
     request(darkroom)
