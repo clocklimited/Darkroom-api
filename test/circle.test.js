@@ -47,21 +47,21 @@ describe('Circle', function() {
   })
 
   it('allow you to pass in circular co-ordinates', function(done) {
-    var uri = baseUrl + imgSrcId
-      , qs = querystring.stringify({ src: imgSrcId, x0: '100', y0: '100', x1: '0', y1: '0', h: '100', w: '100' })
+    var qs = querystring.stringify({ x0: '100', y0: '100', x1: '0', y1: '0', height: '100', width: '100' })
+      , uri = baseUrl + imgSrcId
 
     request(darkroom)
-      .get(uri + ':' + hashHelper(uri) + '?' + qs)
+      .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
       .expect(200)
       .end(done)
   })
 
   it('allow you to pass in a background colour', function(done) {
-    var uri = baseUrl + imgSrcId
-      , qs = querystring.stringify({ colour: '#9966FF' })
+    var qs = querystring.stringify({ colour: '#9966FF' })
+      , uri = baseUrl + imgSrcId
 
     request(darkroom)
-      .get(uri + ':' + hashHelper(uri) + '?' + qs)
+      .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
       .expect(200)
       .end(done)
   })
@@ -78,11 +78,11 @@ describe('Circle', function() {
   }
 
   it('allow you to resize an image', function(done) {
-    var uri = baseUrl + imgSrcId
-      , qs = querystring.stringify({ colour: '#9966FF', height: '225', width: '300' })
+    var qs = querystring.stringify({ colour: '#9966FF', height: '225', width: '300' })
+      , uri = baseUrl + imgSrcId
 
     request(darkroom)
-      .get(uri + ':' + hashHelper(uri) + '?' + qs)
+      .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
       .expect(200)
       .parse(binaryParser)
       .end(function (err, res) {
@@ -94,5 +94,15 @@ describe('Circle', function() {
           done()
         })
       })
+  })
+
+  it('should error if the checksum does not match', function (done) {
+    var uri = baseUrl + imgSrcId
+      , qs = querystring.stringify({ width: 50000 })
+
+    request(darkroom)
+      .get(uri + ':' + hashHelper(uri) + '?' + qs)
+      .expect(403)
+      .end(done)
   })
 })

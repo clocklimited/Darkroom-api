@@ -82,7 +82,11 @@ module.exports = function (config) {
         if (closed)
           return false
         mv(tempName, req.cachePath, function (error) {
-          if (error) req.log.warn(error, 'resize.cacheStore')
+          if (error) {
+            req.log.error(error, 'resize.cacheStore')
+            return next(error)
+          }
+
           return next()
         })
       })
