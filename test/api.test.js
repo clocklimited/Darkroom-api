@@ -1,6 +1,6 @@
 var config = require('con.figure')(require('./config')())
-  , darkroom = require('../server')(config)
   , request = require('supertest')
+  , createBackendFactory = require('../lib/backend-factory-creator')
   , _ = require('lodash')
   , mkdirp = require('mkdirp')
   , rimraf = require('rimraf')
@@ -8,21 +8,10 @@ var config = require('con.figure')(require('./config')())
   , assert = require('assert')
 
 describe('API', function() {
-  /**
-   *  Currently does not have a 404 route
-   */
-  // it('should not 404 on / route', function(done) {
-  //   request(darkroom)
-  //     .get('/')
-  //     .set('Accept', 'application/json')
-  //     .set('X-Appication-Token', 'publicly-viewable')
-  //     .set('X-Appication-Secret-Key', 'server-to-server')
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end(done)
-  // })
+  var createDarkroom = require('../server')
+    , darkroom
 
-  before(function () {
+  before(function (done) {
     try {
       rimraf.sync(config.paths.data())
       rimraf.sync(config.paths.cache())
@@ -30,7 +19,10 @@ describe('API', function() {
       mkdirp.sync(config.paths.cache())
     } catch (e) {
     }
-
+    createBackendFactory(config, function (err, factory) {
+      darkroom = createDarkroom(config, factory)
+      done()
+    })
   })
 
   describe('#get', function() {

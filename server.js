@@ -2,20 +2,14 @@ var restify = require('restify')
   , bunyan = require('bunyan')
   , async = require('async')
   , cpus = require('os').cpus()
-  , createFileUpload = require('fileupload').createFileUpload
-  , createFileAdaptor = require('./lib/file-upload-adapter')
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')
   , createServeCached = require('./lib/serve-cached')
   , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
-  , temp = require('temp')
 
-temp.track()
-
-module.exports = function (config) {
+module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
-
   var endpoint = createEndpoints(config)
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
@@ -25,8 +19,6 @@ module.exports = function (config) {
       , stream: process.stdout
       , serializers: restify.bunyan.stdSerializers
       })
-    , fileAdaptor = createFileAdaptor(config.paths.data(), config.log && log)
-    , upload = createFileUpload({ adapter: fileAdaptor })
     , queue = async.queue(function (task, callback) {
       task(function(error) {
         callback(error)
@@ -152,36 +144,14 @@ module.exports = function (config) {
   server.post('/', restify.bodyParser()
     , createKeyAuth(config)
     , endpoint.utils.dedupeName
-    , upload.middleware
+    , backEndFactory.uploadMiddleware
     , endpoint.upload
   )
 
   server.put('/'
     , createKeyAuth(config)
     , endpoint.utils.dedupeName
-    , function(req, res, next) {
-
-        var stream = temp.createWriteStream()
-
-        req.on('end', function() {
-          fileAdaptor.put(stream.path, function(err, file) {
-
-            if (err) {
-              if (err.name === 'SizeError') {
-                next(new restify.BadDigestError(err.message))
-              } else {
-                return next(err)
-              }
-            }
-            temp.cleanup()
-            req.body = { file: [ file ] }
-            next()
-          })
-        })
-
-        req.on('error', next)
-        req.pipe(stream)
-      }
+    , backEndFactory.streamUploadMiddleware
     , endpoint.upload
   )
 

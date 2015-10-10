@@ -1,5 +1,6 @@
 var config = require('con.figure')(require('./config')())
-  , darkroom = require('../server')(config)
+  , createDarkroom = require('../server')
+  , createBackendFactory = require('../lib/backend-factory-creator')
   , request = require('supertest')
   , hashHelper = require('./hash-helper')
   , gm = require('gm')
@@ -8,6 +9,7 @@ var config = require('con.figure')(require('./config')())
 
 describe('Resize', function () {
   var imgSrcId
+    , darkroom
 
   function clean() {
     try {
@@ -21,6 +23,13 @@ describe('Resize', function () {
 
   before(clean)
   after(clean)
+
+  before(function (done) {
+    createBackendFactory(config, function (err, factory) {
+      darkroom = createDarkroom(config, factory)
+      done()
+    })
+  })
 
   before(function (done) {
 
@@ -133,7 +142,6 @@ describe('Resize', function () {
         , now = new Date()
 
       config.http.maxage = 3600
-      darkroom = require('../server')(config)
 
       request(darkroom)
         .get(url)
@@ -153,7 +161,6 @@ describe('Resize', function () {
 
       config.http.pageNotFoundMaxage = 2
       config.log = false
-      darkroom = require('../server')(config)
 
       request(darkroom)
         .get(url)

@@ -1,5 +1,6 @@
 var config = require('con.figure')(require('./config')())
-  , darkroom = require('../server')(config)
+  , createDarkroom = require('../server')
+  , createBackendFactory = require('../lib/backend-factory-creator')
   , request = require('supertest')
   , path = '/crop'
   , rimraf = require('rimraf')
@@ -7,6 +8,7 @@ var config = require('con.figure')(require('./config')())
 
 describe('Crop', function() {
   var imgSrcId
+    , darkroom
 
   function clean() {
     try {
@@ -20,6 +22,13 @@ describe('Crop', function() {
 
   before(clean)
   after(clean)
+
+  before(function (done) {
+    createBackendFactory(config, function (err, factory) {
+      darkroom = createDarkroom(config, factory)
+      done()
+    })
+  })
 
   before(function (done) {
     request(darkroom)

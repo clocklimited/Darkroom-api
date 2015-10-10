@@ -1,5 +1,6 @@
 var config = require('con.figure')(require('./config')())
-  , darkroom = require('../server')(config)
+  , createDarkroom = require('../server')
+  , createBackendFactory = require('../lib/backend-factory-creator')
   , request = require('supertest')
   , querystring = require('querystring')
   , baseUrl = '/circle/'
@@ -11,7 +12,7 @@ var config = require('con.figure')(require('./config')())
 
 describe('Circle', function() {
   var imgSrcId = null
-
+    , darkroom
   function clean() {
     try {
       rimraf.sync(config.paths.data())
@@ -21,6 +22,13 @@ describe('Circle', function() {
     } catch (e) {
     }
   }
+
+  before(function (done) {
+    createBackendFactory(config, function (err, factory) {
+      darkroom = createDarkroom(config, factory)
+      done()
+    })
+  })
 
   before(clean)
   after(clean)
