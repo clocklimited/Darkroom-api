@@ -9,26 +9,24 @@ var config = require('con.figure')(require('./config')())
   , gm = require('gm')
   , assert = require('assert-diff')
   , hashHelper = require('./hash-helper')
+  , async = require('async')
 
 describe('Circle', function() {
   var imgSrcId = null
     , darkroom
-  function clean() {
-    try {
-      rimraf.sync(config.paths.data())
-      rimraf.sync(config.paths.cache())
-      mkdirp.sync(config.paths.data())
-      mkdirp.sync(config.paths.cache())
-    } catch (e) {
-    }
-  }
+    , factory
 
   before(function (done) {
-    createBackendFactory(config, function (err, factory) {
+    createBackendFactory(config, function (err, backendFactory) {
+      factory = backendFactory
       darkroom = createDarkroom(config, factory)
       done()
     })
   })
+
+  function clean(done) {
+    async.series([ factory.setup, factory.clean ], done)
+  }
 
   before(clean)
   after(clean)

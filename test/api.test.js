@@ -2,28 +2,29 @@ var config = require('con.figure')(require('./config')())
   , request = require('supertest')
   , createBackendFactory = require('../lib/backend-factory-creator')
   , _ = require('lodash')
-  , mkdirp = require('mkdirp')
-  , rimraf = require('rimraf')
   , fs = require('fs')
   , assert = require('assert')
+  , async = require('async')
 
 describe('API', function() {
   var createDarkroom = require('../server')
     , darkroom
+    , factory
 
   before(function (done) {
-    try {
-      rimraf.sync(config.paths.data())
-      rimraf.sync(config.paths.cache())
-      mkdirp.sync(config.paths.data())
-      mkdirp.sync(config.paths.cache())
-    } catch (e) {
-    }
-    createBackendFactory(config, function (err, factory) {
+    createBackendFactory(config, function (err, backendFactory) {
+      factory = backendFactory
       darkroom = createDarkroom(config, factory)
       done()
     })
   })
+
+  function clean(done) {
+    async.series([ factory.setup, factory.clean ], done)
+  }
+
+  before(clean)
+  after(clean)
 
   describe('#get', function() {
     it('should 404 for invalid token', function (done) {
