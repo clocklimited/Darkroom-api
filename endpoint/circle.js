@@ -1,8 +1,6 @@
 var darkroom = require('darkroom')
+  , PassThrough = require('stream').PassThrough
   , path = require('path')
-  , dp = require('darkroom-persistence')
-  , retrieve = dp.RetrieveStream
-  , StoreStream = dp.StoreStream
   , restify = require('restify')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
@@ -37,12 +35,10 @@ function circleEndpoint(config) {
         }
       , circle = new darkroom.Circle(circleOptions)
       , circleFolderLocation = filePath(req.params, config.paths.data())
-      , tempName = temp.path({ suffix: '.darkroom' })
-
+      , store = temp.createWriteStream()
     res.on('close', next)
 
     mkdirp(circleFolderLocation, function() {
-      var store = new StoreStream(tempName)
 
       store.once('error', function (error) {
         return showError(req, error, next)
@@ -62,7 +58,7 @@ function circleEndpoint(config) {
       res.on('finish', function () {
         if (closed)
           return false
-        mv(tempName, req.cachePath, function (error) {
+        mv(store.path, req.cachePath, function (error) {
           if (error) {
             req.log.error(error, 'circle.cacheStore')
             return next(error)
@@ -72,10 +68,13 @@ function circleEndpoint(config) {
         })
       })
 
-      retrieve(streamOptions, { isFile: true })
+      var passThrough = new PassThrough()
+      passThrough.pipe(store)
+
+      fs.createReadStream(streamOptions.path)
         .on('error', next)
         .pipe(circle)
-        .pipe(store)
+        .pipe(passThrough)
         .pipe(res)
     })
 
@@ -91,8 +90,7 @@ function circleEndpoint(config) {
 
   function resizeImage(req, res, cb) {
     var re = new darkroom.Resize()
-      , tempName = temp.path({ suffix: '.darkroom' })
-      , store = new StoreStream(tempName)
+      , store = temp.createWriteStream()
 
     store.on('error', function (error) {
       req.log.warn('StoreStream:', error.message)
@@ -106,7 +104,7 @@ function circleEndpoint(config) {
 
     var resizedPath = path.join(config.paths.data(), req.params.data.substring(0,3) , req.params.data)
 
-    retrieve({ path: resizedPath }, { isFile: true })
+    fs.createReadStream(resizedPath)
       .pipe(re)
       .pipe(store
         , { width: Number(req.params.width)
@@ -116,7 +114,7 @@ function circleEndpoint(config) {
           })
 
     store.once('finish', function () {
-      req.resized = tempName
+      req.resized = store.path
       return cb()
     })
   }

@@ -1,26 +1,27 @@
-var dp = require('darkroom-persistence')
-  , retrieve = dp.RetrieveStream
-  , darkroom = require('darkroom')
+var darkroom = require('darkroom')
+  , PassThrough = require('stream').PassThrough
   , path = require('path')
-  , StoreStream = dp.StoreStream
   , temp = require('temp')
   , mv = require('mv')
+  , fs = require('fs')
 
 module.exports = function (config) {
   return function (req, res, next) {
     var info = new darkroom.Info()
       , tempName = temp.path({ suffix: '.darkroom' })
-      , store = new StoreStream(tempName)
+      , store = fs.createWriteStream(tempName)
 
     req.params.path = path.join(config.paths.data(), req.params.data.substring(0,3), req.params.data)
 
     store.on('error', function (error) {
       req.log.error('StoreStream:', error.message)
     })
+    var passThrough = new PassThrough()
+    passThrough.pipe(store)
 
-    retrieve(req.params, { isFile: true })
+    fs.createReadStream(req.params.path)
       .pipe(info)
-      .pipe(store
+      .pipe(passThrough
         , { width: Number(req.params.width)
           , height: Number(req.params.height)
           , crop: req.params.crop
