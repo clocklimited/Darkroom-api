@@ -1,8 +1,6 @@
 var darkroom = require('darkroom')
   , path = require('path')
-  , dp = require('darkroom-persistence')
-  , retrieve = dp.RetrieveStream
-  , StoreStream = dp.StoreStream
+  , fs = require('fs')
   , restify = require('restify')
   , filePath = require('../lib/file-path')
   , mkdirp = require('mkdirp')
@@ -29,7 +27,7 @@ module.exports = function (config) {
     })
 
     mkdirp(watermarkFolderLocation, function() {
-      var store = new StoreStream(watermarkFileLocation)
+      var store = fs.createWriteStream(watermarkFileLocation)
 
       store.once('error', function (error) {
         return showError(req, error, next)
@@ -39,11 +37,11 @@ module.exports = function (config) {
         return showError(req, error, next)
       })
 
-      store.once('end', function () {
+      store.once('close', function () {
         res.json(200, { compositeSrc: path.basename(watermarkFileLocation) })
       })
 
-      retrieve(streamOptions, { isFile: true })
+      fs.createReadStream(streamOptions.path)
         .on('error', next)
         .pipe(watermark)
         .pipe(store)

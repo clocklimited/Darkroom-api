@@ -1,7 +1,6 @@
-var darkroom = require('darkroom')
-  , dp = require('darkroom-persistence')
-  , StoreStream = dp.StoreStream
-  , retrieve = dp.RetrieveStream
+var fs = require('fs')
+  , PassThrough = require('stream').PassThrough
+  , darkroom = require('darkroom')
   , path = require('path')
   , restify = require('restify')
   , temp = require('temp')
@@ -48,7 +47,7 @@ module.exports = function (config) {
       res.set('Last-Modified', new Date().toUTCString())
 
       var re = new darkroom.Resize()
-        , store = new StoreStream(tempName)
+        , store = fs.createWriteStream(tempName)
 
       store.on('error', function (error) {
         req.log.warn('StoreStream:', error.message)
@@ -60,16 +59,20 @@ module.exports = function (config) {
         next(error)
       })
 
-      retrieve(req.params, { isFile: true })
+      var passThrough = new PassThrough()
+
+      passThrough.pipe(store)
+      passThrough.pipe(res)
+
+      fs.createReadStream(req.params.path)
         .pipe(re)
-        .pipe(store
+        .pipe(passThrough
           , { width: Number(req.params.width)
             , height: Number(req.params.height)
             , quality: config.quality
             , mode: req.params.mode
             }
         )
-        .pipe(res)
 
       var closed = false
 

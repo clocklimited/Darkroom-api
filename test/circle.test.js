@@ -4,8 +4,6 @@ var config = require('con.figure')(require('./config')())
   , request = require('supertest')
   , querystring = require('querystring')
   , baseUrl = '/circle/'
-  , mkdirp = require('mkdirp')
-  , rimraf = require('rimraf')
   , gm = require('gm')
   , assert = require('assert-diff')
   , hashHelper = require('./hash-helper')
@@ -25,7 +23,7 @@ describe('Circle', function() {
   })
 
   function clean(done) {
-    async.series([ factory.setup, factory.clean ], done)
+    async.series([ factory.clean, factory.setup ], done)
   }
 
   before(clean)

@@ -3,31 +3,27 @@ var config = require('con.figure')(require('./config')())
   , createBackendFactory = require('../lib/backend-factory-creator')
   , request = require('supertest')
   , hashHelper = require('./hash-helper')
-  , rimraf = require('rimraf')
-  , mkdirp = require('mkdirp')
+  , async = require('async')
 
 describe('Original', function() {
   var imgSrcId
     , darkroom
-  function clean() {
-    try {
-      rimraf.sync(config.paths.data())
-      rimraf.sync(config.paths.cache())
-      mkdirp.sync(config.paths.data())
-      mkdirp.sync(config.paths.cache())
-    } catch (e) {
-    }
-  }
-
-  before(clean)
-  after(clean)
+    , factory
 
   before(function (done) {
-    createBackendFactory(config, function (err, factory) {
+    createBackendFactory(config, function (err, backendFactory) {
+      factory = backendFactory
       darkroom = createDarkroom(config, factory)
       done()
     })
   })
+
+  function clean(done) {
+    async.series([ factory.clean, factory.setup ], done)
+  }
+
+  before(clean)
+  after(clean)
 
   before(function (done) {
     request(darkroom)

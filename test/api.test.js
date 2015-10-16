@@ -20,24 +20,13 @@ describe('API', function() {
   })
 
   function clean(done) {
-    async.series([ factory.setup, factory.clean ], done)
+    async.series([ factory.clean, factory.setup ], done)
   }
 
   before(clean)
   after(clean)
 
   describe('#get', function() {
-    it('should 404 for invalid token', function (done) {
-      request(darkroom)
-        .get('/info/WANG')
-        .set('x-darkroom-key', 'key')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .end(function (err, res) {
-          res.statusCode.should.equal(404)
-          done()
-        })
-    })
 
     it('should 404 for site root', function (done) {
       request(darkroom)
@@ -88,9 +77,9 @@ describe('API', function() {
       stream.pipe(req)
 
       stream.on('end', function() {
-        originalEnd.call(req, function(err, req) {
-          assert.equal(req.statusCode, 200)
-          assert.deepEqual(Object.keys(req.body), [ 'src', 'id' ])
+        originalEnd.call(req, function(err, res) {
+          assert.equal(res.statusCode, 200)
+          assert.deepEqual(Object.keys(res.body), [ 'src', 'id' ])
           done()
         })
       })

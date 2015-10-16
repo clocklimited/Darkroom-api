@@ -1,8 +1,6 @@
 var darkroom = require('darkroom')
   , _ = require('lodash')
-  , dp = require('darkroom-persistence')
-  , StoreStream = dp.StoreStream
-  , retrieve = dp.RetrieveStream
+  , fs = require('fs')
   , path = require('path')
   , filePath = require('../lib/file-path')
   , url = require('url')
@@ -20,7 +18,6 @@ module.exports = function (config) {
 
     req.params.path = path.join(config.paths.data(), req.params.data.substring(0, 3), req.params.data)
     req.body.crops = !_.isArray(req.body.crops) ? [ req.body.crops ] : req.body.crops
-
     if (req.params.crops === undefined) return next(new restify.BadDigestError(
       'Crops are undefined'
     ))
@@ -28,12 +25,7 @@ module.exports = function (config) {
     req.log.info({ id: req.requestId }, 'Crop Request made for image: ' + req.params.path + ' with ' + req.params.crops.length + ' crops')
     req.log.info({ id: req.requestId }, 'Crop Info: ' + JSON.stringify(req.params.crops))
 
-    var collection = {} // new CollectionStream(Object.keys(crops).length)
-      // , dataSource = retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
-
-    // Currently resize images only deals with pngs
-    // res.set('Content-Type', 'image/png')
-
+    var collection = {}
       , cropCount = 1
 
     async.eachSeries(req.params.crops, function (data, callback) {
@@ -43,8 +35,9 @@ module.exports = function (config) {
 
       req.log.info({ id: req.requestId }, 'Creating crop ' + cropCount + ': ' + fileLocation)
 
-      mkdirp(folderLocation, function() {
-        var store = new StoreStream(fileLocation)
+      mkdirp(folderLocation, function(err) {
+        if (err) return callback(err)
+        var store = fs.createWriteStream(fileLocation)
           , crop = new darkroom.Crop()
 
         store.once('error', function (error) {
@@ -58,15 +51,12 @@ module.exports = function (config) {
           callback(error)
         })
 
-        store.once('end', function () {
+        store.once('finish', function () {
           var values = []
             , key = null
           for (key in data) {
             values.push(data[key])
           }
-
-          // delete values[data.data]
-          // console.log(collection)
 
           key = values.join(':')
           collection[key] = path.basename(fileLocation)
@@ -74,8 +64,9 @@ module.exports = function (config) {
           cropCount++
           callback()
         })
+        var readStream = fs.createReadStream(req.params.path)
 
-        retrieve(_.extend(req.params, { url: req.body.src }), { isFile: true })
+        readStream
           .pipe(crop)
           .pipe(store
             , { crop: data
