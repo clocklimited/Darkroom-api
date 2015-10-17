@@ -43,11 +43,7 @@ describe('Original', function() {
     request(darkroom)
       .get(url)
       .expect(200)
-      .end(function (error, res) {
-        if (error) return done(error)
-        res.statusCode.should.equal(200)
-        done()
-      })
+      .end(done)
   })
 
   it('should return 404 if an image doesnt exist', function(done) {
@@ -56,11 +52,7 @@ describe('Original', function() {
     request(darkroom)
       .get(url)
       .expect(404)
-      .end(function (error, res) {
-        if (error) return done(error)
-        res.statusCode.should.equal(404)
-        done()
-      })
+      .end(done)
   })
 
 })

@@ -10,7 +10,7 @@ var restify = require('restify')
 
 module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
-  var endpoint = createEndpoints(config)
+  var endpoint = createEndpoints(config, backEndFactory)
     , authorised = createAuthorised(config)
     , serveCached = createServeCached(config)
     , log = bunyan.createLogger(

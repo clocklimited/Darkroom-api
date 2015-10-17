@@ -4,6 +4,7 @@ var config = require('con.figure')(require('./config')())
   , request = require('supertest')
   , path = '/crop'
   , async = require('async')
+  , assert = require('assert')
 
 describe('Crop', function() {
   var imgSrcId
@@ -59,9 +60,9 @@ describe('Crop', function() {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
-          Object.keys(res.body).should.have.length(1)
-          res.body.should.be.instanceOf(Object)
-          res.body.should.have.property('10:100:100:100:100:200:' + imgSrcId)
+          assert.equal(Object.keys(res.body).length, 1)
+          assert(res.body instanceof Object)
+          assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
           done()
         })
     })
@@ -87,9 +88,9 @@ describe('Crop', function() {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
-          Object.keys(res.body).should.have.length(1)
-          res.body.should.be.instanceOf(Object)
-          res.body.should.have.property('10:100:100:100:100:200:' + imgSrcId)
+          assert.equal(Object.keys(res.body).length, 1)
+          assert(res.body instanceof Object)
+          assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
           done()
         })
     })
@@ -116,8 +117,9 @@ describe('Crop', function() {
       .expect(200)
       .end(function (error, res) {
         if (error) return done(error)
-        res.body.should.be.instanceOf(Object)
-        res.body.should.have.property('10:100:100:100:100:200:' + imgSrcId)
+        assert.equal(Object.keys(res.body).length, 1)
+        assert(res.body instanceof Object)
+        assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
         done()
       })
   })
