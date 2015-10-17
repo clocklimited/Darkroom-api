@@ -4,7 +4,7 @@ var darkroom = require('darkroom')
 module.exports = function (config, backEndFactory) {
   return function (req, res, next) {
     var info = new darkroom.Info()
-      , store = backEndFactory.createCacheStream(req.cachePath)
+      , store = backEndFactory.createCacheStream(req.cacheKey)
 
     store.on('error', function (error) {
       req.log.error('Cache:', error.message)

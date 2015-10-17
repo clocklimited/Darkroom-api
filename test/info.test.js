@@ -34,7 +34,7 @@ describe('Info', function() {
       .attach('file', 'test/fixtures/jpeg.jpeg')
       .end(function (err, res) {
         imgSrcId = res.body.src
-        done()
+        done(err)
       })
   })
 
@@ -45,9 +45,8 @@ describe('Info', function() {
       .get(url)
       .expect(200)
       .end(function (error, res) {
-        if (error) return done(error)
-        assert.equal(res.text, '{"width":500,"height":375}')
-        done()
+        assert.equal(res.text, '{"width":500,"height":375}', res.text)
+        done(error)
       })
   })
 

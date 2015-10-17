@@ -5,7 +5,7 @@ var config = require('con.figure')(require('./config')())
   , path = '/watermark'
   , async = require('async')
 
-describe('Watermark', function() {
+describe.skip('Watermark', function() {
   var  imgSrcId = null
     , darkroom
     , factory

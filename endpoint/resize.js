@@ -1,14 +1,10 @@
-var fs = require('fs')
-  , PassThrough = require('stream').PassThrough
+var PassThrough = require('stream').PassThrough
   , darkroom = require('darkroom')
-  , path = require('path')
   , restify = require('restify')
-  , temp = require('temp')
-  , mv = require('mv')
-  , mime = require('mime-magic')
-  , resize = {}
 
-module.exports = function (config) {
+module.exports = function (config, backendFactory) {
+
+  var resize = {}
 
   resize.width = function (req, res, next) {
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
@@ -28,72 +24,44 @@ module.exports = function (config) {
     req.params.height = req.params.height || req.params[1]
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
 
-    var tempName = temp.path({ suffix: '.darkroom' })
-    req.params.path = path.join(config.paths.data(), req.params.data.substring(0,3) , req.params.data)
+    var readStream = backendFactory.getDataStream(req.params.data)
 
-    mime(req.params.path, function (err, type) {
-      if (err) {
-        //Something has gone wrong, set max age to only a few minutes to prevent DDOS on missing images.
-        res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
-        if (config.log) req.log.warn(new restify.ResourceNotFoundError(req.params.path + ' not found'))
-
-        if (req.params.data === 'http') {
-          return next(new restify.BadDigestError('Cannot use a remote resource'))
-        }
-        return next(new restify.ResourceNotFoundError('Image does not exist'))
-      }
-
-      res.set('Content-Type', type)
-      res.set('Last-Modified', new Date().toUTCString())
-
-      var re = new darkroom.Resize()
-        , store = fs.createWriteStream(tempName)
-
-      store.on('error', function (error) {
-        req.log.warn('StoreStream:', error.message)
-        return next(error)
-      })
-
-      re.on('error', function (error) {
-        req.log.error('Resize', error)
-        next(error)
-      })
-
-      var passThrough = new PassThrough()
-
-      passThrough.pipe(store)
-      passThrough.pipe(res)
-
-      fs.createReadStream(req.params.path)
-        .pipe(re)
-        .pipe(passThrough
-          , { width: Number(req.params.width)
-            , height: Number(req.params.height)
-            , quality: config.quality
-            , mode: req.params.mode
-            }
-        )
-
-      var closed = false
-
-      res.on('close', function () {
-        closed = true
-        return next(new Error('Response was closed before end.'))
-      })
-
-      res.on('finish', function () {
-        if (closed)
-          return false
-        mv(tempName, req.cachePath, function (error) {
-          if (error) {
-            req.log.error(error, 'resize.cacheStore')
-            return next(error)
-          }
-
-          return next()
-        })
-      })
+    readStream.on('notFound', function () {
+      res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
+      next(new restify.ResourceNotFoundError('Image does not exist'))
     })
+
+    readStream.on('meta', function (meta) {
+      res.set('Content-Type', meta.type)
+      res.set('Last-Modified', new Date().toUTCString())
+    })
+
+    var re = new darkroom.Resize()
+      , cacheStore = backendFactory.createCacheStream(req.cacheKey)
+
+    cacheStore.on('error', function (error) {
+      req.log.warn('StoreStream:', error.message)
+      next(error)
+    })
+
+    re.on('error', function (error) {
+      req.log.error('Resize', error)
+      next(error)
+    })
+
+    var passThrough = new PassThrough()
+
+    passThrough.pipe(cacheStore)
+    passThrough.pipe(res)
+
+    readStream
+      .pipe(re)
+      .pipe(passThrough
+        , { width: Number(req.params.width)
+          , height: Number(req.params.height)
+          , quality: config.quality
+          , mode: req.params.mode
+          })
   }
   return resize
 }

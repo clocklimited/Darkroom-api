@@ -1,36 +1,30 @@
 var restify = require('restify')
   , bunyan = require('bunyan')
-  , async = require('async')
-  , cpus = require('os').cpus()
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')
   , createServeCached = require('./lib/serve-cached')
-  , concurrency = (cpus.length === 1) ? cpus.length : cpus.length - 1
+  , createCircleEndpoint = require('./endpoint/circle')
+  , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
 
 module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
   var endpoint = createEndpoints(config, backEndFactory)
     , authorised = createAuthorised(config)
-    , serveCached = createServeCached(config)
+    , serveCached = createServeCached(config, backEndFactory)
+    , circleEndpoint = createCircleEndpoint(config, backEndFactory)
     , log = bunyan.createLogger(
       { name: 'darkroom'
       , level: process.env.LOG_LEVEL || 'debug'
       , stream: process.stdout
       , serializers: restify.bunyan.stdSerializers
       })
-    , queue = async.queue(function (task, callback) {
-      task(function(error) {
-        callback(error)
-      })
-    }, concurrency)
     , server = restify.createServer(
       { version: config.version
       , name: 'darkroom.io'
       , log: config.log && log
       }
     )
-  // server.pre(restify.pre.sanitizePath())
   server.use(restify.acceptParser(server.acceptable))
   server.use(restify.queryParser())
 
@@ -104,41 +98,13 @@ module.exports = function (config, backEndFactory) {
     return next()
   })
 
-  server.get(/^\/+circle\/+(.*)$/, checkRoute, endpoint.circleCache, function (req, res, next) {
-    queue.unshift(endpoint.circle.bind(this, req, res), next)
-  })
-
-  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.info.bind(this, req, res), next)
-  })
-
-  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.resize.both.bind(this, req, res), next)
-  })
-
-  server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
-  })
-
-  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, function (req, res, next) {
-    queue.unshift(endpoint.resize.width.bind(this, req, res), next)
-  })
-
-  // GET /original/:url
+  server.get(/^\/+circle\/+(.*)$/, checkRoute
+    , createServeCached(config, backEndFactory, createCacheKey), circleEndpoint)
+  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, endpoint.info)
+  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, serveCached, endpoint.resize.both)
+  server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
-
-  server.get('/stats', function (req, res, next) {
-    res.set('Cache-Control', 'max-age=0')
-    res.json(
-      { queue:
-        { length: queue.length()
-        , concurrency: concurrency
-        }
-      }
-    )
-    return next()
-  })
-
   server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/', restify.bodyParser()
@@ -155,13 +121,11 @@ module.exports = function (config, backEndFactory) {
     , endpoint.upload
   )
 
-  server.post('/crop', restify.bodyParser(), function (req, res, next) {
-    queue.push(endpoint.crop.bind(this, req, res), next)
-  })
+  server.post('/crop', restify.bodyParser(), endpoint.crop)
 
-  server.post('/watermark', restify.bodyParser(), function (req, res, next) {
-    queue.push(endpoint.watermark.bind(this, req, res), next)
-  })
+  // This is being removed until a time when the 'darkroom' implementation is more streamy or a new version of DR
+  // is rolled out.
+  //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
 
   if (config.log) {
 

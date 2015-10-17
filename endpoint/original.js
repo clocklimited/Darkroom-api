@@ -16,12 +16,9 @@ module.exports = function (config, backendFactory) {
         })
       stream.pipe(res)
     })
-    stream.on('error', function (err) {
-      if (err.code === 'ENOENT') {
-        next(new restify.ResourceNotFoundError('Not Found'))
-      } else {
-        next(err)
-      }
+    stream.on('notFound', function () {
+      next(new restify.ResourceNotFoundError('Not Found'))
     })
+    stream.on('error', next)
   }
 }

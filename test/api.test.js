@@ -78,7 +78,7 @@ describe('API', function() {
 
       stream.on('end', function() {
         originalEnd.call(req, function(err, res) {
-          assert.equal(res.statusCode, 200)
+          assert.equal(res.statusCode, 200, res.text)
           assert.deepEqual(Object.keys(res.body), [ 'src', 'id' ])
           done()
         })
@@ -99,7 +99,8 @@ describe('API', function() {
         .post('/')
         .set('x-darkroom-key', 'key')
         .attach('file', 'test/fixtures/jpeg.jpeg')
-        .attach('file2', 'test/fixtures/png.png')
+        .attach('file', 'test/fixtures/png.png')
+        .attach('file2', 'test/fixtures/test.txt')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)

@@ -42,7 +42,7 @@
     "checkStyle": "jscs -v -r unix .",
     "pretest": "npm run lint && npm run checkStyle",
     "test": "istanbul cover _mocha -- -r should",
-    "posttest": "istanbul check-coverage --statements 70 --branches 60 --functions 70 --lines 70 && rm -rf coverage",
+    "posttest": "istanbul check-coverage --statements 70 --branches 60 --functions 65 --lines 70 && rm -rf coverage",
     "start": "node app"
   },
   "author": "Tom Gallacher",
