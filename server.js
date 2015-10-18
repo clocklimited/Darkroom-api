@@ -3,7 +3,7 @@ var restify = require('restify')
   , createEndpoints = require('./endpoint')
   , createKeyAuth = require('./lib/key-auth')
   , createAuthorised = require('./lib/authorised')
-  , createServeCached = require('./lib/serve-cached')
+  , createCacheDealer = require('./lib/middleware/cache-dealer')
   , createCircleEndpoint = require('./endpoint/circle')
   , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
 
@@ -11,7 +11,7 @@ module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
   var endpoint = createEndpoints(config, backEndFactory)
     , authorised = createAuthorised(config)
-    , serveCached = createServeCached(config, backEndFactory)
+    , cacheDealer = createCacheDealer(config, backEndFactory)
     , circleEndpoint = createCircleEndpoint(config, backEndFactory)
     , log = bunyan.createLogger(
       { name: 'darkroom'
@@ -99,11 +99,11 @@ module.exports = function (config, backEndFactory) {
   })
 
   server.get(/^\/+circle\/+(.*)$/, checkRoute
-    , createServeCached(config, backEndFactory, createCacheKey), circleEndpoint)
-  server.get(/^\/+info\/+(.*)$/, checkRoute, serveCached, endpoint.info)
-  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, serveCached, endpoint.resize.both)
-  server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
-  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, serveCached, endpoint.resize.width)
+    , createCacheDealer(config, backEndFactory, createCacheKey), circleEndpoint)
+  server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
+  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, cacheDealer, endpoint.resize.both)
+  server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
+  server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
   server.get(/^\/(.*)$/, endpoint.original)
 
