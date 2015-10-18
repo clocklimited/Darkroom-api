@@ -6,6 +6,7 @@ var restify = require('restify')
   , createCacheDealer = require('./lib/middleware/cache-dealer')
   , createCircleEndpoint = require('./endpoint/circle')
   , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
+  , createPutUploader = require('./lib/middleware/put-uploader')
 
 module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
@@ -13,6 +14,7 @@ module.exports = function (config, backEndFactory) {
     , authorised = createAuthorised(config)
     , cacheDealer = createCacheDealer(config, backEndFactory)
     , circleEndpoint = createCircleEndpoint(config, backEndFactory)
+    , putUploader = createPutUploader(backEndFactory)
     , log = bunyan.createLogger(
       { name: 'darkroom'
       , level: process.env.LOG_LEVEL || 'debug'
@@ -117,14 +119,14 @@ module.exports = function (config, backEndFactory) {
   server.put('/'
     , createKeyAuth(config)
     , endpoint.utils.dedupeName
-    , backEndFactory.streamUploadMiddleware
+    , putUploader
     , endpoint.upload
   )
 
   server.post('/crop', restify.bodyParser(), endpoint.crop)
 
-  // This is being removed until a time when the 'darkroom' implementation is more streamy or a new version of DR
-  // is rolled out.
+  // This is being removed until a time when the 'darkroom' implementation is
+  // more streamy or a new version of DR is rolled out.
   //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
 
   if (config.log) {
