@@ -32,8 +32,8 @@ describe.skip('Watermark', function() {
       .set('Accept', 'application/json')
       .attach('file', 'test/fixtures/jpeg.jpeg')
       .end(function (err, res) {
-        imgSrcId = res.body.src
-        done()
+        imgSrcId = res.body.id
+        done(err)
       })
   })
 
@@ -69,7 +69,7 @@ describe.skip('Watermark', function() {
         res.body.should.be.instanceOf(Object)
         res.body.should.have.property('compositeSrc')
         res.body.compositeSrc.should.equal('06f3eeff749dbe47fdd2ebae5d2adf23')
-        done()
+        done(error)
       })
   })
 })

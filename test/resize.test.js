@@ -35,8 +35,8 @@ describe('Resize', function () {
       .set('Accept', 'application/json')
       .attach('file', 'test/fixtures/jpeg.jpeg')
       .end(function (err, res) {
-        imgSrcId = res.body.src
-        done()
+        imgSrcId = res.body.id
+        done(err)
       })
   })
 
@@ -52,7 +52,7 @@ describe('Resize', function () {
           assert.equal(res.headers['d-cache'], 'MISS')
           assert.equal(value.width, 500)
           assert.equal(value.height, 375)
-          done()
+          done(err)
         })
       })
   })
@@ -70,7 +70,7 @@ describe('Resize', function () {
           assert.equal(res.headers['d-cache'], 'MISS')
           assert.equal(value.width, 67)
           assert.equal(value.height, 50)
-          done()
+          done(err)
         })
       })
   })
@@ -87,7 +87,7 @@ describe('Resize', function () {
           assert.equal(res.headers['d-cache'], 'MISS')
           assert.equal(value.width, 67)
           assert.equal(value.height, 50)
-          done()
+          done(err)
         })
       })
   })
@@ -105,7 +105,7 @@ describe('Resize', function () {
           assert.equal(res.headers['d-cache'], 'MISS')
           assert.equal(value.width, 100)
           assert.equal(value.height, 50)
-          done()
+          done(err)
         })
       })
   })
@@ -123,7 +123,7 @@ describe('Resize', function () {
           assert.equal(res.headers['d-cache'], 'MISS')
           assert.equal(value.width, 160)
           assert.equal(value.height, 120)
-          done()
+          done(err)
         })
       })
   })
@@ -139,9 +139,8 @@ describe('Resize', function () {
         .get(url)
         .expect(200)
         .end(function (error, res) {
-          if (error) return done(error)
           assert.equal(res.headers['cache-control'], 'max-age=' + config.http.maxage)
-          done()
+          done(error)
         })
 
     })
@@ -157,11 +156,9 @@ describe('Resize', function () {
         .get(url)
         .expect(404)
         .end(function (error, res) {
-          if (error) return done(error)
           res.headers['cache-control'].should.equal('max-age=' + config.http.pageNotFoundMaxage)
-          done()
+          done(error)
         })
-
     })
   })
 })

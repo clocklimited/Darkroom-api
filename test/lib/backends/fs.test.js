@@ -23,13 +23,14 @@ describe('file backend', function () {
       })
     })
 
-    it('should write and read data', function (done) {
+    it('should write with `id` on finish and read data', function (done) {
       createBackend(getConfig(), function (err, factory) {
-        var stream = factory.createDataStream('1234')
+        var stream = factory.createDataStream()
         stream.on('error', done)
-        stream.on('close', function () {
+        stream.on('done', function (id) {
+          assert(id !== undefined, 'should return an `id`')
           var response = []
-          factory.getDataStream('1234').on('data', function (data) {
+          factory.getDataStream(id).on('data', function (data) {
             response.push(data)
           }).on('end', function () {
             assert.equal(Buffer.concat(response).toString(), 'hello')
@@ -43,14 +44,15 @@ describe('file backend', function () {
 
     it('should emit meta on read data', function (done) {
       createBackend(getConfig(), function (err, factory) {
-        var stream = factory.createDataStream('1234')
+        var stream = factory.createDataStream()
         stream.on('error', done)
-        stream.on('close', function () {
+        stream.on('done', function (id) {
           var response = []
-          factory.getDataStream('1234').on('data', function (data) {
+          factory.getDataStream(id).on('data', function (data) {
             response.push(data)
           }).on('meta', function (meta) {
-            assert.deepEqual(meta, { type: 'text/plain; charset=us-ascii', size: 5 })
+            assert.equal(meta.type, 'text/plain; charset=us-ascii')
+            assert.equal(meta.size, 5)
             done()
           })
         })
@@ -72,11 +74,12 @@ describe('file backend', function () {
       createBackend(getConfig(), function (err, factory) {
         var stream = factory.createCacheStream('1234')
         stream.on('error', done)
-        stream.on('close', function () {
+        stream.on('done', function () {
           var response = []
-          factory.getCacheStream('1234').on('data', function (cache) {
-            response.push(cache)
+          factory.getCacheStream('1234').on('data', function (cacheData) {
+            response.push(cacheData)
           }).on('end', function () {
+
             assert.equal(Buffer.concat(response).toString(), 'hello')
             done()
           })

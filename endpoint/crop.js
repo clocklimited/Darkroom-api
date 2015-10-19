@@ -2,7 +2,6 @@ var darkroom = require('darkroom')
   , url = require('url')
   , async = require('async')
   , restify = require('restify')
-  , dataHasher = require('../lib/data-hasher')
 
 module.exports = function (config, backendFactory) {
   return function (req, res, next) {
@@ -26,8 +25,7 @@ module.exports = function (config, backendFactory) {
 
       req.log.info({ id: req.requestId }, 'Creating crop ' + cropCount)
       data.data = req.params.data
-      var cropId = dataHasher(data)
-        , store = backendFactory.createDataStream(cropId)
+      var store = backendFactory.createDataStream()
         , crop = new darkroom.Crop()
 
       store.once('error', function (error) {
@@ -41,7 +39,7 @@ module.exports = function (config, backendFactory) {
         callback(error)
       })
 
-      store.once('finish', function () {
+      store.once('done', function (id) {
         var values = []
           , key = null
         for (key in data) {
@@ -49,8 +47,8 @@ module.exports = function (config, backendFactory) {
         }
 
         key = values.join(':')
-        collection[key] = cropId
-        req.log.info({ id: req.requestId }, 'Successfully created crop ' + cropCount + ': ' + cropId)
+        collection[key] = id
+        req.log.info({ id: req.requestId }, 'Successfully created crop ' + cropCount + ': ' + id)
         cropCount++
         callback()
       })

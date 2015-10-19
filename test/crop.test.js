@@ -33,7 +33,7 @@ describe('Crop', function() {
       .set('Accept', 'application/json')
       .attach('file', 'test/fixtures/jpeg.jpeg')
       .end(function (err, res) {
-        imgSrcId = res.body.src
+        imgSrcId = res.body.id
         done()
       })
   })

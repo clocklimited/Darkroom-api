@@ -32,8 +32,8 @@ describe('Original', function() {
       .set('Accept', 'application/json')
       .attach('file', 'test/fixtures/jpeg.jpeg')
       .end(function (err, res) {
-        imgSrcId = res.body.src
-        done()
+        imgSrcId = res.body.id
+        done(err)
       })
   })
 

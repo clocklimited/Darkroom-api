@@ -6,6 +6,5 @@ module.exports = function (config, backendFactory) {
   , info: require('./info')(config, backendFactory)
   , watermark: require('./watermark')(config, backendFactory)
   , upload: require('./upload')
-  , utils: require('./utils')
   }
 }

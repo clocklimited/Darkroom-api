@@ -6,6 +6,7 @@ var restify = require('restify')
   , createCacheDealer = require('./lib/middleware/cache-dealer')
   , createCircleEndpoint = require('./endpoint/circle')
   , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
+  , createPostUploader = require('./lib/middleware/post-uploader')
   , createPutUploader = require('./lib/middleware/put-uploader')
 
 module.exports = function (config, backEndFactory) {
@@ -14,6 +15,7 @@ module.exports = function (config, backEndFactory) {
     , authorised = createAuthorised(config)
     , cacheDealer = createCacheDealer(config, backEndFactory)
     , circleEndpoint = createCircleEndpoint(config, backEndFactory)
+    , postUploader = createPostUploader(backEndFactory)
     , putUploader = createPutUploader(backEndFactory)
     , log = bunyan.createLogger(
       { name: 'darkroom'
@@ -109,16 +111,14 @@ module.exports = function (config, backEndFactory) {
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
   server.get(/^\/(.*)$/, endpoint.original)
 
-  server.post('/', restify.bodyParser()
+  server.post('/'
     , createKeyAuth(config)
-    , endpoint.utils.dedupeName
-    , backEndFactory.uploadMiddleware
+    , postUploader
     , endpoint.upload
   )
 
   server.put('/'
     , createKeyAuth(config)
-    , endpoint.utils.dedupeName
     , putUploader
     , endpoint.upload
   )

@@ -31,19 +31,15 @@ describe('API', function() {
     it('should 404 for site root', function (done) {
       request(darkroom)
         .get('/')
-        .end(function (err, res) {
-          res.statusCode.should.equal(404)
-          done()
-        })
+        .expect(404)
+        .end(done)
     })
 
     it('should 404 for non API endpoints', function (done) {
       request(darkroom)
         .get('/favicon.ico')
-        .end(function (err, res) {
-          res.statusCode.should.equal(404)
-          done()
-        })
+        .expect(404)
+        .end(done)
     })
   })
 
@@ -58,7 +54,7 @@ describe('API', function() {
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err)
-          res.body.should.have.property('src')
+          assert(res.body.id !== undefined, 'invalid id ' + res.body)
           done()
         })
     })
@@ -79,7 +75,7 @@ describe('API', function() {
       stream.on('end', function() {
         originalEnd.call(req, function(err, res) {
           assert.equal(res.statusCode, 200, res.text)
-          assert.deepEqual(Object.keys(res.body), [ 'src', 'id' ])
+          assert.deepEqual(Object.keys(res.body), [ 'id' ])
           done()
         })
       })
@@ -100,15 +96,14 @@ describe('API', function() {
         .set('x-darkroom-key', 'key')
         .attach('file', 'test/fixtures/jpeg.jpeg')
         .attach('file', 'test/fixtures/png.png')
-        .attach('file2', 'test/fixtures/test.txt')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          res.body.should.be.an.instanceOf(Array)
+          assert(Array.isArray(res.body), 'not an array')
           _.each(res.body, function (file) {
-            file.should.have.property('src')
+            assert.deepEqual(Object.keys(file), [ 'id' ])
           })
           done()
         })
