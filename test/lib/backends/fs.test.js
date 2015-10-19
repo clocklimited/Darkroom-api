@@ -4,6 +4,7 @@ var createBackend = require('../../../lib/backends/fs')
   , tests = require('./backend-tests')
 
 temp.track()
+
 function getConfig() {
   var data = temp.path()
     , cache = temp.path()
@@ -12,4 +13,6 @@ function getConfig() {
   return { paths: { data: function () { return data }, cache: function () { return cache } } }
 }
 
-tests(createBackend, getConfig)
+describe('Filesystem Backend', function () {
+  tests(createBackend, getConfig)
+})

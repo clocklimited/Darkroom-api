@@ -9,10 +9,11 @@ module.exports = function () {
         , 'pageNotFoundMaxage': 0
         }
       , 'log': false
-      , 'paths':
-        { 'data': function() { return '/tmp/dr/data' }
-        , 'cache': function() { return '/tmp/dr/cache' }
-        }
+      , 'databaseUri': 'mongodb://localhost:27017/darkroom-unit'
+      // , 'paths':
+      //   { 'data': function() { return '/tmp/dr/data' }
+      //   , 'cache': function() { return '/tmp/dr/cache' }
+      //   }
       , 'version': '0.0.1'
       , 'salt': 'salt'
       , 'key': 'key'
