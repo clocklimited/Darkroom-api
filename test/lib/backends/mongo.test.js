@@ -5,4 +5,6 @@ function getConfig() {
   return { databaseUri: 'mongodb://localhost:27017/darkroom-test' }
 }
 
-tests(createBackend, getConfig)
+describe('Mongo Backend', function () {
+  tests(createBackend, getConfig)
+})

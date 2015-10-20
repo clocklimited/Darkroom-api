@@ -38,10 +38,10 @@
     "lint": "jshint .",
     "checkStyle": "jscs -v -r unix .",
     "pretest": "npm run lint && npm run checkStyle",
-    "test": "istanbul cover _mocha -- -r should",
-    "posttest": "istanbul check-coverage --statements 70 --branches 60 --functions 65 --lines 70 && rm -rf coverage",
+    "test": "istanbul cover _mocha -- -r should --recursive",
+    "posttest": "istanbul check-coverage --statements 80 --branches 80 --functions 70 --lines 80 && rm -rf coverage",
     "start": "node app"
   },
-  "author": "Tom Gallacher",
-  "license": "MIT"
+  "author": "Paul Serby",
+  "license": "ISC"
 }
