@@ -24,7 +24,7 @@ module.exports = function (config, backendFactory) {
     req.params.height = req.params.height || req.params[1]
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
 
-    var readStream = backendFactory.getDataStream(req.params.data)
+    var readStream = backendFactory.createDataReadStream(req.params.data)
 
     readStream.on('notFound', function () {
       res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
@@ -37,7 +37,7 @@ module.exports = function (config, backendFactory) {
     })
 
     var re = new darkroom.Resize()
-      , cacheStore = backendFactory.createCacheStream(req.cacheKey)
+      , cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
 
     cacheStore.on('error', function (error) {
       req.log.warn('StoreStream:', error.message)

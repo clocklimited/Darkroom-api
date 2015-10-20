@@ -18,18 +18,18 @@ module.exports = function (createBackend, getConfig) {
 
     it('should return a stream', function () {
       createBackend(getConfig(), function (err, factory) {
-        assert(factory.createDataStream('1234') instanceof Stream)
+        assert(factory.createDataWriteStream('1234') instanceof Stream)
       })
     })
 
     it('should write with `id` on finish and read data', function (done) {
       createBackend(getConfig(), function (err, factory) {
-        var stream = factory.createDataStream()
+        var stream = factory.createDataWriteStream()
         stream.on('error', done)
         stream.on('done', function (id) {
           assert(id !== undefined, 'should return an `id`')
           var response = []
-          factory.getDataStream(id).on('data', function (data) {
+          factory.createDataReadStream(id).on('data', function (data) {
             response.push(data)
           }).on('end', function () {
             assert.equal(Buffer.concat(response).toString(), 'hello')
@@ -43,11 +43,11 @@ module.exports = function (createBackend, getConfig) {
 
     it('should emit meta on read data', function (done) {
       createBackend(getConfig(), function (err, factory) {
-        var stream = factory.createDataStream()
+        var stream = factory.createDataWriteStream()
         stream.on('error', done)
         stream.on('done', function (id) {
           var response = []
-          factory.getDataStream(id).on('data', function (data) {
+          factory.createDataReadStream(id).on('data', function (data) {
             response.push(data)
           }).on('meta', function (meta) {
             assert.equal(meta.type, 'text/plain; charset=us-ascii')
@@ -66,17 +66,17 @@ module.exports = function (createBackend, getConfig) {
 
     it('should return a stream', function () {
       createBackend(getConfig(), function (err, factory) {
-        assert(factory.createCacheStream('1234') instanceof Stream)
+        assert(factory.createCacheWriteStream('1234') instanceof Stream)
       })
     })
 
     it('should write and read cache', function (done) {
       createBackend(getConfig(), function (err, factory) {
-        var stream = factory.createCacheStream('1234')
+        var stream = factory.createCacheWriteStream('1234')
         stream.on('error', done)
         stream.on('done', function () {
           var response = []
-          factory.getCacheStream('1234').on('data', function (cacheData) {
+          factory.createCacheReadStream('1234').on('data', function (cacheData) {
             response.push(cacheData)
           }).on('end', function () {
 

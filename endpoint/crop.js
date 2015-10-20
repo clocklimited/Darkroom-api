@@ -25,7 +25,7 @@ module.exports = function (config, backendFactory) {
 
       req.log.info({ id: req.requestId }, 'Creating crop ' + cropCount)
       data.data = req.params.data
-      var store = backendFactory.createDataStream()
+      var store = backendFactory.createDataWriteStream()
         , crop = new darkroom.Crop()
 
       store.once('error', function (error) {
@@ -52,7 +52,7 @@ module.exports = function (config, backendFactory) {
         cropCount++
         callback()
       })
-      var readStream = backendFactory.getDataStream(req.params.data)
+      var readStream = backendFactory.createDataReadStream(req.params.data)
 
       readStream
         .pipe(crop)

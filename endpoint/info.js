@@ -4,7 +4,7 @@ var darkroom = require('darkroom')
 module.exports = function (config, backEndFactory) {
   return function (req, res, next) {
     var info = new darkroom.Info()
-      , store = backEndFactory.createCacheStream(req.cacheKey)
+      , store = backEndFactory.createCacheWriteStream(req.cacheKey)
 
     store.on('error', function (error) {
       req.log.error('Cache:', error.message)
@@ -13,7 +13,7 @@ module.exports = function (config, backEndFactory) {
     var passThrough = new PassThrough()
     passThrough.pipe(store)
 
-    backEndFactory.getDataStream(req.params.data)
+    backEndFactory.createDataReadStream(req.params.data)
       .pipe(info)
       .pipe(passThrough
         , { width: Number(req.params.width)

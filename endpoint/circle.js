@@ -7,7 +7,7 @@ module.exports = circleEndpoint
 function circleEndpoint(config, backendFactory) {
 
   return function processCircle(req, res, next) {
-    var originalReadStream = backendFactory.getDataStream(req.params.data)
+    var originalReadStream = backendFactory.createDataReadStream(req.params.data)
       , readStream = originalReadStream
 
     if (req.params.width && req.params.height) {
@@ -32,7 +32,7 @@ function circleEndpoint(config, backendFactory) {
         , colour: req.params.colour
         }
       , circle = new darkroom.Circle(circleOptions)
-      , store = backendFactory.createCacheStream(req.cacheKey)
+      , store = backendFactory.createCacheWriteStream(req.cacheKey)
 
     store.once('error', function (error) {
       return showError(req, error, next)
