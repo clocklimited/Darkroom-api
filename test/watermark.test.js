@@ -5,6 +5,7 @@ var config = require('con.figure')(require('./config')())
   , path = '/watermark'
   , async = require('async')
 
+// This is skipped because `darkroom` doesn't have a streamy interface for this yet.
 describe.skip('Watermark', function() {
   var  imgSrcId = null
     , darkroom
