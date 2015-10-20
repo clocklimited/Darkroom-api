@@ -50,6 +50,21 @@ Update the properties in the application you're working on to talk to your local
 , darkroomKey: 'key'
 ```
 
+# CLI Tool
+
+You can generate a hashed URL from the CLI using
+
+```
+./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c
+```
+
+Or you can pass a given salt
+
+```
+./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
+```
+
+
 # Version 4.0.0
 
 As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.

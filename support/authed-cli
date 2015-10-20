@@ -1,0 +1,8 @@
+#!/usr/local/bin/node
+var config = require('con.figure')(require('../config')())
+  , url = process.argv[2]
+  , salt = process.argv[3] || config.salt
+  , host = config.http.url || ''
+  , hash = require('crypto').createHash('md5').update(url + salt).digest('hex')
+
+console.log('\nURL: %s\n', [ host, url, ':', hash ].join(''))
