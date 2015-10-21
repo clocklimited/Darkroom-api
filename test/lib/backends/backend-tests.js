@@ -43,6 +43,45 @@ module.exports = function (createBackend, getConfig) {
       })
     })
 
+    it('should handle 200MB', function (done) {
+      createBackend(getConfig(), function (err, factory) {
+        var stream = factory.createDataWriteStream()
+        stream.on('error', done)
+        stream.on('done', function (id) {
+          assert.deepEqual(id,
+            { id: 'e60a4106eed37bb9f34d3932c6d3eb1f'
+            , size: 20000000
+            , type: 'application/octet-stream; charset=binary' })
+          done()
+        })
+        var data = []
+          , i = 0
+          , buf
+        for (i = 0; i < 100000; i += 1) data.push(i)
+        buf = new Buffer(data)
+        for (i = 0; i < 200; i += 1) stream.write(buf)
+        stream.end()
+      })
+    })
+
+    it('should return same meta if the same file is uploaded twice', function (done) {
+      createBackend(getConfig(), function (err, factory) {
+        var stream = factory.createDataWriteStream()
+        stream.on('error', done)
+        stream.on('done', function (id) {
+          var secondStream = factory.createDataWriteStream()
+          secondStream.on('done', function (secondId) {
+            assert.deepEqual(id, secondId)
+            done()
+          })
+          secondStream.write('hello')
+          secondStream.end()
+        })
+        stream.write('hello')
+        stream.end()
+      })
+    })
+
     it('should emit meta on read data', function (done) {
       createBackend(getConfig(), function (err, factory) {
         var stream = factory.createDataWriteStream()
