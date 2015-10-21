@@ -122,7 +122,7 @@ backends().forEach(function (backend) {
           if (error) return done(error)
           assert.equal(Object.keys(res.body).length, 1)
           assert(res.body instanceof Object)
-          assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
+          assert(!(res.body['10:100:100:100:100:200:' + imgSrcId] instanceof Object))
           done()
         })
     })

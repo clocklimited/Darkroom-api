@@ -39,7 +39,7 @@ module.exports = function (config, backendFactory) {
         callback(error)
       })
 
-      store.once('done', function (id) {
+      store.once('done', function (file) {
         var values = []
           , key = null
         for (key in data) {
@@ -47,8 +47,8 @@ module.exports = function (config, backendFactory) {
         }
 
         key = values.join(':')
-        collection[key] = id
-        req.log.info({ id: req.requestId }, 'Successfully created crop ' + cropCount + ': ' + id)
+        collection[key] = file.id
+        req.log.info({ id: req.requestId }, 'Successfully created crop ' + cropCount + ': ' + file.id)
         cropCount++
         callback()
       })
