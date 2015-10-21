@@ -1,6 +1,5 @@
 var request = require('supertest')
   , createBackendFactory = require('../lib/backend-factory-creator')
-  , _ = require('lodash')
   , fs = require('fs')
   , assert = require('assert')
   , async = require('async')

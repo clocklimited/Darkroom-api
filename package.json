@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",
+    "benchmarking": "^1.1.0",
     "gm": "^1.18.1",
     "istanbul": "^0.3.17",
     "jscs": "^2.3.2",

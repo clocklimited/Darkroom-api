@@ -19,6 +19,6 @@ module.exports = function () {
       , 'key': 'key'
       }
   }
-  if (process.env.MONGO_BACKEND) config.databaseUrl = 'mongodb://localhost:27017/darkroom-unit'
+  if (process.env.MONGO_BACKEND) config.databaseUrl = 'mongodb://localhost:27017/darkroom-test'
   return config
 }
