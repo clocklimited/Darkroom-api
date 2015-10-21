@@ -79,7 +79,9 @@ backends().forEach(function (backend) {
         stream.on('end', function() {
           originalEnd.call(req, function(err, res) {
             assert.equal(res.statusCode, 200, res.text)
-            assert.deepEqual(Object.keys(res.body), [ 'id' ])
+            assert(res.body.id !== undefined)
+            assert.equal(res.body.size, 104680)
+            assert.equal(res.body.type, 'image/jpeg; charset=binary')
             done()
           })
         })
@@ -106,9 +108,12 @@ backends().forEach(function (backend) {
           .end(function (err, res) {
             if (err) return done(err)
             assert(Array.isArray(res.body), 'not an array')
-            _.each(res.body, function (file) {
-              assert.deepEqual(Object.keys(file), [ 'id' ])
-            })
+            assert(res.body[0].id !== undefined)
+            assert.equal(res.body[0].size, 104680)
+            assert.equal(res.body[0].type, 'image/jpeg; charset=binary')
+            assert(res.body[1].id !== undefined)
+            assert.equal(res.body[1].size, 147532)
+            assert.equal(res.body[1].type, 'image/png; charset=binary')
             done()
           })
       })

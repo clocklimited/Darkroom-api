@@ -27,9 +27,11 @@ module.exports = function (createBackend, getConfig) {
         var stream = factory.createDataWriteStream()
         stream.on('error', done)
         stream.on('done', function (id) {
-          assert(id !== undefined, 'should return an `id`')
+          assert(id !== undefined, 'should return an `id`' + id)
+          assert.equal(id.size, 5)
+          assert.equal(id.type, 'text/plain; charset=us-ascii')
           var response = []
-          factory.createDataReadStream(id).on('data', function (data) {
+          factory.createDataReadStream(id.id).on('data', function (data) {
             response.push(data)
           }).on('end', function () {
             assert.equal(Buffer.concat(response).toString(), 'hello')
@@ -47,11 +49,11 @@ module.exports = function (createBackend, getConfig) {
         stream.on('error', done)
         stream.on('done', function (id) {
           var response = []
-          factory.createDataReadStream(id).on('data', function (data) {
+          factory.createDataReadStream(id.id).on('data', function (data) {
             response.push(data)
           }).on('meta', function (meta) {
-            assert.equal(meta.type, 'text/plain; charset=us-ascii')
             assert.equal(meta.size, 5)
+            assert.equal(meta.type, 'text/plain; charset=us-ascii')
             assert(meta.lastModified instanceof Date, 'meta.lastModified should be a date' + meta.lastModified)
             done()
           })
@@ -81,6 +83,26 @@ module.exports = function (createBackend, getConfig) {
           }).on('end', function () {
 
             assert.equal(Buffer.concat(response).toString(), 'hello')
+            done()
+          })
+        })
+        stream.write('hello')
+        stream.end()
+      })
+    })
+
+    it('should emit meta on read data', function (done) {
+      createBackend(getConfig(), function (err, factory) {
+        var stream = factory.createCacheWriteStream('1234')
+        stream.on('error', done)
+        stream.on('done', function (id) {
+          var response = []
+          factory.createCacheReadStream(id.id).on('data', function (data) {
+            response.push(data)
+          }).on('meta', function (meta) {
+            assert.equal(meta.type, 'text/plain; charset=us-ascii')
+            assert.equal(meta.size, 5)
+            assert(meta.lastModified instanceof Date, 'meta.lastModified should be a date' + meta.lastModified)
             done()
           })
         })
