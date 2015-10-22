@@ -1,6 +1,6 @@
 var createUploadBench = require('./upload')
   , async = require('async')
-  , n = 20
+  , n = 5
   , ConsoleHistogram = require('console-histogram')
 
 async.series(
@@ -45,15 +45,38 @@ function test (name, count, testFn) {
   }
 }
 
+function average(list, newLength) {
+  var y = newLength / list.length
+    , i = 0
+    , c = 0
+    , r = []
+    , x = 0
+    , e = 0
+
+  for (i = 0; i < newLength; i += 1) {
+    c = 0
+    x = 0
+    for (e = Math.ceil(i / y); e < Math.ceil((i + 1) / y); e += 1) {
+      x += 1
+      c += list[e]
+    }
+
+    r.push(c / x)
+  }
+
+  return r
+}
+
+
 function bar(values) {
   var max = Math.max.apply(null, values)
     , ratio = (process.stdout.columns / 1.5) / max
     , maxDigitLength = ('' + max).length
     , i = 1
-
-  values.forEach(function (value) {
+    , scaledValues = average(values, Math.max(process.stdout.rows - 1, 20))
+  scaledValues.forEach(function (value, index) {
     var length = Math.floor(value * ratio)
-    console.log( ('   ' + i).substr(-maxDigitLength) + ' | ' + Array(length).join('-') + ' ' + value)
+    console.log(('         ' + i).substr(-maxDigitLength - 1) + ' | ' + Array(length).join('-') + ' ' + value)
     i += 1
   })
 }
