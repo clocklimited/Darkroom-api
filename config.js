@@ -12,11 +12,11 @@ module.exports = function () {
     , 'log': true
     , quality: 85
     , apiProcesses: 1
-    , 'databaseUri': 'mongodb://localhost:27017/darkroom'
-    // , paths:
-    //   { 'data': function() { return locations.data }
-    //   , 'cache': function() { return  locations.cache }
-    //   }
+    //, 'databaseUri': 'mongodb://localhost:27017/darkroom'
+    , paths:
+      { 'data': function() { return locations.data }
+      , 'cache': function() { return  locations.cache }
+      }
     , version: version
     , salt: locations.salt
     , key: locations.key
