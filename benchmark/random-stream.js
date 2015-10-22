@@ -1,6 +1,6 @@
 'use strict'
 
-var Readable = new require('stream').Readable
+var Readable = require('stream').Readable
   , crypto = require('crypto')
 
 function RandomReadStream(size) {

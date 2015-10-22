@@ -67,16 +67,15 @@ function average(list, newLength) {
   return r
 }
 
-
 function bar(values) {
   var max = Math.max.apply(null, values)
     , ratio = (process.stdout.columns / 1.5) / max
     , maxDigitLength = ('' + max).length
     , i = 1
     , scaledValues = average(values, Math.max(process.stdout.rows - 1, 20))
-  scaledValues.forEach(function (value, index) {
+  scaledValues.forEach(function (value) {
     var length = Math.floor(value * ratio)
-    console.log(('         ' + i).substr(-maxDigitLength - 1) + ' | ' + Array(length).join('-') + ' ' + value)
+    console.log(('         ' + i).substr(-maxDigitLength - 1) + ' | ' + (new Array(length)).join('-') + ' ' + value)
     i += 1
   })
 }
