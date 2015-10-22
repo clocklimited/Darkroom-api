@@ -3,10 +3,10 @@ var createBackend = require('../../../lib/backends/mongo')
   , assert = require('assert')
 
 function getConfig() {
-  return { databaseUri: 'mongodb://localhost:27017/darkroom-test' }
+  return { databaseUri: process.env.MONGO_URL || 'mongodb://localhost:27017/darkroom-test' }
 }
 
-describe('Mongo Backend', function () {
+describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
   tests(createBackend, getConfig)
 
   describe('meta data', function () {
