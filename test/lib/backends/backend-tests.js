@@ -5,6 +5,7 @@ module.exports = function (createBackend, getConfig) {
 
   function clean(done) {
     createBackend(getConfig(), function (err, factory) {
+      if (err) return done(err)
       factory.clean(function () {
         factory.setup(done)
       })
