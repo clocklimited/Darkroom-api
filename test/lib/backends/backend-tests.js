@@ -18,7 +18,7 @@ module.exports = function (createBackend, getConfig) {
 
     it('should return a stream', function () {
       createBackend(getConfig(), function (err, factory) {
-        assert(factory.createDataWriteStream('1234') instanceof Stream)
+        assert(factory.createDataWriteStream() instanceof Stream)
       })
     })
 
