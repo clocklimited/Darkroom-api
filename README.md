@@ -65,6 +65,22 @@ Or you can pass a given salt
 ```
 
 
+# Version 6.0.0
+
+Major refactor to include a GridFS backend option.
+
+This also drops the { src: 'HASH'} from upload responses. It has always been the same as `id`, so was removed.
+
+If you want to use a mongo backend add `databaseUri` to `config.js`
+
+```
+'databaseUri': 'mongodb://localhost:27017/darkroom'
+```
+
+# Version 5.0.0
+
+Adds circle support
+
 # Version 4.0.0
 
 As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.
