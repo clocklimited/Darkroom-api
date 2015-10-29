@@ -1,7 +1,7 @@
 {
   "name": "darkroom-api",
   "private": true,
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "dependencies": {
@@ -21,6 +21,7 @@
     "mv": "^2.0.3",
     "pliers": "^1.2.1",
     "restify": "=2.3.5",
+    "rimraf": "^2.4.0",
     "temp": "^0.8.3"
   },
   "devDependencies": {
@@ -32,7 +33,6 @@
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
     "request": "^2.65.0",
-    "rimraf": "^2.4.0",
     "should": "^6.0.3",
     "supertest": "^1.0.1"
   },
