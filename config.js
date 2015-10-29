@@ -12,7 +12,7 @@ module.exports = function () {
     , 'log': true
     , quality: 85
     , apiProcesses: 1
-    //, 'databaseUri': 'mongodb://localhost:27017/darkroom'
+    , 'databaseUri': locations.databaseUri
     , paths:
       { 'data': function() { return locations.data }
       , 'cache': function() { return  locations.cache }

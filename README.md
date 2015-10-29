@@ -35,6 +35,7 @@ module.exports =
 , cache: './cache'
 , salt: 'salt'
 , key: 'key'
+, databaseUri: 'mongodb://localhost:27017/darkroom'
 }
 ```
 
@@ -71,7 +72,7 @@ Major refactor to include a GridFS backend option.
 
 This also drops the { src: 'HASH'} from upload responses. It has always been the same as `id`, so was removed.
 
-If you want to use a mongo backend add `databaseUri` to `config.js`
+If you want to use a mongo backend, set `databaseUri` in `locations.js`, otherwise set it to `false`.
 
 ```
 'databaseUri': 'mongodb://localhost:27017/darkroom'
