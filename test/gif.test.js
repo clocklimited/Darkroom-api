@@ -5,8 +5,8 @@ var request = require('supertest')
   , async = require('async')
   , backends = require('./lib/backends')
   , hashHelper = require('./hash-helper')
-  // , gm = require('gm')
-  , dir = 'samples'
+  , gm = require('gm')
+  , fixture = '/fixtures/gif.gif'
 
 backends().forEach(function (backend) {
   var config = backend.config
@@ -18,8 +18,8 @@ backends().forEach(function (backend) {
       , factory
 
     before(function (done) {
-			if (!fs.existsSync(dir)){
-				fs.mkdirSync(dir);
+			if (!fs.existsSync('test/samples')){
+				fs.mkdirSync('test/samples');
 			}
 			createBackendFactory(config, function (err, backendFactory) {
 				factory = backendFactory
@@ -31,6 +31,14 @@ backends().forEach(function (backend) {
     function clean(done) {
 			async.series([ factory.clean, factory.setup ], done)
     }
+
+		function assertImageEqual(actualfilePath, expectedfilePath, cb) {
+			gm.compare(actualfilePath, expectedfilePath, 0.01, function (err, isEqual) {
+				if (err) return cb(err)
+				assert(isEqual, 'Generated image should match the image fixture')
+				cb()
+			})
+		}
 
     before(clean)
     after(clean)
@@ -46,7 +54,7 @@ backends().forEach(function (backend) {
         originalEnd = req.end
         req.end = function() {}
 
-        var stream = fs.createReadStream(__dirname + '/fixtures/gif.gif')
+        var stream = fs.createReadStream(__dirname + fixture)
 
         stream.pipe(req)
 
@@ -61,8 +69,8 @@ backends().forEach(function (backend) {
         })
       })
 
-			it('should resize /300/150/:url to fit', function (done) {
-				var uri = '/300/150/' + imgSrcId
+			it('should resize /500/500/:url to fit', function (done) {
+				var uri = '/500/500/' + imgSrcId
 					, url = uri + ':' + hashHelper(uri)
 
 				request(darkroom)
@@ -70,15 +78,10 @@ backends().forEach(function (backend) {
 					.expect(200)
 					.end(function (error, res) {
 						if (error) return done(error)
-						fs.writeFile('samples/resize.gif', res.body, 'binary', function(err) {
-							if (err) throw err
+						fs.writeFile(__dirname + '/samples/resize.gif', res.body, 'binary', function (err) {
+							if (err) done(err)
+							assertImageEqual(__dirname + '/samples/resize.gif', __dirname + fixture, done)
 						})
-            done()
-						// gm(res.body).size(function (err, value) {
-						// 	assert.equal(res.headers['d-cache'], 'MISS')
-						// 	assert.equal(value.height, 150)
-						// 	done(err)
-						// })
 					})
 		  })
 
@@ -91,7 +94,7 @@ backends().forEach(function (backend) {
 					.expect(200)
 					.end(function (error, res) {
 						if (error) return done(error)
-							fs.writeFile('samples/original.gif', res.body, 'binary', function(err) {
+							fs.writeFile(__dirname + '/samples/original.gif', res.body, 'binary', function(err) {
 								if (err) throw err
                 done()
 							})
