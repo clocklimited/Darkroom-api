@@ -65,8 +65,7 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-
-# Version 6.0.0
+# Version 6.0.0 (Current)
 
 Major refactor to include a GridFS backend option.
 
@@ -78,11 +77,11 @@ If you want to use a mongo backend, set `databaseUri` in `locations.js`, otherwi
 'databaseUri': 'mongodb://localhost:27017/darkroom'
 ```
 
-# Version 5.0.0
+# Version 5.0.0 (Updates will still be applied)
 
 Adds circle support
 
-# Version 4.0.0
+# Version 4.0.0 (No longer supported)
 
 As of v4.0.0 darkroom and darkroom-api require GraphicsMagick 1.3.20+ to work correctly.
 
@@ -90,7 +89,7 @@ It will still mostly work with GraphicsMagick 1.3.18+ but the resize({ mode: 'fi
 
 v4 will not work well with GraphicsMagick pre 1.3.18
 
-# Version 3.0.0
+# Version 3.0.0 (No longer supported)
 Changes the folder structure and naming of images when uploaded and cropped.
 
 With the previous convention of `data/<hash>/image` on **ext3** you have a maximum limitation of 32k images and crops within `data/`. This is not so much an issue on **ext4** but eventually performance will degrade.
