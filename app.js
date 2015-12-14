@@ -6,6 +6,13 @@ var createServer = require('./server')
 
 createBackendFactory(config, function (err, factory) {
 
+  if (err) {
+    console.error('Error starting darkroom')
+    console.error(err.message)
+    console.log(err.stack)
+    return process.exit(1)
+  }
+
   factory.setup(function() {
 
     var app = createServer(config, factory)
