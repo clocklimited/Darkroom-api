@@ -102,6 +102,19 @@ module.exports = function (config, backEndFactory) {
     return next()
   })
 
+  server.get('/_health', function (req, res, next) {
+    backEndFactory.isHealthy(function (err, healthy) {
+      if (err) return next(err)
+      if (healthy) {
+        res.send(200, 'OK')
+      } else {
+        console.error(err)
+        res.send(500, 'ERROR')
+      }
+
+    })
+  })
+
   server.get(/^\/+circle\/+(.*)$/, checkRoute
     , createCacheDealer(config, backEndFactory, createCacheKey), circleEndpoint)
   server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
