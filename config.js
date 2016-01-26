@@ -11,6 +11,8 @@ module.exports = function () {
       }
     , 'log': true
     , quality: 85
+    , upload: {
+    }
     , apiProcesses: 1
     , 'databaseUri': locations.databaseUri
     , paths:
