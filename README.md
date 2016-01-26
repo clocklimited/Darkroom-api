@@ -65,7 +65,7 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.1.0 (Current)
+# Version 6.5.0 (Current)
 
 Now has the ability to white list upload file types. To only allow png and jpg add the following to the config.
 
