@@ -160,7 +160,7 @@ backends().forEach(function (backend) {
           .get(url)
           .expect(404)
           .end(function (error, res) {
-            res.headers['cache-control'].should.equal('max-age=' + config.http.pageNotFoundMaxage)
+            assert.equal(res.headers['cache-control'], 'max-age=' + config.http.pageNotFoundMaxage)
             done(error)
           })
       })
