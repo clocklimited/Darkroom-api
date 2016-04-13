@@ -59,6 +59,7 @@ module.exports = function (config, backendFactory) {
         .pipe(store
           , { crop: data
             , gravity: req.params.gravity
+            , format: req.params.format
             }
         )
     }, function (error) {
