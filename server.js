@@ -8,6 +8,7 @@ var restify = require('restify')
   , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
   , createPostUploader = require('./lib/middleware/post-uploader')
   , createPutUploader = require('./lib/middleware/put-uploader')
+  , path = require('path')
 
 module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
@@ -78,6 +79,7 @@ module.exports = function (config, backEndFactory) {
     req.params.data = tokens.shift()
     req.params.hash = tokens.shift()
     req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
+    req.params.format = path.extname(req.url).substring(1)
 
     if (authorised(req)) {
       res.set('Authorized-Request', req.url)
