@@ -142,6 +142,7 @@ backends().forEach(function (backend) {
     })
 
     it('should format image to specified format', function (done) {
+      this.timeout(6000)
       var uri = '/160/' + imgSrcId
         , format = 'png'
         , url = uri + ':' + hashHelper(uri) + '/a.' + format

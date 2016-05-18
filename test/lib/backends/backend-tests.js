@@ -45,6 +45,7 @@ module.exports = function (createBackend, getConfig) {
     })
 
     it('should handle 200MB', function (done) {
+      this.timeout(6000)
       createBackend(getConfig(), function (err, factory) {
         var stream = factory.createDataWriteStream()
         stream.on('error', done)
