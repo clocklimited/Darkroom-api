@@ -65,7 +65,13 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.5.0 (Current)
+# Version 6.6.0 (Current)
+
+Adds the ability to request different response formats. The file name extension is used as the desired format. The `allowedResponseFormats` configuration property sets what formats are allowed. If the extension does not match one of these formats, then the image will be returned in its uploaded format.
+
+This feature could be used to increase CPU load. This needs to/will be resolved in a future version.
+
+# Version 6.5.0
 
 Now has the ability to white list upload file types. To only allow png and jpg add the following to the config.
 

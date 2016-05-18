@@ -22,6 +22,14 @@ module.exports = function () {
     , version: version
     , salt: locations.salt
     , key: locations.key
+    , allowedResponseFormats:
+      [ 'jpg'
+      , 'jpeg'
+      , 'png'
+      , 'gif'
+      , 'tiff'
+      , 'svg'
+      ]
     }
   }
 }

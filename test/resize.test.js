@@ -6,6 +6,14 @@ var createDarkroom = require('../server')
   , async = require('async')
   , assert = require('assert')
   , backends = require('./lib/backends')
+  , allowedResponseFormats =
+      [ 'jpg'
+      , 'jpeg'
+      , 'png'
+      , 'gif'
+      , 'tiff'
+      , 'svg'
+      ]
 
 backends().forEach(function (backend) {
   var config = backend.config
@@ -15,6 +23,7 @@ backends().forEach(function (backend) {
     var imgSrcId
       , darkroom
       , factory
+      , imgSrcFormat = 'jpeg'
 
     before(function (done) {
       createBackendFactory(config, function (err, backendFactory) {
@@ -37,7 +46,7 @@ backends().forEach(function (backend) {
         .post('/')
         .set('x-darkroom-key', 'key')
         .set('Accept', 'application/json')
-        .attach('file', 'test/fixtures/jpeg.jpeg')
+        .attach('file', 'test/fixtures/jpeg.' + imgSrcFormat)
         .end(function (err, res) {
           imgSrcId = res.body.id
           done(err)
@@ -127,6 +136,44 @@ backends().forEach(function (backend) {
             assert.equal(res.headers['d-cache'], 'MISS')
             assert.equal(value.width, 160)
             assert.equal(value.height, 120)
+            done(err)
+          })
+        })
+    })
+
+    it('should format image to specified format', function (done) {
+      this.timeout(6000)
+      var uri = '/160/' + imgSrcId
+        , format = 'png'
+        , url = uri + ':' + hashHelper(uri) + '/a.' + format
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).format(function (err, value) {
+            assert.equal(value, format.toUpperCase())
+            done(err)
+          })
+        })
+    })
+
+    it('should format image to original format if no other format is specified', function (done) {
+      var uri = '/160/' + imgSrcId
+        , url = uri + ':' + hashHelper(uri)
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).format(function (err, value) {
+            assert.equal(value, imgSrcFormat.toUpperCase())
             done(err)
           })
         })

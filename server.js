@@ -8,6 +8,8 @@ var restify = require('restify')
   , createCacheKey = require('./endpoint/circle/cache-key-adaptor')
   , createPostUploader = require('./lib/middleware/post-uploader')
   , createPutUploader = require('./lib/middleware/put-uploader')
+  , createResponseFormatWhitelister = require('./lib/response-format-whitelister')
+  , path = require('path')
 
 module.exports = function (config, backEndFactory) {
   /* jshint maxstatements: 27 */
@@ -17,6 +19,7 @@ module.exports = function (config, backEndFactory) {
     , circleEndpoint = createCircleEndpoint(config, backEndFactory)
     , postUploader = createPostUploader(backEndFactory)
     , putUploader = createPutUploader(backEndFactory)
+    , whitelistResponseFormat = createResponseFormatWhitelister(config)
     , log = bunyan.createLogger(
       { name: 'darkroom'
       , level: process.env.LOG_LEVEL || 'debug'
@@ -78,6 +81,7 @@ module.exports = function (config, backEndFactory) {
     req.params.data = tokens.shift()
     req.params.hash = tokens.shift()
     req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
+    req.params.format = whitelistResponseFormat(path.extname(req.url).substring(1).toLowerCase())
 
     if (authorised(req)) {
       res.set('Authorized-Request', req.url)
