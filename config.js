@@ -22,7 +22,7 @@ module.exports = function () {
     , version: version
     , salt: locations.salt
     , key: locations.key
-    , allowedFormats:
+    , allowedResponseFormats:
       [ 'jpg'
       , 'jpeg'
       , 'png'

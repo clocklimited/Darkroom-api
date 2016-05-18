@@ -6,7 +6,7 @@ var createDarkroom = require('../server')
   , async = require('async')
   , assert = require('assert')
   , backends = require('./lib/backends')
-  , allowedFormats =
+  , allowedResponseFormats =
       [ 'jpg'
       , 'jpeg'
       , 'png'
@@ -147,7 +147,7 @@ backends().forEach(function (backend) {
         , format = 'png'
         , url = uri + ':' + hashHelper(uri) + '/a.' + format
 
-      config.allowedFormats = allowedFormats
+      config.allowedResponseFormats = allowedResponseFormats
 
       request(darkroom)
         .get(url)
@@ -165,7 +165,7 @@ backends().forEach(function (backend) {
       var uri = '/160/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
 
-      config.allowedFormats = allowedFormats
+      config.allowedResponseFormats = allowedResponseFormats
 
       request(darkroom)
         .get(url)

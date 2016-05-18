@@ -1,28 +1,28 @@
 var assert = require('assert')
-  , createFormatWhitelister = require('../../lib/format-whitelister')
-  , config = { allowedFormats: [ 'jpg', 'png' ] }
+  , createResponseFormatWhitelister = require('../../lib/response-format-whitelister')
+  , config = { allowedResponseFormats: [ 'jpg', 'png' ] }
 
 describe('Format-Whitelister', function () {
 
   it('should return format if it is allowed', function () {
     var format = 'jpg'
-      , whitelistFormat = createFormatWhitelister(config)
+      , whitelistResponseFormat = createResponseFormatWhitelister(config)
 
-    assert.equal(whitelistFormat(format), format)
+    assert.equal(whitelistResponseFormat(format), format)
   })
 
   it('should return undefined if format is not allowed', function () {
     var format = 'bmp'
-      , whitelistFormat = createFormatWhitelister(config)
+      , whitelistResponseFormat = createResponseFormatWhitelister(config)
 
-    assert.equal(whitelistFormat(format), undefined)
+    assert.equal(whitelistResponseFormat(format), undefined)
   })
 
   it('should return undefined if config.allowedFormats is falsey', function () {
     var format = 'jpg'
-      , whitelistFormat = createFormatWhitelister({})
+      , whitelistResponseFormat = createResponseFormatWhitelister({})
 
-    assert.equal(whitelistFormat(format), undefined)
+    assert.equal(whitelistResponseFormat(format), undefined)
   })
 
 })
