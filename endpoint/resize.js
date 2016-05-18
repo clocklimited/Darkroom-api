@@ -23,7 +23,7 @@ module.exports = function (config, backendFactory) {
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
-    req.params.format = req.params.format || undefined
+    req.params.format = req.params.format
 
     var readStream = backendFactory.createDataReadStream(req.params.data)
 
