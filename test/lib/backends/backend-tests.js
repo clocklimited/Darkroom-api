@@ -51,7 +51,7 @@ module.exports = function (createBackend, getConfig) {
         stream.on('error', done)
         stream.on('done', function (id) {
           assert.deepEqual(id,
-            { id: 'e60a4106eed37bb9f34d3932c6d3eb1f'
+            { id: '6b54f2903bc311a75e6ed47337877c3b'
             , size: 20000000
             , type: 'application/octet-stream; charset=binary' })
           done()
@@ -59,7 +59,7 @@ module.exports = function (createBackend, getConfig) {
         var data = []
           , i = 0
           , buf
-        for (i = 0; i < 100000; i += 1) data.push(i)
+        for (i = 1; i < 100001; i += 1) data.push(i)
         buf = new Buffer(data)
         for (i = 0; i < 200; i += 1) stream.write(buf)
         stream.end()
