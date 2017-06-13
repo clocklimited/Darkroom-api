@@ -142,7 +142,7 @@ module.exports = function (config, backEndFactory) {
 
   server.post('/crop', restify.bodyParser(), endpoint.crop)
 
-  // This is being removed until a time when the 'darkroom' implementation is
+  // This is being removed until a time when the 'verydarkroom' implementation is
   // more streamy or a new version of DR is rolled out.
   //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
 

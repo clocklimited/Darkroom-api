@@ -1,4 +1,4 @@
-var darkroom = require('darkroom')
+var darkroom = require('verydarkroom')
   , PassThrough = require('stream').PassThrough
   , restify = require('restify')
 

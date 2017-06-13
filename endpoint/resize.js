@@ -1,5 +1,5 @@
 var PassThrough = require('stream').PassThrough
-  , darkroom = require('darkroom')
+  , darkroom = require('verydarkroom')
   , restify = require('restify')
 
 module.exports = function (config, backendFactory) {

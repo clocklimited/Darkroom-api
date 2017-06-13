@@ -1,4 +1,4 @@
-var darkroom = require('darkroom')
+var darkroom = require('verydarkroom')
   , path = require('path')
   , fs = require('fs')
   , restify = require('restify')

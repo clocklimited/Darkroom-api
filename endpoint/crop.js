@@ -1,4 +1,4 @@
-var darkroom = require('darkroom')
+var darkroom = require('verydarkroom')
   , url = require('url')
   , async = require('async')
   , restify = require('restify')
@@ -35,7 +35,7 @@ module.exports = function (config, backendFactory) {
 
       // changed from “once” to “on” because with “once” the server would crash on an error
       crop.on('error', function (error) {
-        req.log.error({ id: req.requestId }, 'Crop', error)
+        req.log.error({ id: req.requestId }, 'Crop', error.toString ? error.toString() : error)
         callback(error)
       })
 

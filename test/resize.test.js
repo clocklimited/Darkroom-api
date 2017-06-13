@@ -197,7 +197,7 @@ backends().forEach(function (backend) {
       })
 
       it('should return a low max age header when a requests 404s', function (done) {
-        var uri = '/100/abcdefghijklmnopqrstuvwxyz123456'
+        var uri = '/100/f3205aa9a406642cff624998ccc4dd78'
           , url = uri + ':' + hashHelper(uri)
 
         config.http.pageNotFoundMaxage = 2

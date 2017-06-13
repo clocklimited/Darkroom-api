@@ -55,7 +55,7 @@ backends().forEach(function (backend) {
     })
 
     it('should 404 if image is not found', function(done) {
-      var uri = '/info/wang'
+      var uri = '/info/f3205aa9a406642cff624998ccc4dd78'
         , url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)

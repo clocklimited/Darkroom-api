@@ -10,7 +10,7 @@
     "busboy": "^0.2.11",
     "clustered": "^1.0.0",
     "con.figure": "0.0.0",
-    "darkroom": "^4.4.0",
+    "debug": "^2.6.8",
     "gridfs-stream": "^1.1.1",
     "lodash": "^3.9.3",
     "lodash.clone": "^4.0.1",
@@ -22,7 +22,8 @@
     "pliers": "^1.2.1",
     "restify": "=2.3.5",
     "rimraf": "^2.4.0",
-    "temp": "^0.8.3"
+    "temp": "^0.8.3",
+    "verydarkroom": "^1.0.0"
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",
