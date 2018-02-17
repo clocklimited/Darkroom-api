@@ -12,12 +12,21 @@ pipeline:
       - cd /app
       - npm test
 
+  package:
+    image: docker
+    commands:
+      - docker build --target package -t ${DRONE_REPO,,}:packager .
+      - docker rmi ${DRONE_REPO,,}:packager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   publish-release-image:
     image: docker
     commands:
       - docker login -u _json_key -p "$GOOGLE_CREDENTIALS" https://eu.gcr.io
       - docker build --target release --pull=true -t eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG .
       - docker push eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
+      - docker rmi eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
     secrets: [ google_credentials ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
