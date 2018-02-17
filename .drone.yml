@@ -9,6 +9,7 @@ pipeline:
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     commands:
+      - cd /app
       - npm test
 
   publish-release-image:
