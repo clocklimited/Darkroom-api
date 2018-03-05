@@ -14,13 +14,12 @@ module.exports = function (config, backendFactory) {
         { 'Content-Type': meta.type
         , 'Content-Length': meta.size
         })
-    })
+      stream.on('notFound', function () {
+        next(new restify.ResourceNotFoundError('Not Found'))
+      })
+      stream.on('error', next)
 
-    stream.on('notFound', function () {
-      next(new restify.ResourceNotFoundError('Not Found'))
+      stream.pipe(res)
     })
-    stream.on('error', next)
-
-    stream.pipe(res)
   }
 }
