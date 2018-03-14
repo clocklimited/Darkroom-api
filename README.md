@@ -65,7 +65,19 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.6.0 (Current)
+# Version 6.6.3 (Current)
+
+Adds a fix for the `/original` endpoint, where meta headers would be sent *after* the file has begun sending.
+
+# Version 6.6.2
+
+Adds a fix for a `Not Found` issue on the `/info` endpoint.
+
+# Version 6.6.1
+
+Adds a fix for the `clustered` module ignoring the environment variable `API_PROCESSES`.
+
+# Version 6.6.0
 
 Adds the ability to request different response formats. The file name extension is used as the desired format. The `allowedResponseFormats` configuration property sets what formats are allowed. If the extension does not match one of these formats, then the image will be returned in its uploaded format.
 
