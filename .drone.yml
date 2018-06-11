@@ -13,7 +13,6 @@ pipeline:
     commands:
       - cp /usr/bin/gm /drone/
       - cp -R /usr/lib /drone/lib
-      - ls /drone/lib/
 
   install:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
@@ -27,6 +26,7 @@ pipeline:
     commands:
       - cp /drone/gm /usr/bin/
       - cp -R /drone/lib/ /usr/lib/
+      - ls /usr/lib/
       - yarn test
 
   compile-app:
