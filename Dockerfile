@@ -7,7 +7,7 @@ RUN apk add --update \
 
 RUN yarn global add pkg
 
-FROM microadam/graphicsmagick-alpine:1.3.23 AS release
+FROM microadam/graphicsmagick-alpine:1.3.28 AS release
 
 RUN apk add --update libstdc++ libgcc && rm -rf /var/cache/apk/*
 
