@@ -24,9 +24,9 @@ pipeline:
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     commands:
-      - ls /drone/lib/
+      - ls -la /drone/lib/
       - cp /drone/gm /usr/bin/
-      - cp /drone/lib/* /usr/lib/
+      - cp -R /drone/lib/* /usr/lib/
       - ls /usr/lib/
       - yarn test
 
