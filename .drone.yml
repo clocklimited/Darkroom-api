@@ -6,32 +6,36 @@ pipeline:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  test:
+  pre-test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     commands:
-      - cd /app
-      - npm test
+      - cp `which node` /drone/node
+      - cp `which yarn` /drone/yarn
 
-  package:
-    image: docker
+  test:
+    image: microadam/graphicsmagick-alpine:1.3.23
     commands:
-      - docker build --target package -t ${DRONE_REPO,,}:packager .
-      - docker rmi ${DRONE_REPO,,}:packager
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - export PATH=/drone:$PATH
+      - yarn test
+
+  compile-app:
+    image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
+    environment:
+      - PKG_CACHE_PATH=/drone/pkg-cache
+    commands:
+      - mv locations.js.env locations.js
+      - pkg -t host app.js -o darkoom
 
   publish-release-image:
     image: docker
     commands:
-      - docker login -u _json_key -p "$GOOGLE_CREDENTIALS" https://eu.gcr.io
-      - docker build --target release --pull=true -t eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG .
-      - docker push eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
-      - docker rmi eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
+      - echo "$GOOGLE_CREDENTIALS" | docker login -u _json_key --password-stdin https://eu.gcr.io
+      - docker build --target release -t eu.gcr.io/test-k8s-1289/darkroom:${DRONE_COMMIT_SHA} .
+      - docker push eu.gcr.io/test-k8s-1289/darkroom:${DRONE_COMMIT_SHA}
+      - docker rmi eu.gcr.io/test-k8s-1289/darkroom:${DRONE_COMMIT_SHA}
     secrets: [ google_credentials ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      event: tag
 
   delete-previous-build-image:
     image: docker
@@ -44,8 +48,8 @@ pipeline:
 
   notify:
     image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
     channel: adam-test
     username: drone
+    secrets: [ slack_webhook ]
     when:
       status: [ success, failure ]

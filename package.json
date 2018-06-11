@@ -20,7 +20,7 @@
     "mongodb": "^2.0.45",
     "mv": "^2.0.3",
     "pliers": "^1.2.1",
-    "restify": "=2.3.5",
+    "restify": "4.3.0",
     "rimraf": "^2.4.0",
     "temp": "^0.8.3",
     "verydarkroom": "^1.0.0"
