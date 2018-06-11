@@ -23,11 +23,11 @@ pipeline:
 
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/test
     commands:
-      - ls -la /drone/lib/
       - cp /drone/gm /usr/bin/
       - cp -R /drone/lib/* /usr/lib/
-      - ls /usr/lib/
       - yarn test
 
   compile-app:
@@ -65,3 +65,10 @@ pipeline:
     secrets: [ slack_webhook ]
     when:
       status: [ success, failure ]
+
+services:
+  mongo:
+    image: mongo:3.4
+    command: [ "--smallfiles" ]
+    when:
+      event: push
