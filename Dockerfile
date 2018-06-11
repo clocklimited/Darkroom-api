@@ -13,6 +13,6 @@ RUN apk add --update libstdc++ libgcc && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY darkroom .
-node_modules/mmmagic/build/Release/magic.node .
+COPY node_modules/mmmagic/build/Release/magic.node .
 
 CMD [ '/app/darkroom' ]
