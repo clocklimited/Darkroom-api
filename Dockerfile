@@ -1,7 +1,8 @@
+FROM microadam/graphicsmagick-alpine:1.3.23 AS base
 FROM node:6.11.5-alpine AS build
 
-RUN apk add --update python build-base && rm -rf /var/cache/apk/*
-RUN yarn global add pkg && rm -rf /usr/local/share/.cache/
+RUN apk add --update python build-base
+RUN yarn global add pkg
 
 WORKDIR /app
 
@@ -9,11 +10,14 @@ COPY package*.json /app/
 RUN npm install
 
 COPY . /app/
+COPY --from=base /usr/bin/gm /usr/bin/gm
+
+FROM build AS package
 
 RUN mv /app/locations.js.env /app/locations.js
 RUN pkg -t node6-alpine-x64 /app/app.js
 
-FROM microadam/graphicsmagick-alpine:1.3.23 AS release
+FROM base AS release
 
 RUN apk add --update libstdc++ && rm -rf /var/cache/apk/*
 

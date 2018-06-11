@@ -1,0 +1,51 @@
+pipeline:
+  create-build-image:
+    image: docker
+    commands:
+      - docker build --target build -t ${DRONE_REPO,,}:${DRONE_BUILD_NUMBER} .
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  test:
+    image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
+    commands:
+      - cd /app
+      - npm test
+
+  package:
+    image: docker
+    commands:
+      - docker build --target package -t ${DRONE_REPO,,}:packager .
+      - docker rmi ${DRONE_REPO,,}:packager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  publish-release-image:
+    image: docker
+    commands:
+      - docker login -u _json_key -p "$GOOGLE_CREDENTIALS" https://eu.gcr.io
+      - docker build --target release --pull=true -t eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG .
+      - docker push eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
+      - docker rmi eu.gcr.io/test-k8s-1289/darkroom:$DRONE_TAG
+    secrets: [ google_credentials ]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      event: tag
+
+  delete-previous-build-image:
+    image: docker
+    commands:
+      - docker rmi -f ${DRONE_REPO,,}:${DRONE_PREV_BUILD_NUMBER}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      status: [ success, failure ]
+
+  notify:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: adam-test
+    username: drone
+    when:
+      status: [ success, failure ]
