@@ -14,12 +14,31 @@ pipeline:
       - cp /usr/bin/gm /drone/
       - cp -R /usr/lib /drone/lib
 
+  restore-cache:
+    image: drillster/drone-volume-cache
+    group: preinstall
+    restore: true
+    mount:
+      - /drone/pkg-cache
+      - node_modules
+    volumes:
+      - /var/lib/drone/cache-new:/cache
+
   install:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     commands:
       - yarn install --silent --no-emoji --prefer-offline
     when:
       event: push
+
+  rebuild-cache:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - /drone/pkg-cache
+      - node_modules
+    volumes:
+      - /var/lib/drone/cache-new:/cache
 
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
