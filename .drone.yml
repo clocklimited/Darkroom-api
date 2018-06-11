@@ -15,6 +15,7 @@ pipeline:
   test:
     image: microadam/graphicsmagick-alpine:1.3.23
     commands:
+      - apk add --update libstdc++ libgcc
       - export PATH=/drone:$PATH
       - yarn test
 
