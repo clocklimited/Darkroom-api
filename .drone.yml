@@ -28,8 +28,6 @@ pipeline:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     commands:
       - yarn install --silent --no-emoji --prefer-offline
-    when:
-      event: push
 
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
