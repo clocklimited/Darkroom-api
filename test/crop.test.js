@@ -90,7 +90,6 @@ backends().forEach(function (backend) {
           .expect('Content-Type', /json/)
           .expect(200)
           .end(function (error, res) {
-            console.log(res)
             if (error) return done(error)
             assert.equal(Object.keys(res.body).length, 1)
             assert(res.body instanceof Object)
