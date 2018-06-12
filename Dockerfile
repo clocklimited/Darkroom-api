@@ -15,4 +15,4 @@ WORKDIR /app
 COPY darkroom .
 COPY node_modules/mmmagic/build/Release/magic.node .
 
-CMD [ '/app/darkroom' ]
+ENTRYPOINT [ '/app/darkroom' ]
