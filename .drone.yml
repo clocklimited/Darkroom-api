@@ -31,15 +31,6 @@ pipeline:
     when:
       event: push
 
-  rebuild-cache:
-    image: drillster/drone-volume-cache
-    rebuild: true
-    mount:
-      - /drone/pkg-cache
-      - node_modules
-    volumes:
-      - /var/lib/drone/cache-new:/cache
-
   test:
     image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
     environment:
@@ -56,6 +47,15 @@ pipeline:
     commands:
       - mv locations.js.env locations.js
       - pkg -t host app.js -o darkroom
+
+  rebuild-cache:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - /drone/pkg-cache
+      - node_modules
+    volumes:
+      - /var/lib/drone/cache-new:/cache
 
   publish-release-image:
     image: docker
