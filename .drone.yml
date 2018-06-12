@@ -61,9 +61,9 @@ pipeline:
     image: docker
     commands:
       - echo "$GOOGLE_CREDENTIALS" | docker login -u _json_key --password-stdin https://eu.gcr.io
-      - docker build --target release -t eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v} .
-      - docker push eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}
-      - docker rmi eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}
+      - "docker build --target release -t eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v} ."
+      - "docker push eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}"
+      - "docker rmi eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}"
     secrets: [ google_credentials ]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
