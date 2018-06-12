@@ -55,7 +55,7 @@ pipeline:
       - PKG_CACHE_PATH=/drone/pkg-cache
     commands:
       - mv locations.js.env locations.js
-      - pkg -t host app.js -o darkoom
+      - pkg -t host app.js -o darkroom
 
   publish-release-image:
     image: docker
