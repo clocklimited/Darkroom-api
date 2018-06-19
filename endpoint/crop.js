@@ -5,7 +5,7 @@ var darkroom = require('verydarkroom')
 
 module.exports = function (config, backendFactory) {
   return function (req, res, next) {
-    req.body = JSON.parse(req.body)
+    if (typeof req.body === 'string') req.body = JSON.parse(req.body)
 
     var srcUrl = url.parse(req.body.src).path.split('/')
     req.params.data = srcUrl[srcUrl.length - 1]

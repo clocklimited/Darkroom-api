@@ -13,8 +13,8 @@ results
 
 npm-debug.log
 node_modules/*
-locations.js
 binary/*
+locations.js
 
 data/*
 cache/*

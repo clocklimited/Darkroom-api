@@ -28,6 +28,7 @@ module.exports = function (config, backendFactory) {
     var readStream = backendFactory.createDataReadStream(req.params.data)
 
     readStream.on('notFound', function () {
+      res.removeHeader('Cache-Control')
       res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
       next(new restify.ResourceNotFoundError('Image does not exist'))
     })

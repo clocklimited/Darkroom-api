@@ -207,8 +207,9 @@ backends().forEach(function (backend) {
           .get(url)
           .expect(404)
           .end(function (error, res) {
+            if (error) return done(error)
             assert.equal(res.headers['cache-control'], 'max-age=' + config.http.pageNotFoundMaxage)
-            done(error)
+            done()
           })
       })
     })
