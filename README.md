@@ -65,7 +65,11 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.6.3 (Current)
+# Version 6.7.0 (Current)
+
+Adds a fix for the `/original` endpoint to ensure the correct cache headers are present
+
+# Version 6.6.3
 
 Adds a fix for the `/original` endpoint, where meta headers would be sent *after* the file has begun sending.
 
