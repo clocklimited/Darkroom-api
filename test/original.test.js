@@ -4,6 +4,7 @@ var createDarkroom = require('../server')
   , hashHelper = require('./hash-helper')
   , async = require('async')
   , backends = require('./lib/backends')
+  , assert = require('assert')
 
 backends().forEach(function (backend) {
   var config = backend.config
@@ -41,22 +42,30 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return an image if the image exists', function(done) {
+    it('should return an image if the image exists (with the correct cache headers)', function(done) {
       var uri = '/original/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(200)
-        .end(done)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.equal(res.headers['cache-control'], 'max-age=10')
+          done()
+        })
     })
 
-    it('should return 404 if an image doesnt exist', function(done) {
-      var uri = '/original/missing-image'
+    it('should return 404 if an image doesnt exist (with the correct cache headers)', function(done) {
+      var uri = '/original/1cfdd3bf942749472093f3b0ed6d4f88'
         , url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(404)
-        .end(done)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.equal(res.headers['cache-control'], 'max-age=0')
+          done()
+        })
     })
 
   })
