@@ -1,6 +1,6 @@
 var restify = require('restify')
 
-module.exports = function (config, backendFactory) {
+module.exports = function (config, backendFactory, options) {
   return function (req, res, next) {
 
     if (!req.params.data) {
@@ -15,6 +15,15 @@ module.exports = function (config, backendFactory) {
         , 'Content-Length': meta.size
         })
       res.set('Cache-Control', 'max-age=' + config.http.maxage)
+      if (options && options.download) {
+        var filename = 'download'
+          , urlParts = req.url.split('/')
+          , lastPart = urlParts[urlParts.length - 1]
+        if (urlParts.length === 4) {
+          filename = lastPart
+        }
+        res.set('Content-Disposition', 'attachment;filename="' + filename + '"')
+      }
 
       stream.pipe(res)
     })

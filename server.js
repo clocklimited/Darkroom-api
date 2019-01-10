@@ -126,6 +126,7 @@ module.exports = function (config, backEndFactory) {
   server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
+  server.get(/^\/+download\/+(.*)$/, checkRoute, endpoint.download)
   server.get(/^\/(.*)$/, endpoint.original)
 
   server.post('/'
