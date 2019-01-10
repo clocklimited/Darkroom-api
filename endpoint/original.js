@@ -15,7 +15,7 @@ module.exports = function (config, backendFactory, options) {
         , 'Content-Length': meta.size
         })
       res.set('Cache-Control', 'max-age=' + config.http.maxage)
-      if (options.download) {
+      if (options && options.download) {
         var filename = 'download'
           , urlParts = req.url.split('/')
           , lastPart = urlParts[urlParts.length - 1]
