@@ -65,7 +65,11 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.7.0 (Current)
+# Version 6.8.0 (Current)
+
+Adds a new `/download` endpoint to ensure the correct headers are sent to force a browser to download a file
+
+# Version 6.7.0
 
 Adds a fix for the `/original` endpoint to ensure the correct cache headers are present
 
