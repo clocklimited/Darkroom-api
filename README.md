@@ -11,11 +11,11 @@ Authentication between services and client will be achieved by using Oauth. This
     git clone git@github.com:clocklimited/Darkroom-api.git
     cd Darkroom-api
     nave usemain 0.10.40
-    brew install gm
+    brew install gm gifsicle
     npm install
 
 ## Ubuntu
-    sudo apt-get install graphicsmagick
+    sudo apt-get install graphicsmagick gifsicle
     git clone git@github.com:clocklimited/Darkroom-api.git
     cd Darkroom-api
     npm install
@@ -65,7 +65,15 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 6.8.0 (Current)
+# Version 7.0.0 (Current)
+
+This version adds support for optimised animated gifs using the `gifsicle` software package
+
+As a result, both darkroom and darkroom-api now require Gifsicle 1.88 or later for full functionality.
+
+Without it, you will be unable to process gif's uploaded to dark room
+
+# Version 6.8.0
 
 Adds a new `/download` endpoint to ensure the correct headers are sent to force a browser to download a file
 

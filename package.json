@@ -1,7 +1,7 @@
 {
   "name": "darkroom-api",
   "private": true,
-  "version": "6.8.0",
+  "version": "7.0.0",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "dependencies": {
@@ -23,7 +23,7 @@
     "restify": "4.3.4",
     "rimraf": "^2.4.0",
     "temp": "^0.8.3",
-    "verydarkroom": "^1.0.0"
+    "verydarkroom": "^4.6.1"
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",
