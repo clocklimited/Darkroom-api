@@ -23,7 +23,7 @@
     "restify": "4.3.4",
     "rimraf": "^2.4.0",
     "temp": "^0.8.3",
-    "verydarkroom": "^1.0.0"
+    "verydarkroom": "^4.6.0"
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",
