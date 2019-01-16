@@ -2892,10 +2892,10 @@ verror@1.6.0:
   dependencies:
     extsprintf "1.2.0"
 
-verydarkroom@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/verydarkroom/-/verydarkroom-4.6.0.tgz#adb81ac366a0548625e2c40a90db1098800e8a26"
-  integrity sha512-QajZr4PrpE0e9ZXsdp7wh1Ft4PSfTyV0kPYWVDK4uukBQv0giIY5zW0hIDpi7FvXdv8GqPf+JvQAtjbxItPbgQ==
+verydarkroom@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/verydarkroom/-/verydarkroom-4.6.1.tgz#ac1748ee97e76088757e1e1875b1a64d8fefe7d2"
+  integrity sha512-/IJRJeybYRTqm2bVooMqafSVeb2zEHUBFJFXpzUz2nDW+hT1rVUyGCWV83Zhg28HGPkwDjP92mcfb2JOMmC8hg==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
