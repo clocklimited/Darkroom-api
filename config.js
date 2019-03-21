@@ -29,6 +29,7 @@ module.exports = function () {
       , 'gif'
       , 'tiff'
       , 'svg'
+      , 'webp'
       ]
     }
   }
