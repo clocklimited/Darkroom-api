@@ -65,7 +65,11 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 7.0.1 (Current)
+# Version 7.0.2 (Current)
+
+Enables WebP support by default.
+
+# Version 7.0.1
 
 This version adds support for optimised animated gifs using the `gifsicle` software package
 
