@@ -65,7 +65,11 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 7.0.2 (Current)
+# Version 7.1.0 (Current)
+
+Keeps PNGs lossless when being transcoded to WebP.
+
+# Version 7.0.2
 
 Enables WebP support by default.
 
