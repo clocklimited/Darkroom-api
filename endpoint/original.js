@@ -13,6 +13,7 @@ module.exports = function (config, backendFactory, options) {
       res.set(
         { 'Content-Type': meta.type
         , 'Content-Length': meta.size
+        , 'Last-Modified': new Date(meta.lastModified).toUTCString()
         })
       res.set('Cache-Control', 'max-age=' + config.http.maxage)
       if (options && options.download) {

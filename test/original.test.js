@@ -14,6 +14,7 @@ backends().forEach(function (backend) {
     var imgSrcId
       , darkroom
       , factory
+      , dateUploaded
 
     before(function (done) {
       createBackendFactory(config, function (err, backendFactory) {
@@ -38,6 +39,7 @@ backends().forEach(function (backend) {
         .attach('file', 'test/fixtures/jpeg.jpeg')
         .end(function (err, res) {
           imgSrcId = res.body.id
+          dateUploaded = res.headers.date
           done(err)
         })
     })
@@ -51,6 +53,7 @@ backends().forEach(function (backend) {
         .end(function (err, res) {
           if (err) return done(err)
           assert.equal(res.headers['cache-control'], 'max-age=10')
+          assert.equal(res.headers['last-modified'], dateUploaded)
           done()
         })
     })
@@ -64,6 +67,7 @@ backends().forEach(function (backend) {
         .end(function (err, res) {
           if (err) return done(err)
           assert.equal(res.headers['cache-control'], 'max-age=0')
+          assert.equal(res.headers['last-modified'], undefined)
           done()
         })
     })
