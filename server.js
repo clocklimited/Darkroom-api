@@ -70,7 +70,7 @@ module.exports = function (config, backEndFactory) {
 
     if (Object.keys(req.params).length === 0) return next()
     var dataPath = req.url
-      , tokens = dataPath.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
+      , tokens = dataPath.match(/(http.*|[a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
 
     // Error if an valid token is not found
     if (!Array.isArray(tokens) || (tokens.length < 3)) {

@@ -88,6 +88,24 @@ backends().forEach(function (backend) {
         })
     })
 
+    it('should resize /100/50/:url to fit when an actual URL is requested', function (done) {
+      var uri = '/100/50/' + 'http://img.clockte.ch/1000x1000'
+        , url = uri + ':' + hashHelper(uri)
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).size(function (err, value) {
+            assert.equal(res.headers['d-cache'], 'MISS')
+            assert.equal(value.width, 50)
+            assert.equal(value.height, 50)
+            done(err)
+          })
+        })
+    })
+
     it('should accept mode /100/50/fit/:url ', function (done) {
       var uri = '/100/50/fit/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
