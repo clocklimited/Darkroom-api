@@ -5,7 +5,7 @@ module.exports = function () {
     { http:
       { 'host': '127.0.0.1'
       , 'port': 17999
-      , 'url': 'http://127.0.0.1:17999/'
+      , 'url': 'http://127.0.0.1:17999'
       , 'maxage': 315360000
       , 'pageNotFoundMaxage': 120
       }

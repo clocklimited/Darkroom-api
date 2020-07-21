@@ -1,6 +1,7 @@
 var PassThrough = require('stream').PassThrough
   , darkroom = require('verydarkroom')
   , restify = require('restify')
+  , retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
 module.exports = function (config, backendFactory) {
 
@@ -19,13 +20,15 @@ module.exports = function (config, backendFactory) {
   }
 
   function resizeImage(req, res, next) {
+    /* jshint maxcomplexity:6 */
     var modes = [ 'fit', 'stretch', 'cover' ]
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
     req.params.format = req.params.format
 
-    var readStream = backendFactory.createDataReadStream(req.params.data)
+    var isHttp = req.params.data.indexOf('http') === 0
+    var readStream = isHttp ? retrieveImageByUrl(req.params.data, req.log) : backendFactory.createDataReadStream(req.params.data)
 
     readStream.on('notFound', function () {
       res.removeHeader('Cache-Control')

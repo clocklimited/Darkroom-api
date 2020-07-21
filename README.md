@@ -65,7 +65,11 @@ Or you can pass a given salt
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
 
-# Version 7.1.0 (Current)
+# Version 7.3.0 (Current)
+
+Add ability to download a remote image for resizing
+
+# Version 7.1.0
 
 Keeps PNGs lossless when being transcoded to WebP.
 
