@@ -141,6 +141,24 @@ backends().forEach(function (backend) {
         })
     })
 
+    it('should accept mode /100/50/fill/:url ', function (done) {
+      var uri = '/100/50/fill/' + imgSrcId
+        , url = uri + ':' + hashHelper(uri)
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).size(function (err, value) {
+            assert.equal(res.headers['d-cache'], 'MISS')
+            assert.equal(value.width, 100)
+            assert.equal(value.height, 50)
+            done(err)
+          })
+        })
+    })
+
     it('should resize to a given size with only width /160/:url', function (done) {
       var uri = '/160/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
