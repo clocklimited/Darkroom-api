@@ -23,6 +23,10 @@ Response.prototype.set = function(header, value) {
   this.headers[header] = value
 }
 
+Response.prototype.removeHeader = function(header) {
+  delete this.headers[header]
+}
+
 describe('cache-dealer-middleware', function () {
 
   it('should return a middleware function', function () {

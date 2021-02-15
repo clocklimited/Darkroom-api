@@ -1,4 +1,4 @@
-var darkroom = require('verydarkroom')
+var darkroom = require('@clocklimited/darkroom')
   , url = require('url')
   , async = require('async')
   , restify = require('restify')

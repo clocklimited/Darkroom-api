@@ -1,5 +1,5 @@
 var PassThrough = require('stream').PassThrough
-  , darkroom = require('verydarkroom')
+  , darkroom = require('@clocklimited/darkroom')
   , restify = require('restify')
   , retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
@@ -21,7 +21,7 @@ module.exports = function (config, backendFactory) {
 
   function resizeImage(req, res, next) {
     /* jshint maxcomplexity:6 */
-    var modes = [ 'fit', 'stretch', 'cover' ]
+    var modes = [ 'fit', 'stretch', 'cover', 'fill' ]
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
     req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]

@@ -122,7 +122,7 @@ module.exports = function (config, backEndFactory) {
   server.get(/^\/+circle\/+(.*)$/, checkRoute
     , createCacheDealer(config, backEndFactory, createCacheKey), circleEndpoint)
   server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
-  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch)\/(.*)$/, checkRoute, cacheDealer, endpoint.resize.both)
+  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch|fill)\/(.*)$/, checkRoute, cacheDealer, endpoint.resize.both)
   server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
@@ -143,7 +143,7 @@ module.exports = function (config, backEndFactory) {
 
   server.post('/crop', restify.bodyParser(), endpoint.crop)
 
-  // This is being removed until a time when the 'verydarkroom' implementation is
+  // This is being removed until a time when the '@clocklimited/darkroom' implementation is
   // more streamy or a new version of DR is rolled out.
   //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
 
