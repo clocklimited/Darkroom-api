@@ -64,8 +64,11 @@ Or you can pass a given salt
 ```
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
+# Version 7.4.0 (Current)
 
-# Version 7.3.0 (Current)
+Add `fill` resize mode.
+
+# Version 7.3.0
 
 Add ability to download a remote image for resizing
 
