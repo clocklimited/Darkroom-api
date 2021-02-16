@@ -141,8 +141,8 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should accept mode /100/50/fill/:url ', function (done) {
-      var uri = '/100/50/fill/' + imgSrcId
+    it('should accept mode /100/50/pad/:url ', function (done) {
+      var uri = '/100/50/pad/' + imgSrcId
         , url = uri + ':' + hashHelper(uri)
 
       request(darkroom)
