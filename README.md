@@ -64,7 +64,11 @@ Or you can pass a given salt
 ```
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
 ```
-# Version 7.4.0 (Current)
+# Version 7.5.0 (Current)
+
+Renames `fill` to `pad` and adds transparency.
+
+# Version 7.4.0
 
 Add `fill` resize mode.
 
