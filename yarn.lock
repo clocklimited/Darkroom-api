@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@clocklimited/darkroom@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-5.0.0.tgz#3c81aa68d546dcaa435663477a1acb846764465f"
-  integrity sha512-nBY9NwE3lXF6nG+2+1vLH8osPpIY6eFJR5Zk5gI+2u+wTxKZ910VmRB8Kj9SYhCD1qhEfJK3Uo5t9euXTDdHig==
+"@clocklimited/darkroom@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-5.1.0.tgz#54a24abf39a46d9e9ba451383e4707ad08820d63"
+  integrity sha512-hze6fM698uclfq/f781nRBn0T44zknBXZQnEJjTt3L3Qlj7DI/bBmCYhKn/Gp72XD2Bvy5IQ1DWI0aP0D7q0qg==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"

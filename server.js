@@ -122,7 +122,7 @@ module.exports = function (config, backEndFactory) {
   server.get(/^\/+circle\/+(.*)$/, checkRoute
     , createCacheDealer(config, backEndFactory, createCacheKey), circleEndpoint)
   server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
-  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch|fill)\/(.*)$/, checkRoute, cacheDealer, endpoint.resize.both)
+  server.get(/^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch|pad)\/(.*)$/, checkRoute, cacheDealer, endpoint.resize.both)
   server.get(/^\/+([0-9]+)\/([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+([0-9]+)\/+(.*)$/, checkRoute, cacheDealer, endpoint.resize.width)
   server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
