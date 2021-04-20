@@ -1,7 +1,7 @@
-var createUploadBench = require('./upload')
-  , async = require('async')
-  , n = 5
-  , ConsoleHistogram = require('console-histogram')
+const createUploadBench = require('./upload')
+const async = require('async')
+const n = 5
+const ConsoleHistogram = require('console-histogram')
 
 async.series(
   [ test('Small 100kb', n, createUploadBench({ url: 'http://0.0.0.0:17999/', size: 10 }))
@@ -11,7 +11,7 @@ async.series(
 
 function timeAsync(fn) {
   return function (cb) {
-    var start = Date.now()
+    const start = Date.now()
     fn(function (err) {
       cb(err, Date.now() - start)
     })
@@ -20,16 +20,14 @@ function timeAsync(fn) {
 
 function test (name, count, testFn) {
   return function (cb) {
-    var start
-    , tests = []
-    , consoleHistogram = new ConsoleHistogram({ binSize: 5, xLabel: 'upload', yLabel: 'ms' })
+    const tests = []
+    const consoleHistogram = new ConsoleHistogram({ binSize: 5, xLabel: 'upload', yLabel: 'ms' })
 
-    for (var i = 0; i < count; i++) {
-
+    for (let i = 0; i < count; i++) {
       tests.push(timeAsync(testFn))
     }
 
-    start = Date.now()
+    const start = Date.now()
     async.series(tests, function (err, results) {
       if (err) return console.error(err)
 
@@ -45,36 +43,37 @@ function test (name, count, testFn) {
   }
 }
 
+// what in tarnation
 function average(list, newLength) {
-  var y = newLength / list.length
-    , i = 0
-    , c = 0
-    , r = []
-    , x = 0
-    , e = 0
+  const listRatio = newLength / list.length
+  const result = []
+  let c = 0
+  let x = 0
+  let e = 0
 
-  for (i = 0; i < newLength; i += 1) {
+  for (let i = 0; i < newLength; i += 1) {
     c = 0
     x = 0
-    for (e = Math.ceil(i / y); e < Math.ceil((i + 1) / y); e += 1) {
+    for (e = Math.ceil(i / listRatio); e < Math.ceil((i + 1) / listRatio); e += 1) {
       x += 1
       c += list[e]
     }
 
-    r.push(c / x)
+    result.push((c / x) || 0)
   }
 
-  return r
+  return result
 }
 
 function bar(values) {
-  var max = Math.max.apply(null, values)
-    , ratio = (process.stdout.columns / 1.5) / max
-    , maxDigitLength = ('' + max).length
-    , i = 1
-    , scaledValues = average(values, Math.max(process.stdout.rows - 1, 20))
+  const max = Math.max.apply(null, values)
+  const ratio = (process.stdout.columns / 1.5) / max
+  const maxDigitLength = ('' + max).length
+  const scaledValues = average(values, Math.max(process.stdout.rows - 1, 20))
+  let i = 1
+
   scaledValues.forEach(function (value) {
-    var length = Math.floor(value * ratio)
+    const length = Math.floor(value * ratio)
     console.log(('         ' + i).substr(-maxDigitLength - 1) + ' | ' + (new Array(length)).join('-') + ' ' + value)
     i += 1
   })
