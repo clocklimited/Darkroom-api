@@ -29,7 +29,7 @@ Response.prototype.removeHeader = function (header) {
 describe('cache-dealer-middleware', function () {
   it('should return a middleware function', function () {
     var cacheDealer = createCacheDealer(config)
-    assert.equal(typeof cacheDealer, 'function')
+    assert.strictEqual(typeof cacheDealer, 'function')
   })
 
   it('should call next on not found', function (done) {
@@ -56,7 +56,7 @@ describe('cache-dealer-middleware', function () {
       type: 'image/png'
     })
 
-    assert.deepEqual(res.headers, {
+    assert.deepStrictEqual(res.headers, {
       'Cache-Control': 'max-age=undefined',
       'Content-Length': 1,
       'Content-Type': 'image/png',

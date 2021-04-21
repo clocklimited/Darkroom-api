@@ -41,7 +41,7 @@ backends().forEach(function (backend) {
         .get(url)
         .expect(200)
         .end(function (error, res) {
-          assert.equal(res.text, '{"width":500,"height":375}', res.text)
+          assert.strictEqual(res.text, '{"width":500,"height":375}', res.text)
           done(error)
         })
     })

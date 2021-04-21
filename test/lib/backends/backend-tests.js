@@ -24,8 +24,8 @@ module.exports = function (Backend, getConfig) {
       stream.on('error', done)
       stream.on('done', function (id) {
         assert(id !== undefined, 'should return an `id`' + id)
-        assert.equal(id.size, 5)
-        assert.equal(id.type, 'text/plain; charset=us-ascii')
+        assert.strictEqual(id.size, 5)
+        assert.strictEqual(id.type, 'text/plain; charset=us-ascii')
         const response = []
         backend
           .createDataReadStream(id.id)
@@ -33,7 +33,7 @@ module.exports = function (Backend, getConfig) {
             response.push(data)
           })
           .on('end', function () {
-            assert.equal(Buffer.concat(response).toString(), 'hello')
+            assert.strictEqual(Buffer.concat(response).toString(), 'hello')
             done()
           })
       })
@@ -46,7 +46,7 @@ module.exports = function (Backend, getConfig) {
       const stream = backend.createDataWriteStream()
       stream.on('error', done)
       stream.on('done', function (id) {
-        assert.deepEqual(id, {
+        assert.deepStrictEqual(id, {
           id: '6b54f2903bc311a75e6ed47337877c3b',
           size: 20000000,
           type: 'application/octet-stream; charset=binary'
@@ -68,7 +68,7 @@ module.exports = function (Backend, getConfig) {
       stream.on('done', function (id) {
         const secondStream = backend.createDataWriteStream()
         secondStream.on('done', function (secondId) {
-          assert.deepEqual(id, secondId)
+          assert.deepStrictEqual(id, secondId)
           done()
         })
         secondStream.write('hello')
@@ -89,8 +89,8 @@ module.exports = function (Backend, getConfig) {
             response.push(data)
           })
           .on('meta', function (meta) {
-            assert.equal(meta.size, 5)
-            assert.equal(meta.type, 'text/plain; charset=us-ascii')
+            assert.strictEqual(meta.size, 5)
+            assert.strictEqual(meta.type, 'text/plain; charset=us-ascii')
             assert(
               meta.lastModified instanceof Date,
               'meta.lastModified should be a date' + meta.lastModified
@@ -119,7 +119,7 @@ module.exports = function (Backend, getConfig) {
             response.push(cacheData)
           })
           .on('end', function () {
-            assert.equal(Buffer.concat(response).toString(), 'hello')
+            assert.strictEqual(Buffer.concat(response).toString(), 'hello')
             done()
           })
       })
@@ -138,8 +138,8 @@ module.exports = function (Backend, getConfig) {
             response.push(data)
           })
           .on('meta', function (meta) {
-            assert.equal(meta.type, 'text/plain; charset=us-ascii')
-            assert.equal(meta.size, 5)
+            assert.strictEqual(meta.type, 'text/plain; charset=us-ascii')
+            assert.strictEqual(meta.size, 5)
             assert(
               meta.lastModified instanceof Date,
               'meta.lastModified should be a date' + meta.lastModified

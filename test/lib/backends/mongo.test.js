@@ -31,7 +31,7 @@ describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
         backend._db
           .collection('fs.files')
           .findOne({ md5: file.id }, function (err, data) {
-            assert.equal(data.metadata.type, 'data')
+            assert.strictEqual(data.metadata.type, 'data')
             done()
           })
       })
@@ -45,7 +45,7 @@ describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
         backend._db
           .collection('fs.files')
           .findOne({ filename: file.id }, function (err, data) {
-            assert.equal(data.metadata.type, 'cache')
+            assert.strictEqual(data.metadata.type, 'cache')
             done()
           })
       })

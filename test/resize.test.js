@@ -48,9 +48,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 500)
-            assert.equal(value.height, 375)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 500)
+            assert.strictEqual(value.height, 375)
             done(err)
           })
         })
@@ -66,9 +66,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 67)
-            assert.equal(value.height, 50)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 67)
+            assert.strictEqual(value.height, 50)
             done(err)
           })
         })
@@ -84,9 +84,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 50)
-            assert.equal(value.height, 50)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 50)
+            assert.strictEqual(value.height, 50)
             done(err)
           })
         })
@@ -101,9 +101,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 67)
-            assert.equal(value.height, 50)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 67)
+            assert.strictEqual(value.height, 50)
             done(err)
           })
         })
@@ -119,9 +119,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 100)
-            assert.equal(value.height, 50)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 100)
+            assert.strictEqual(value.height, 50)
             done(err)
           })
         })
@@ -137,9 +137,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 100)
-            assert.equal(value.height, 50)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 100)
+            assert.strictEqual(value.height, 50)
             done(err)
           })
         })
@@ -155,9 +155,9 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).size(function (err, value) {
-            assert.equal(res.headers['d-cache'], 'MISS')
-            assert.equal(value.width, 160)
-            assert.equal(value.height, 120)
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(value.width, 160)
+            assert.strictEqual(value.height, 120)
             done(err)
           })
         })
@@ -177,7 +177,7 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).format(function (err, value) {
-            assert.equal(value, format.toUpperCase())
+            assert.strictEqual(value, format.toUpperCase())
             done(err)
           })
         })
@@ -195,7 +195,7 @@ backends().forEach(function (backend) {
         .end(function (error, res) {
           if (error) return done(error)
           gm(res.body).format(function (err, value) {
-            assert.equal(value, imgSrcFormat.toUpperCase())
+            assert.strictEqual(value, imgSrcFormat.toUpperCase())
             done(err)
           })
         })
@@ -212,7 +212,7 @@ backends().forEach(function (backend) {
           .get(url)
           .expect(200)
           .end(function (error, res) {
-            assert.equal(
+            assert.strictEqual(
               res.headers['cache-control'],
               'max-age=' + config.http.maxage
             )
@@ -232,7 +232,7 @@ backends().forEach(function (backend) {
           .expect(404)
           .end(function (error, res) {
             if (error) return done(error)
-            assert.equal(
+            assert.strictEqual(
               res.headers['cache-control'],
               'max-age=' + config.http.pageNotFoundMaxage
             )

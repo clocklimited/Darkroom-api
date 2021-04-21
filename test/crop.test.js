@@ -47,7 +47,7 @@ backends().forEach(function (backend) {
           .expect(200)
           .end(function (error, res) {
             if (error) return done(error)
-            assert.equal(Object.keys(res.body).length, 1)
+            assert.strictEqual(Object.keys(res.body).length, 1)
             assert(res.body instanceof Object)
             assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
             done()
@@ -66,7 +66,7 @@ backends().forEach(function (backend) {
           .expect(200)
           .end(function (error, res) {
             if (error) return done(error)
-            assert.equal(Object.keys(res.body).length, 1)
+            assert.strictEqual(Object.keys(res.body).length, 1)
             assert(res.body instanceof Object)
             assert(res.body['10:100:100:100:100:200:' + imgSrcId] !== undefined)
             done()
@@ -87,7 +87,7 @@ backends().forEach(function (backend) {
         .expect(200)
         .end(function (error, res) {
           if (error) return done(error)
-          assert.equal(Object.keys(res.body).length, 1)
+          assert.strictEqual(Object.keys(res.body).length, 1)
           assert(res.body instanceof Object)
           assert(
             !(res.body['10:100:100:100:100:200:' + imgSrcId] instanceof Object)

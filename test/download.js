@@ -42,7 +42,7 @@ backends().forEach(function (backend) {
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(
+          assert.strictEqual(
             res.headers['content-disposition'],
             'attachment;filename="download"'
           )
@@ -58,7 +58,7 @@ backends().forEach(function (backend) {
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(
+          assert.strictEqual(
             res.headers['content-disposition'],
             'attachment;filename="audio.mp3"'
           )

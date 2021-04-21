@@ -102,7 +102,7 @@ backends().forEach(function (backend) {
           gm(new Buffer.from(res.body)).size(function (err, size) {
             if (err) return done(err)
 
-            assert.deepEqual(size, { width: 300, height: 225 })
+            assert.deepStrictEqual(size, { width: 300, height: 225 })
             done()
           })
         })

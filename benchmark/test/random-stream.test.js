@@ -16,7 +16,7 @@ describe('random-stream', function () {
     })
 
     randomStream.on('end', function () {
-      assert.equal(Buffer.concat(buffer).length, 10)
+      assert.strictEqual(Buffer.concat(buffer).length, 10)
       done()
     })
   })
@@ -29,7 +29,7 @@ describe('random-stream', function () {
     })
 
     randomStream.on('end', function () {
-      assert.equal(Buffer.concat(buffer).length, 100000)
+      assert.strictEqual(Buffer.concat(buffer).length, 100000)
       done()
     })
   })

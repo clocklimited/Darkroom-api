@@ -43,8 +43,8 @@ backends().forEach(function (backend) {
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['cache-control'], 'max-age=10')
-          assert.equal(res.headers['last-modified'], dateUploaded)
+          assert.strictEqual(res.headers['cache-control'], 'max-age=10')
+          assert.strictEqual(res.headers['last-modified'], dateUploaded)
           done()
         })
     })
@@ -57,8 +57,8 @@ backends().forEach(function (backend) {
         .expect(404)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['cache-control'], 'max-age=0')
-          assert.equal(res.headers['last-modified'], undefined)
+          assert.strictEqual(res.headers['cache-control'], 'max-age=0')
+          assert.strictEqual(res.headers['last-modified'], undefined)
           done()
         })
     })

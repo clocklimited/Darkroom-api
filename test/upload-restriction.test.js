@@ -37,7 +37,7 @@ backends().forEach(function (backend) {
           .expect('Content-Type', /json/)
           .end(function (err, res) {
             if (err) return done(err)
-            assert.equal(
+            assert.strictEqual(
               res.body.message,
               'Forbidden type detected: text/plain; charset=us-ascii'
             )
@@ -61,7 +61,7 @@ backends().forEach(function (backend) {
 
         stream.on('end', function () {
           originalEnd.call(req, function (err, res) {
-            assert.equal(
+            assert.strictEqual(
               res.body.message,
               'Forbidden type detected: text/plain; charset=us-ascii'
             )
@@ -80,7 +80,7 @@ backends().forEach(function (backend) {
           .expect('Content-Type', /json/)
           .end(function (err, res) {
             if (err) return done(err)
-            assert.equal(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
             done()
           })
       })
@@ -101,7 +101,7 @@ backends().forEach(function (backend) {
 
         stream.on('end', function () {
           originalEnd.call(req, function (err, res) {
-            assert.equal(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
             done()
           })
         })

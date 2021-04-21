@@ -7,20 +7,20 @@ describe('Format-Whitelister', function () {
     const format = 'jpg'
     const whitelistResponseFormat = createResponseFormatWhitelister(config)
 
-    assert.equal(whitelistResponseFormat(format), format)
+    assert.strictEqual(whitelistResponseFormat(format), format)
   })
 
   it('should return undefined if format is not allowed', function () {
     const format = 'bmp'
     const whitelistResponseFormat = createResponseFormatWhitelister(config)
 
-    assert.equal(whitelistResponseFormat(format), undefined)
+    assert.strictEqual(whitelistResponseFormat(format), undefined)
   })
 
   it('should return undefined if config.allowedFormats is falsey', function () {
     const format = 'jpg'
     const whitelistResponseFormat = createResponseFormatWhitelister({})
 
-    assert.equal(whitelistResponseFormat(format), undefined)
+    assert.strictEqual(whitelistResponseFormat(format), undefined)
   })
 })
