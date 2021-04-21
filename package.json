@@ -28,20 +28,22 @@
   "devDependencies": {
     "assert-diff": "^1.0.1",
     "console-histogram": "^1.0.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "gm": "^1.18.1",
     "istanbul": "^0.3.17",
-    "jscs": "^2.3.2",
-    "jshint": "^2.8.0",
     "lodash.assign": "^4.0.0",
     "mocha": "^2.2.5",
+    "prettier": "^2.2.1",
     "request": "^2.65.0",
     "supertest": "^1.0.1"
   },
   "scripts": {
-    "lint": "jshint .",
-    "checkStyle": "jscs -v -r unix .",
-    "pretest": "yarn run lint && yarn run checkStyle",
+    "lint": "eslint -f unix .",
+    "pretest": "yarn run lint",
     "test": "istanbul cover _mocha -- --recursive",
+    "testonly": "istanbul cover _mocha -- --recursive",
     "posttest": "istanbul check-coverage --statements 80 --branches 75 --functions 70 --lines 80 && rm -rf coverage",
     "start": "node app"
   },
