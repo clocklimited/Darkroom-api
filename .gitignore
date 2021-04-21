@@ -18,3 +18,4 @@ locations.js
 
 data/*
 cache/*
+coverage/
