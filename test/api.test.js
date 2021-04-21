@@ -22,7 +22,10 @@ backends().forEach(function (backend) {
     })
 
     function clean(done) {
-      async.series([factory.clean, factory.setup], done)
+      async.series(
+        [factory.clean.bind(factory), factory.setup.bind(factory)],
+        done
+      )
     }
 
     before(clean)

@@ -18,7 +18,10 @@ backends().forEach(function (backend) {
         testConfig = extend({}, config, { upload: { allow: ['image/png'] } })
 
       function clean(done) {
-        async.series([factory.clean, factory.setup], done)
+        async.series(
+          [factory.clean.bind(factory), factory.setup.bind(factory)],
+          done
+        )
       }
 
       before(function (done) {
