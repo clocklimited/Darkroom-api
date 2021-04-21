@@ -1,11 +1,10 @@
-var PassThrough = require('stream').PassThrough
-  , darkroom = require('@clocklimited/darkroom')
-  , restify = require('restify')
-  , retrieveImageByUrl = require('../lib/image-by-url-retriever')
+const { PassThrough } = require('stream')
+const darkroom = require('@clocklimited/darkroom')
+const restify = require('restify')
+const retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
 module.exports = function (config, backendFactory) {
-
-  var resize = {}
+  const resize = {}
 
   resize.width = function (req, res, next) {
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
@@ -20,15 +19,18 @@ module.exports = function (config, backendFactory) {
   }
 
   function resizeImage(req, res, next) {
-    /* jshint maxcomplexity:6 */
-    var modes = [ 'fit', 'stretch', 'cover', 'pad' ]
+    const modes = ['fit', 'stretch', 'cover', 'pad']
     req.params.width = req.params.width || req.params[0]
     req.params.height = req.params.height || req.params[1]
-    req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
-    req.params.format = req.params.format
+    req.params.mode =
+      req.params.mode || modes.indexOf(req.params[2]) === -1
+        ? 'fit'
+        : req.params[2]
 
-    var isHttp = req.params.data.indexOf('http') === 0
-    var readStream = isHttp ? retrieveImageByUrl(req.params.data, req.log) : backendFactory.createDataReadStream(req.params.data)
+    const isHttp = req.params.data.indexOf('http') === 0
+    const readStream = isHttp
+      ? retrieveImageByUrl(req.params.data, req.log)
+      : backendFactory.createDataReadStream(req.params.data)
 
     readStream.on('notFound', function () {
       res.removeHeader('Cache-Control')
@@ -41,8 +43,8 @@ module.exports = function (config, backendFactory) {
       res.set('Last-Modified', new Date().toUTCString())
     })
 
-    var re = new darkroom.Resize()
-      , cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
+    const re = new darkroom.Resize()
+    const cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
 
     cacheStore.on('error', function (error) {
       req.log.warn('StoreStream:', error.message)
@@ -54,20 +56,18 @@ module.exports = function (config, backendFactory) {
       next(error)
     })
 
-    var passThrough = new PassThrough()
+    const passThrough = new PassThrough()
 
     passThrough.pipe(cacheStore)
     passThrough.pipe(res)
 
-    readStream
-      .pipe(re)
-      .pipe(passThrough
-        , { width: Number(req.params.width)
-          , height: Number(req.params.height)
-          , quality: config.quality
-          , mode: req.params.mode
-          , format: req.params.format
-          })
+    readStream.pipe(re).pipe(passThrough, {
+      width: Number(req.params.width),
+      height: Number(req.params.height),
+      quality: config.quality,
+      mode: req.params.mode,
+      format: req.params.format
+    })
   }
   return resize
 }

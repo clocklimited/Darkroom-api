@@ -1,7 +1,7 @@
 'use strict'
 
-var Readable = require('stream').Readable
-  , crypto = require('crypto')
+var Readable = require('stream').Readable,
+  crypto = require('crypto')
 
 function RandomReadStream(size) {
   Readable.apply(this)

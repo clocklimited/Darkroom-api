@@ -1,15 +1,15 @@
-var config = require('con.figure')(require('./config')())
-  , createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , path = '/watermark'
-  , async = require('async')
+const config = require('con.figure')(require('./config')())
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const path = '/watermark'
+const async = require('async')
 
 // This is skipped because `darkroom` doesn't have a streamy interface for this yet.
-describe.skip('Watermark', function() {
-  var  imgSrcId = null
-    , darkroom
-    , factory
+describe.skip('Watermark', function () {
+  let imgSrcId = null
+  let darkroom
+  let factory
 
   before(function (done) {
     createBackendFactory(config, function (err, backendFactory) {
@@ -20,7 +20,7 @@ describe.skip('Watermark', function() {
   })
 
   function clean(done) {
-    async.series([ factory.clean, factory.setup ], done)
+    async.series([factory.clean, factory.setup], done)
   }
 
   before(clean)
@@ -38,29 +38,24 @@ describe.skip('Watermark', function() {
       })
   })
 
-  it('should not require a opacity', function(done) {
+  it('should not require a opacity', function (done) {
     request(darkroom)
       .post(path)
-      .send(
-        { baseSrc: imgSrcId
-        , watermarkSrc: imgSrcId
-        }
-      )
+      .send({ baseSrc: imgSrcId, watermarkSrc: imgSrcId })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
       .end(done)
   })
 
-  it('should return a new image src id for a watermarked image', function(done) {
+  it('should return a new image src id for a watermarked image', function (done) {
     request(darkroom)
       .post(path)
-      .send(
-        { baseSrc: imgSrcId
-        , watermarkSrc: imgSrcId
-        , opacityPercentage: 25
-        }
-      )
+      .send({
+        baseSrc: imgSrcId,
+        watermarkSrc: imgSrcId,
+        opacityPercentage: 25
+      })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)

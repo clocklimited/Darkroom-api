@@ -1,12 +1,12 @@
-var darkroom = require('@clocklimited/darkroom')
-  , PassThrough = require('stream').PassThrough
-  , debug = require('debug')('darkroom-api:info')
-  , restify = require('restify')
+var darkroom = require('@clocklimited/darkroom'),
+  PassThrough = require('stream').PassThrough,
+  debug = require('debug')('darkroom-api:info'),
+  restify = require('restify')
 
 module.exports = function (config, backEndFactory) {
   return function (req, res, next) {
-    var info = new darkroom.Info()
-      , store = backEndFactory.createCacheWriteStream(req.cacheKey)
+    var info = new darkroom.Info(),
+      store = backEndFactory.createCacheWriteStream(req.cacheKey)
 
     store.on('error', function (error) {
       req.log.error('Cache:', error.message)
@@ -19,12 +19,11 @@ module.exports = function (config, backEndFactory) {
     var stream = backEndFactory.createDataReadStream(req.params.data)
     stream
       .pipe(info)
-      .pipe(passThrough
-        , { width: Number(req.params.width)
-          , height: Number(req.params.height)
-          , crop: req.params.crop
-          }
-      )
+      .pipe(passThrough, {
+        width: Number(req.params.width),
+        height: Number(req.params.height),
+        crop: req.params.crop
+      })
       .pipe(res)
 
     stream.on('notFound', function () {

@@ -1,18 +1,16 @@
-var createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , path = '/crop'
-  , async = require('async')
-  , assert = require('assert')
-  , backends = require('./lib/backends')
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const path = '/crop'
+const async = require('async')
+const assert = require('assert')
+const backends = require('./lib/backends')
 
 backends().forEach(function (backend) {
   var config = backend.config
 
-  describe('Crop ' + backend.name + ' backend', function() {
-    var imgSrcId
-      , darkroom
-      , factory
+  describe('Crop ' + backend.name + ' backend', function () {
+    var imgSrcId, darkroom, factory
 
     before(function (done) {
       createBackendFactory(config, function (err, backendFactory) {
@@ -23,7 +21,7 @@ backends().forEach(function (backend) {
     })
 
     function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
+      async.series([factory.clean, factory.setup], done)
     }
 
     before(clean)
@@ -42,22 +40,13 @@ backends().forEach(function (backend) {
     })
 
     describe('FileTypes', function () {
-      it('should return a working crop with a png', function(done) {
+      it('should return a working crop with a png', function (done) {
         request(darkroom)
           .post(path)
-          .send(
-            { src: imgSrcId
-            , crops: [
-                { x1: 10
-                , x2: 100
-                , y1: 100
-                , y2: 100
-                , w: 100
-                , h: 200
-                }
-              ]
-            }
-          )
+          .send({
+            src: imgSrcId,
+            crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
+          })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -70,22 +59,13 @@ backends().forEach(function (backend) {
           })
       })
 
-      it('should return a working crop with a jpeg', function(done) {
+      it('should return a working crop with a jpeg', function (done) {
         request(darkroom)
           .post(path)
-          .send(
-            { src: imgSrcId
-            , crops: [
-                { x1: 10
-                , x2: 100
-                , y1: 100
-                , y2: 100
-                , w: 100
-                , h: 200
-                }
-              ]
-            }
-          )
+          .send({
+            src: imgSrcId,
+            crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
+          })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -99,19 +79,11 @@ backends().forEach(function (backend) {
       })
     })
 
-    it('should return an object containing the specified dimensions as object keys', function(done) {
-      var body =
-        { src: imgSrcId
-        , crops: [
-            { x1: 10
-            , x2: 100
-            , y1: 100
-            , y2: 100
-            , w: 100
-            , h: 200
-            }
-          ]
-        }
+    it('should return an object containing the specified dimensions as object keys', function (done) {
+      var body = {
+        src: imgSrcId,
+        crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
+      }
       request(darkroom)
         .post(path)
         .send(body)
@@ -122,12 +94,14 @@ backends().forEach(function (backend) {
           if (error) return done(error)
           assert.equal(Object.keys(res.body).length, 1)
           assert(res.body instanceof Object)
-          assert(!(res.body['10:100:100:100:100:200:' + imgSrcId] instanceof Object))
+          assert(
+            !(res.body['10:100:100:100:100:200:' + imgSrcId] instanceof Object)
+          )
           done()
         })
     })
 
-    it('should return a http error if sizes not provided', function(done) {
+    it('should return a http error if sizes not provided', function (done) {
       request(darkroom)
         .post(path)
         .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
@@ -137,33 +111,33 @@ backends().forEach(function (backend) {
         .end(done)
     })
 
-    it('should not return an error if not all crop dimensions are specified', function(done) {
-      var body =
-        { src: imgSrcId
-        , crops: [
-            { x1: 10
-            , x2: 100
+    it('should not return an error if not all crop dimensions are specified', function (done) {
+      var body = {
+        src: imgSrcId,
+        crops: [
+          {
+            x1: 10,
+            x2: 100,
             // , y1: 100
             // , y2: 100
-            , w: 100
-            , h: 200
-            }
-          ]
-        }
+            w: 100,
+            h: 200
+          }
+        ]
+      }
 
-        request(darkroom)
-          .post(path)
-          .send(body)
-          .set('Accept', 'application/json')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .end(function (error) {
-            if (error) return done(error)
-            // TODO add tests for returned error message?
-            // res.body.results.should.have.length(0)
-            done()
-          })
-
+      request(darkroom)
+        .post(path)
+        .send(body)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(function (error) {
+          if (error) return done(error)
+          // TODO add tests for returned error message?
+          // res.body.results.should.have.length(0)
+          done()
+        })
     })
   })
 })

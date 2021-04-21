@@ -1,8 +1,7 @@
-var assert = require('assert')
-  , Stream = require('stream')
+var assert = require('assert'),
+  Stream = require('stream')
 
 module.exports = function (createBackend, getConfig) {
-
   function clean(done) {
     createBackend(getConfig(), function (err, factory) {
       if (err) return done(err)
@@ -16,7 +15,6 @@ module.exports = function (createBackend, getConfig) {
   after(clean)
 
   describe('data stream', function () {
-
     it('should return a stream', function () {
       createBackend(getConfig(), function (err, factory) {
         assert(factory.createDataWriteStream() instanceof Stream)
@@ -32,12 +30,15 @@ module.exports = function (createBackend, getConfig) {
           assert.equal(id.size, 5)
           assert.equal(id.type, 'text/plain; charset=us-ascii')
           var response = []
-          factory.createDataReadStream(id.id).on('data', function (data) {
-            response.push(data)
-          }).on('end', function () {
-            assert.equal(Buffer.concat(response).toString(), 'hello')
-            done()
-          })
+          factory
+            .createDataReadStream(id.id)
+            .on('data', function (data) {
+              response.push(data)
+            })
+            .on('end', function () {
+              assert.equal(Buffer.concat(response).toString(), 'hello')
+              done()
+            })
         })
         stream.write('hello')
         stream.end()
@@ -50,15 +51,16 @@ module.exports = function (createBackend, getConfig) {
         var stream = factory.createDataWriteStream()
         stream.on('error', done)
         stream.on('done', function (id) {
-          assert.deepEqual(id,
-            { id: '6b54f2903bc311a75e6ed47337877c3b'
-            , size: 20000000
-            , type: 'application/octet-stream; charset=binary' })
+          assert.deepEqual(id, {
+            id: '6b54f2903bc311a75e6ed47337877c3b',
+            size: 20000000,
+            type: 'application/octet-stream; charset=binary'
+          })
           done()
         })
-        var data = []
-          , i = 0
-          , buf
+        var data = [],
+          i = 0,
+          buf
         for (i = 1; i < 100001; i += 1) data.push(i)
         buf = new Buffer.from(data)
         for (i = 0; i < 200; i += 1) stream.write(buf)
@@ -90,14 +92,20 @@ module.exports = function (createBackend, getConfig) {
         stream.on('error', done)
         stream.on('done', function (id) {
           var response = []
-          factory.createDataReadStream(id.id).on('data', function (data) {
-            response.push(data)
-          }).on('meta', function (meta) {
-            assert.equal(meta.size, 5)
-            assert.equal(meta.type, 'text/plain; charset=us-ascii')
-            assert(meta.lastModified instanceof Date, 'meta.lastModified should be a date' + meta.lastModified)
-            done()
-          })
+          factory
+            .createDataReadStream(id.id)
+            .on('data', function (data) {
+              response.push(data)
+            })
+            .on('meta', function (meta) {
+              assert.equal(meta.size, 5)
+              assert.equal(meta.type, 'text/plain; charset=us-ascii')
+              assert(
+                meta.lastModified instanceof Date,
+                'meta.lastModified should be a date' + meta.lastModified
+              )
+              done()
+            })
         })
         stream.write('hello')
         stream.end()
@@ -106,7 +114,6 @@ module.exports = function (createBackend, getConfig) {
   })
 
   describe('cache stream', function () {
-
     it('should return a stream', function () {
       createBackend(getConfig(), function (err, factory) {
         assert(factory.createCacheWriteStream('1234') instanceof Stream)
@@ -119,13 +126,15 @@ module.exports = function (createBackend, getConfig) {
         stream.on('error', done)
         stream.on('done', function () {
           var response = []
-          factory.createCacheReadStream('1234').on('data', function (cacheData) {
-            response.push(cacheData)
-          }).on('end', function () {
-
-            assert.equal(Buffer.concat(response).toString(), 'hello')
-            done()
-          })
+          factory
+            .createCacheReadStream('1234')
+            .on('data', function (cacheData) {
+              response.push(cacheData)
+            })
+            .on('end', function () {
+              assert.equal(Buffer.concat(response).toString(), 'hello')
+              done()
+            })
         })
         stream.write('hello')
         stream.end()
@@ -138,14 +147,20 @@ module.exports = function (createBackend, getConfig) {
         stream.on('error', done)
         stream.on('done', function (id) {
           var response = []
-          factory.createCacheReadStream(id.id).on('data', function (data) {
-            response.push(data)
-          }).on('meta', function (meta) {
-            assert.equal(meta.type, 'text/plain; charset=us-ascii')
-            assert.equal(meta.size, 5)
-            assert(meta.lastModified instanceof Date, 'meta.lastModified should be a date' + meta.lastModified)
-            done()
-          })
+          factory
+            .createCacheReadStream(id.id)
+            .on('data', function (data) {
+              response.push(data)
+            })
+            .on('meta', function (meta) {
+              assert.equal(meta.type, 'text/plain; charset=us-ascii')
+              assert.equal(meta.size, 5)
+              assert(
+                meta.lastModified instanceof Date,
+                'meta.lastModified should be a date' + meta.lastModified
+              )
+              done()
+            })
         })
         stream.write('hello')
         stream.end()

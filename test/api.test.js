@@ -1,18 +1,17 @@
-var request = require('supertest')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , fs = require('fs')
-  , assert = require('assert')
-  , async = require('async')
-  , backends = require('./lib/backends')
+const request = require('supertest')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const fs = require('fs')
+const assert = require('assert')
+const async = require('async')
+const backends = require('./lib/backends')
 
 backends().forEach(function (backend) {
   var config = backend.config
 
-  describe('API ' + backend.name + ' backend', function() {
-
-    var createDarkroom = require('../server')
-      , darkroom
-      , factory
+  describe('API ' + backend.name + ' backend', function () {
+    var createDarkroom = require('../server'),
+      darkroom,
+      factory
 
     before(function (done) {
       createBackendFactory(config, function (err, backendFactory) {
@@ -23,30 +22,23 @@ backends().forEach(function (backend) {
     })
 
     function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
+      async.series([factory.clean, factory.setup], done)
     }
 
     before(clean)
     after(clean)
 
-    describe('#get', function() {
-
+    describe('#get', function () {
       it('should 404 for site root', function (done) {
-        request(darkroom)
-          .get('/')
-          .expect(404)
-          .end(done)
+        request(darkroom).get('/').expect(404).end(done)
       })
 
       it('should 404 for non API endpoints', function (done) {
-        request(darkroom)
-          .get('/favicon.ico')
-          .expect(404)
-          .end(done)
+        request(darkroom).get('/favicon.ico').expect(404).end(done)
       })
     })
 
-    describe('#upload', function() {
+    describe('#upload', function () {
       it('should upload a single image', function (done) {
         request(darkroom)
           .post('/')
@@ -63,20 +55,21 @@ backends().forEach(function (backend) {
       })
 
       it('should upload a single image via PUT', function (done) {
-        var originalEnd
-          , req = request(darkroom).put('/')
+        var originalEnd,
+          req = request(darkroom)
+            .put('/')
             .set('x-darkroom-key', 'key')
             .set('Accept', 'application/json')
 
         originalEnd = req.end
-        req.end = function() {}
+        req.end = function () {}
 
         var stream = fs.createReadStream(__dirname + '/fixtures/jpeg.jpeg')
 
         stream.pipe(req)
 
-        stream.on('end', function() {
-          originalEnd.call(req, function(err, res) {
+        stream.on('end', function () {
+          originalEnd.call(req, function (err, res) {
             assert.equal(res.statusCode, 200, res.text)
             assert(res.body.id !== undefined)
             assert.equal(res.body.size, 104680)
@@ -84,11 +77,11 @@ backends().forEach(function (backend) {
             done()
           })
         })
-
       })
 
       it('should fail upload from empty PUT', function (done) {
-        request(darkroom).put('/')
+        request(darkroom)
+          .put('/')
           .set('x-darkroom-key', 'key')
           .set('Accept', 'application/json')
           .expect(400)

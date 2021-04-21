@@ -1,20 +1,16 @@
-var createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , hashHelper = require('./hash-helper')
-  , async = require('async')
-  , backends = require('./lib/backends')
-  , assert = require('assert')
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const hashHelper = require('./hash-helper')
+const async = require('async')
+const backends = require('./lib/backends')
+const assert = require('assert')
 
 backends().forEach(function (backend) {
   var config = backend.config
 
-  describe('Original ' + backend.name + ' backend', function() {
-
-    var imgSrcId
-      , darkroom
-      , factory
-      , dateUploaded
+  describe('Original ' + backend.name + ' backend', function () {
+    var imgSrcId, darkroom, factory, dateUploaded
 
     before(function (done) {
       createBackendFactory(config, function (err, backendFactory) {
@@ -25,7 +21,7 @@ backends().forEach(function (backend) {
     })
 
     function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
+      async.series([factory.clean, factory.setup], done)
     }
 
     before(clean)
@@ -44,9 +40,9 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return an image if the image exists (with the correct cache headers)', function(done) {
-      var uri = '/original/' + imgSrcId
-        , url = uri + ':' + hashHelper(uri)
+    it('should return an image if the image exists (with the correct cache headers)', function (done) {
+      var uri = '/original/' + imgSrcId,
+        url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(200)
@@ -58,9 +54,9 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return 404 if an image doesnt exist (with the correct cache headers)', function(done) {
-      var uri = '/original/1cfdd3bf942749472093f3b0ed6d4f88'
-        , url = uri + ':' + hashHelper(uri)
+    it('should return 404 if an image doesnt exist (with the correct cache headers)', function (done) {
+      var uri = '/original/1cfdd3bf942749472093f3b0ed6d4f88',
+        url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(404)
@@ -71,6 +67,5 @@ backends().forEach(function (backend) {
           done()
         })
     })
-
   })
 })

@@ -1,26 +1,27 @@
 module.exports = tasks
 
-var join = require('path').join
-  , child
+var join = require('path').join,
+  child
 
 // Growl is only for Mac users
 try {
   var growl = require('growl')
-} catch (e) {}
+} catch (e) {
+  //
+}
 
 function notify() {
   if (growl) growl.apply(null, arguments)
 }
 
 function tasks(pliers) {
-
-  pliers.filesets('tests', [ join(__dirname, 'test', '*', '**/*.test.js') ])
-  pliers.filesets('serverJs'
-    , [ join(__dirname, 'lib/**/*.js')
-      , join(__dirname, 'endpoint/**/*.js')
-      , join(__dirname, '*.js')
-      , join(__dirname, 'test/**/*.js')
-      ])
+  pliers.filesets('tests', [join(__dirname, 'test', '*', '**/*.test.js')])
+  pliers.filesets('serverJs', [
+    join(__dirname, 'lib/**/*.js'),
+    join(__dirname, 'endpoint/**/*.js'),
+    join(__dirname, '*.js'),
+    join(__dirname, 'test/**/*.js')
+  ])
 
   pliers('qa', 'test', 'lint')
   pliers('noExitQa', 'noExitLint', 'noExitTest')
@@ -66,7 +67,6 @@ function tasks(pliers) {
   })
 
   pliers('watch', function () {
-
     pliers.logger.info('Watching for application JavaScript changes')
     pliers.watch(pliers.filesets.serverJs, function () {
       pliers.run('start', function () {
@@ -76,7 +76,5 @@ function tasks(pliers) {
     })
 
     pliers.run('start')
-
   })
-
 }
