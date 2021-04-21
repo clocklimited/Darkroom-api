@@ -3,7 +3,6 @@ const createDarkroom = require('../server')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const request = require('supertest')
 const path = '/watermark'
-const async = require('async')
 
 // This is skipped because `darkroom` doesn't have a streamy interface for this yet.
 describe.skip('Watermark', function () {
@@ -19,15 +18,8 @@ describe.skip('Watermark', function () {
     })
   })
 
-  function clean(done) {
-    async.series(
-      [factory.clean.bind(factory), factory.setup.bind(factory)],
-      done
-    )
-  }
-
-  before(clean)
-  after(clean)
+  before((done) => factory.setup(done))
+  after((done) => factory.clean(done))
 
   before(function (done) {
     request(darkroom)

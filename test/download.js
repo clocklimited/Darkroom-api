@@ -2,7 +2,6 @@ const createDarkroom = require('../server')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const request = require('supertest')
 const hashHelper = require('./hash-helper')
-const async = require('async')
 const backends = require('./lib/backends')
 const assert = require('assert')
 
@@ -20,15 +19,8 @@ backends().forEach(function (backend) {
       })
     })
 
-    function clean(done) {
-      async.series(
-        [factory.clean.bind(factory), factory.setup.bind(factory)],
-        done
-      )
-    }
-
-    before(clean)
-    after(clean)
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
 
     before(function (done) {
       request(darkroom)

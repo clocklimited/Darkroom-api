@@ -1,4 +1,4 @@
-const createBackend = require('../../../lib/backends/fs')
+const FsBackend = require('../../../lib/backends/FsBackend')
 const temp = require('temp')
 const mkdirp = require('mkdirp')
 const tests = require('./backend-tests')
@@ -23,5 +23,5 @@ function getConfig() {
 }
 
 describe('Filesystem Backend', function () {
-  tests(createBackend, getConfig)
+  tests(FsBackend, getConfig)
 })

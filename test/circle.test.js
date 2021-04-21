@@ -6,7 +6,6 @@ const baseUrl = '/circle/'
 const gm = require('gm')
 const assert = require('assert-diff')
 const hashHelper = require('./hash-helper')
-const async = require('async')
 const backends = require('./lib/backends')
 
 backends().forEach(function (backend) {
@@ -24,15 +23,8 @@ backends().forEach(function (backend) {
       })
     })
 
-    function clean(done) {
-      async.series(
-        [factory.clean.bind(factory), factory.setup.bind(factory)],
-        done
-      )
-    }
-
-    before(clean)
-    after(clean)
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
 
     before(function (done) {
       request(darkroom)

@@ -2,7 +2,6 @@ const request = require('supertest')
 const fs = require('fs')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const assert = require('assert')
-const async = require('async')
 const backends = require('./lib/backends')
 const extend = require('lodash.assign')
 
@@ -17,13 +16,6 @@ backends().forEach(function (backend) {
         factory,
         testConfig = extend({}, config, { upload: { allow: ['image/png'] } })
 
-      function clean(done) {
-        async.series(
-          [factory.clean.bind(factory), factory.setup.bind(factory)],
-          done
-        )
-      }
-
       before(function (done) {
         createBackendFactory(testConfig, function (err, backendFactory) {
           factory = backendFactory
@@ -32,8 +24,8 @@ backends().forEach(function (backend) {
         })
       })
 
-      before(clean)
-      after(clean)
+      before((done) => factory.setup(done))
+      after((done) => factory.clean(done))
 
       it('should not allow POST upload of certain any type', function (done) {
         request(darkroom)
