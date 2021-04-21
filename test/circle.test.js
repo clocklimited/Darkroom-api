@@ -79,7 +79,7 @@ backends().forEach(function (backend) {
         res.data += chunk
       })
       res.on('end', function () {
-        cb(null, new Buffer(res.data, 'binary'))
+        cb(null, new Buffer.from(res.data, 'binary'))
       })
     }
 
@@ -93,7 +93,7 @@ backends().forEach(function (backend) {
         .parse(binaryParser)
         .end(function (err, res) {
           if (err) return done(err)
-          gm(new Buffer(res.body)).size(function (err, size) {
+          gm(new Buffer.from(res.body)).size(function (err, size) {
             if (err) return done(err)
 
             assert.deepEqual(size, { width: 300, height: 225 })

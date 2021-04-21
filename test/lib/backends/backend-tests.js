@@ -60,7 +60,7 @@ module.exports = function (createBackend, getConfig) {
           , i = 0
           , buf
         for (i = 1; i < 100001; i += 1) data.push(i)
-        buf = new Buffer(data)
+        buf = new Buffer.from(data)
         for (i = 0; i < 200; i += 1) stream.write(buf)
         stream.end()
       })

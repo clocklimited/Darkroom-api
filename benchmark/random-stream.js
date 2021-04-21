@@ -18,7 +18,7 @@ RandomReadStream.prototype._read = function (size) {
   }
   amountToSend = Math.min(this.size - this.sent, size)
   this.sent += amountToSend
-  this.push(new Buffer(crypto.randomBytes(amountToSend)))
+  this.push(new Buffer.from(crypto.randomBytes(amountToSend)))
 }
 
 module.exports = RandomReadStream
