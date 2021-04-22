@@ -2,24 +2,21 @@ const restify = require('restify')
 const bunyan = require('bunyan')
 const createEndpoints = require('./endpoint')
 const createKeyAuth = require('./lib/key-auth')
-const createAuthorised = require('./lib/authorised')
 const createCacheDealer = require('./lib/middleware/cache-dealer')
+const createRouteChecker = require('./lib/middleware/route-checker')
 const createCircleEndpoint = require('./endpoint/circle')
 const createCacheKey = require('./endpoint/circle/cache-key-adaptor')
 const createPostUploader = require('./lib/middleware/post-uploader')
 const createPutUploader = require('./lib/middleware/put-uploader')
-const createResponseFormatWhitelister = require('./lib/response-format-whitelister')
-const path = require('path')
 
 module.exports = function (config, backEndFactory) {
-  /* jshint maxstatements: 27 */
   const endpoint = createEndpoints(config, backEndFactory)
-  const authorised = createAuthorised(config)
   const cacheDealer = createCacheDealer(config, backEndFactory)
+  const checkRoute = createRouteChecker(config)
   const circleEndpoint = createCircleEndpoint(config, backEndFactory)
   const postUploader = createPostUploader(backEndFactory)
   const putUploader = createPutUploader(backEndFactory)
-  const whitelistResponseFormat = createResponseFormatWhitelister(config)
+
   const log = bunyan.createLogger({
     name: 'darkroom',
     level: process.env.LOG_LEVEL || 'debug',
@@ -58,43 +55,6 @@ module.exports = function (config, backEndFactory) {
   })
 
   server.use(restify.CORS({ headers: ['X-Requested-With'] }))
-
-  function checkRoute(req, res, next) {
-    /* jshint maxcomplexity: 7 */
-    if (req.method !== 'GET') return next()
-
-    if (Object.keys(req.params).length === 0) return next()
-    const dataPath = req.url
-    const tokens = dataPath.match(
-      /(http.*|[a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/
-    )
-
-    // Error if an valid token is not found
-    if (!Array.isArray(tokens) || tokens.length < 3) {
-      return next(new restify.ResourceNotFoundError('Not Found'))
-    }
-
-    tokens.shift()
-    req.params.data = tokens.shift()
-    req.params.hash = tokens.shift()
-    req.params.action = req.url.substring(0, req.url.indexOf(req.params.data))
-    req.params.format = whitelistResponseFormat(
-      path.extname(req.url).substring(1).toLowerCase()
-    )
-
-    if (authorised(req)) {
-      res.set('Authorized-Request', req.url)
-      return next()
-    } else {
-      let message = 'Checksum does not match'
-      if (req.params.hash === undefined) message = 'Checksum is missing'
-      return next(
-        new restify.NotAuthorizedError(
-          message + ' for action: ' + req.params.action
-        )
-      )
-    }
-  }
 
   server.opts(/.*/, function (req, res, next) {
     res.set(
