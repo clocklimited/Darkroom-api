@@ -19,7 +19,8 @@ module.exports = function () {
       },
       version: '0.0.1',
       salt: 'salt',
-      key: 'key'
+      key: 'key',
+      allowedResponseFormats: ['png']
     }
   }
   if (process.env.MONGO_BACKEND)
