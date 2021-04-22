@@ -1,29 +1,29 @@
 const assert = require('assert')
 const createCacheDealer = require('../../../lib/middleware/cache-dealer')
 const config = { http: { age: 1000 } }
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
-function MockBackend() {}
-MockBackend.prototype.createCacheReadStream = function () {
-  this.readStream = new Transform()
-  this.readStream._transform = function (data, enc, cb) {
-    cb(data)
+class MockBackend {
+  createCacheReadStream() {
+    this.readStream = new Transform()
+    this.readStream._transform = (data, enc, cb) => {
+      cb(data)
+    }
+    return this.readStream
   }
-  return this.readStream
 }
 
-function Response() {
-  this.headers = {}
-}
-
-Response.prototype = Object.create(Transform.prototype)
-
-Response.prototype.set = function (header, value) {
-  this.headers[header] = value
-}
-
-Response.prototype.removeHeader = function (header) {
-  delete this.headers[header]
+class Response extends Transform {
+  constructor() {
+    super()
+    this.headers = {}
+  }
+  set(header, value) {
+    this.headers[header] = value
+  }
+  removeHeader(header) {
+    delete this.headers[header]
+  }
 }
 
 describe('cache-dealer-middleware', function () {
