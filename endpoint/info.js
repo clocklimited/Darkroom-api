@@ -1,19 +1,19 @@
-var darkroom = require('@clocklimited/darkroom'),
-  PassThrough = require('stream').PassThrough,
-  debug = require('debug')('darkroom-api:info'),
-  restify = require('restify')
+const darkroom = require('@clocklimited/darkroom')
+const { PassThrough } = require('stream')
+const debug = require('debug')('darkroom-api:info')
+const restify = require('restify')
 
 module.exports = function (config, backEndFactory) {
   return function (req, res, next) {
-    var info = new darkroom.Info(),
-      store = backEndFactory.createCacheWriteStream(req.cacheKey)
+    const info = new darkroom.Info()
+    const store = backEndFactory.createCacheWriteStream(req.cacheKey)
 
     store.on('error', function (error) {
       req.log.error('Cache:', error.message)
       debug(error.message)
     })
 
-    var passThrough = new PassThrough()
+    const passThrough = new PassThrough()
     passThrough.pipe(store)
     debug('info for', req.params.data)
     var stream = backEndFactory.createDataReadStream(req.params.data)
