@@ -1,7 +1,5 @@
 # API
 
-Default response will be either an (301 to an image / JSON object pointing to a resource)
-
 ## **POST /**
 
   Creates a number of images on Darkroom. If the image(s) already exist in the backend store, they will not be stored again.
@@ -161,6 +159,54 @@ Default response will be either an (301 to an image / JSON object pointing to a 
 * **Sample Call:**
 
   `curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999/`
+
+
+## GET /_health
+
+  Checks the health of the backend.
+
+* **URL**
+
+  `/_health`
+
+* **Method:**
+
+  <_The request type_>
+
+  `GET`
+
+*  **URL Params**
+
+   **Required:**
+
+   None
+
+   **Optional:**
+
+   None
+
+* **Header Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** `"OK"`
+
+* **Error Response:**
+
+  * **Code:** 500 INTERNAL SERVER ERROR <br />
+    **Content:** `"ERROR"` <br />
+    **Reason:** Backend health check failed
+
+* **Sample Call:**
+
+  `curl -v localhost:17999/_health`
 
 ### GET /{width}/{height}/{imageurl}
 or
