@@ -160,7 +160,7 @@ Default response will be either an (301 to an image / JSON object pointing to a 
 
 * **Sample Call:**
 
-  `curl -v -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999`
+  `curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999/`
 
 ## POST /composite
 
