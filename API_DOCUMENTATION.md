@@ -162,45 +162,6 @@ Default response will be either an (301 to an image / JSON object pointing to a 
 
   `curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999/`
 
-## POST /composite
-
-Creates a composite image - mainly used to watermark images
-
-### Body
-
-`baseSrc` - Image ID of the base image.
-`topSrc` - Image ID of the image you wish to overlay on     top of the base image.
-`opacityPercentage` - Opacity percentage of the overlaid image
-
-    {"baseSrc": "99a597ad07d9fd8ffbea1b92384c2652", "topSrc": "b4f2c51d3397ec70921e4d3961f53a79", "opacityPercentage": "25"}
-
-### Response
-
-    {"compositeSrc":"b4f0923edb9c89c69d1ef5a4ceb2c263"}
-
-### Body
-
-`src` - URL of image to manipulate, or send as multipart form data.
-
-`sizes` - An array of sizes to return, dimensions cannot be larger than the source image.
-
-    { "src": "http://tomg.co/image.png"
-    , "sizes":
-      [ { w: 200
-        , h: 400
-        }
-      , [100, 200]
-      , [50] // keeps aspect ratio
-      ]
-    }
-
-### Response
-
-    { "200x400": "51aca1f496317c0d2b475768c9303de3"
-    , "100x200": "51aca1f496317c0d2b475768c9303de3"
-    , "50": "51aca1f496317c0d2b475768c9303de3"
-    }
-
 ### GET /{width}/{height}/{imageurl}
 or
 ### GET /{width}/{imageurl}
