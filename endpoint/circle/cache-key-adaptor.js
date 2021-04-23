@@ -1,7 +1,7 @@
 module.exports = createCacheKey
 
 function createCacheKey(req) {
-  var parts = [
+  const parts = [
     req.params.action,
     req.params.data + req.params.hash,
     req.params.height,

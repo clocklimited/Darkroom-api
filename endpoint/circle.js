@@ -1,19 +1,19 @@
-var darkroom = require('@clocklimited/darkroom'),
-  PassThrough = require('stream').PassThrough,
-  restify = require('restify')
+const darkroom = require('@clocklimited/darkroom')
+const { PassThrough } = require('stream')
+const restify = require('restify')
 
 module.exports = circleEndpoint
 
 function circleEndpoint(config, backendFactory) {
   return function processCircle(req, res, next) {
-    var originalReadStream = backendFactory.createDataReadStream(
-        req.params.data
-      ),
-      readStream = originalReadStream
+    const originalReadStream = backendFactory.createDataReadStream(
+      req.params.data
+    )
+    let readStream = originalReadStream
 
     if (req.params.width && req.params.height) {
-      var re = new darkroom.Resize(),
-        resizePassThrough = new PassThrough()
+      const re = new darkroom.Resize()
+      const resizePassThrough = new PassThrough()
 
       readStream = originalReadStream.pipe(re).pipe(resizePassThrough, {
         width: Number(req.params.width),
@@ -23,15 +23,15 @@ function circleEndpoint(config, backendFactory) {
       })
     }
 
-    var circleOptions = {
-        x0: req.params.x0,
-        y0: req.params.y0,
-        x1: req.params.x1,
-        y1: req.params.y1,
-        colour: req.params.colour
-      },
-      circle = new darkroom.Circle(circleOptions),
-      store = backendFactory.createCacheWriteStream(req.cacheKey)
+    const circleOptions = {
+      x0: req.params.x0,
+      y0: req.params.y0,
+      x1: req.params.x1,
+      y1: req.params.y1,
+      colour: req.params.colour
+    }
+    const circle = new darkroom.Circle(circleOptions)
+    const store = backendFactory.createCacheWriteStream(req.cacheKey)
 
     store.once('error', function (error) {
       return showError(req, error, next)
@@ -41,7 +41,7 @@ function circleEndpoint(config, backendFactory) {
       return showError(req, error, next)
     })
 
-    var passThrough = new PassThrough()
+    const passThrough = new PassThrough()
     passThrough.pipe(store)
 
     readStream.on('error', next)
