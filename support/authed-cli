@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const config = require('con.figure')(require('../config')())
@@ -23,14 +22,24 @@ yargs(hideBin(process.argv))
     type: 'string',
     description: 'Querystring parameter in format a=1&b=2'
   })
+  .option('nonewline', {
+    alias: 'n',
+    type: 'boolean',
+    default: false,
+    description: 'Disable additional newline for usage in scripts'
+  })
   .command({
     command: '$0 <url>',
     desc: 'Create a hashed url',
     handler: (argv) => {
-      const { host, url, salt, query } = argv
+      const { host, url, salt, query, nonewline } = argv
       const stringToHash = url + (query || '') + salt
       const hash = crypto.createHash('md5').update(stringToHash).digest('hex')
       const hashedUrl = `${host}${url}:${hash}` + (query ? `?${query}` : '')
-      console.log(`\nURL: ${hashedUrl}\n`)
+      process.stdout.write(hashedUrl)
+      if (!nonewline) {
+        process.stdout.write('\n')
+      }
+      process.exit(0)
     }
   }).argv
