@@ -1,5 +1,7 @@
 # API
 
+Note, when running examples for image manipulation, make sure you've uploaded the test files so you've got something to play with.
+
 ## **POST /**
 
   Creates a number of images on Darkroom. If the image(s) already exist in the backend store, they will not be stored again.
@@ -171,8 +173,6 @@
 
 * **Method:**
 
-  <_The request type_>
-
   `GET`
 
 *  **URL Params**
@@ -207,6 +207,95 @@
 * **Sample Call:**
 
   `curl -v localhost:17999/_health`
+
+* **Notes:**
+
+  There should definitely be alerting setup using this endpoint.
+
+## GET /circle
+
+  This endpoint provides images cropped in a circular fashion.
+
+* **URL**
+
+  `/circle/imageId:hash`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+  If no circle params (x0, y0, x1, y1) are provided, the underlying library @clocklimited/darkroom will set default values.
+
+   | Param | Required | Usage |
+   |-------|----------|-------|
+   | `x0` | No | Forms the X component of the centre of the circle |
+   | `y0` | No | Forms the Y component of the centre of the circle |
+   | `x1` | No | Forms the X component of the outer edge of the circle |
+   | `y1` | No | Forms the Y component of the outer edge of the circle |
+   | `width` | No | If set with `height`, will crop the image to this dimension after applying circular mask |
+   | `height` | No | If set with `width`, will crop the image to this dimension after applying circular mask |
+   | `colour` | No | Sets the colour of the mask, defaults to white. Use hex colour codes, i.e. #9966FF |
+
+* **Header Params**
+
+  `x-darkroom-key`, unless configured with `process.env.NO_KEY`.
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `<image data of type specified in Content-Type header>`
+
+* **Error Response:**
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:** None <br />
+    **Reason:** You did not supply the authentication key `x-darkroom-key`
+
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:**
+      ```json
+      {
+        "code": "ResourceNotFound",
+        "message": "Not Found"
+      }
+      ```
+    **Reason:** The image ID provided was not found
+
+  OR
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:**
+      ```json
+      {
+        "code": "NotAuthorized",
+        "message": "Checksum does not match for action: /circle/"
+      }
+      ```
+    **Reason:** The hash did not match correctly
+
+  OR
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:**
+      ```json
+      {
+        "code": "BadDigest",
+        "message": "<variable message dependant on error location>"
+      }
+      ```
+    **Reason:** The reason for the error will be in the response message
+
+* **Sample Call:**
+
+  `curl -v $(./support/authed-cli /circle/1cfdd3bf942749472093f3b0ed6d4f89 -q x0=100 -n)`
 
 ### GET /{width}/{height}/{imageurl}
 or
