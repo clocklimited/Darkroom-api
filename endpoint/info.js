@@ -16,15 +16,8 @@ module.exports = function (config, backEndFactory) {
     const passThrough = new PassThrough()
     passThrough.pipe(store)
     debug('info for', req.params.data)
-    var stream = backEndFactory.createDataReadStream(req.params.data)
-    stream
-      .pipe(info)
-      .pipe(passThrough, {
-        width: Number(req.params.width),
-        height: Number(req.params.height),
-        crop: req.params.crop
-      })
-      .pipe(res)
+    const stream = backEndFactory.createDataReadStream(req.params.data)
+    stream.pipe(info).pipe(passThrough).pipe(res)
 
     stream.on('notFound', function () {
       next(new restify.ResourceNotFoundError('Not Found'))
