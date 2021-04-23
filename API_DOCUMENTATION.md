@@ -35,7 +35,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   * Single file uploads
     **Code:** 200 <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       {
         "id": "1cfdd3bf942749472093f3b0ed6d4f89",
@@ -46,7 +46,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   * Multi file uploads
     **Code:** 200 <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       [
         {
@@ -71,7 +71,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   OR
 
   * **Code:** 403 FORBIDDEN <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       {
         "code": "NotAuthorized",
@@ -123,11 +123,11 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   * **Code:** 200 <br />
     **Content:** `application/json`
       ```json
-        {
-          "id": "1cfdd3bf942749472093f3b0ed6d4f89",
-          "type": "image/jpeg; charset=binary",
-          "size": 104680
-        }
+      {
+        "id": "1cfdd3bf942749472093f3b0ed6d4f89",
+        "type": "image/jpeg; charset=binary",
+        "size": 104680
+      }
       ```
 
 * **Error Response:**
@@ -139,12 +139,12 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   OR
 
   * **Code:** 403 FORBIDDEN <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
-        {
-          "code": "NotAuthorized",
-          "message": "Forbidden type detected: image/jpeg; charset=binary"
-        }
+      {
+        "code": "NotAuthorized",
+        "message": "Forbidden type detected: image/jpeg; charset=binary"
+      }
       ```
     **Reason:** You tried to upload a file type not in your `config.upload.allow` list.
 
@@ -196,6 +196,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   There should definitely be alerting setup using this endpoint.
 
+
 ## GET /circle
 
   This endpoint provides images cropped in a circular fashion.
@@ -238,7 +239,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 * **Error Response:**
 
   * **Code:** 404 NOT FOUND <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       {
         "code": "ResourceNotFound",
@@ -250,7 +251,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   OR
 
   * **Code:** 403 FORBIDDEN <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       {
         "code": "NotAuthorized",
@@ -262,7 +263,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   OR
 
   * **Code:** 400 BAD REQUEST <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
       {
         "code": "BadDigest",
