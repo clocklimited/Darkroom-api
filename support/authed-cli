@@ -3,6 +3,7 @@ const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const config = require('con.figure')(require('../config')())
 const crypto = require('crypto')
+const querystring = require('querystring')
 
 yargs(hideBin(process.argv))
   .option('salt', {
@@ -33,9 +34,11 @@ yargs(hideBin(process.argv))
     desc: 'Create a hashed url',
     handler: (argv) => {
       const { host, url, salt, query, nonewline } = argv
-      const stringToHash = url + (query || '') + salt
+      const qs = querystring.parse(query)
+      const stringToHash = url + (query ? querystring.stringify(qs) : '') + salt
       const hash = crypto.createHash('md5').update(stringToHash).digest('hex')
-      const hashedUrl = `${host}${url}:${hash}` + (query ? `?${query}` : '')
+      const hashedUrl =
+        `${host}${url}:${hash}` + (query ? `?${querystring.stringify(qs)}` : '')
       process.stdout.write(hashedUrl)
       if (!nonewline) {
         process.stdout.write('\n')
