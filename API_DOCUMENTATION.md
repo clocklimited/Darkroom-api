@@ -3,7 +3,6 @@
 Default response will be either an (301 to an image / JSON object pointing to a resource)
 
 ## **POST /**
-----
 
   Creates a single image on Darkroom.
 
@@ -49,7 +48,7 @@ Default response will be either an (301 to an image / JSON object pointing to a 
 * **Error Response:**
 
   * **Code:** 403 FORBIDDEN <br />
-    **Content:** None
+    **Content:** None <br />
     **Reason:** You did not supply the authentication key `x-darkroom-key`
 
   OR
