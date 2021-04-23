@@ -59,10 +59,10 @@ You can generate a hashed URL from the CLI using
 ./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c
 ```
 
-Or you can pass a given salt
+Check usage information for further customisation:
 
 ```
-./support/authed-cli /info/345e73295450e3aaf7d2b7a17258649c salty-salt
+./support/authed-cli --help
 ```
 
 # Usage
