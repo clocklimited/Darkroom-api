@@ -6,6 +6,7 @@ module.exports = function (config, backendFactory) {
     download: require('./original')(config, backendFactory, { download: true }),
     info: require('./info')(config, backendFactory),
     watermark: require('./watermark')(config, backendFactory),
-    upload: require('./upload')
+    circle: require('./circle')(config, backendFactory),
+    upload: require('./upload'),
   }
 }

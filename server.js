@@ -4,7 +4,6 @@ const createEndpoints = require('./endpoint')
 const createKeyAuth = require('./lib/key-auth')
 const createCacheDealer = require('./lib/middleware/cache-dealer')
 const createRouteChecker = require('./lib/middleware/route-checker')
-const createCircleEndpoint = require('./endpoint/circle')
 const createCacheKey = require('./endpoint/circle/cache-key-adaptor')
 const createPostUploader = require('./lib/middleware/post-uploader')
 const createPutUploader = require('./lib/middleware/put-uploader')
@@ -13,7 +12,6 @@ module.exports = function (config, backEndFactory) {
   const endpoint = createEndpoints(config, backEndFactory)
   const cacheDealer = createCacheDealer(config, backEndFactory)
   const checkRoute = createRouteChecker(config)
-  const circleEndpoint = createCircleEndpoint(config, backEndFactory)
   const postUploader = createPostUploader(backEndFactory)
   const putUploader = createPutUploader(backEndFactory)
 
@@ -86,7 +84,7 @@ module.exports = function (config, backEndFactory) {
     /^\/+circle\/+(.*)$/,
     checkRoute,
     createCacheDealer(config, backEndFactory, createCacheKey),
-    circleEndpoint
+    endpoint.circle
   )
   server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
   server.get(
