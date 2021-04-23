@@ -20,12 +20,6 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 *  **URL Params**
 
-   **Required:**
-
-   None
-
-   **Optional:**
-
    None
 
 * **Header Params**
@@ -101,6 +95,8 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   Creates a single image on Darkroom.
 
+  If successful, you will receive a JSON object with your file's metadata.
+
 * **URL**
 
   `/`
@@ -110,12 +106,6 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `PUT`
 
 *  **URL Params**
-
-   **Required:**
-
-   None
-
-   **Optional:**
 
    None
 
@@ -131,7 +121,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:**
+    **Content:** `application/json`
       ```json
         {
           "id": "1cfdd3bf942749472093f3b0ed6d4f89",
@@ -176,12 +166,6 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `GET`
 
 *  **URL Params**
-
-   **Required:**
-
-   None
-
-   **Optional:**
 
    None
 
@@ -240,7 +224,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 * **Header Params**
 
-  `x-darkroom-key`, unless configured with `process.env.NO_KEY`.
+  None
 
 * **Data Params**
 
@@ -252,12 +236,6 @@ Note, when running examples for image manipulation, make sure you've uploaded th
     **Content:** `<image data of type specified in Content-Type header>`
 
 * **Error Response:**
-
-  * **Code:** 403 FORBIDDEN <br />
-    **Content:** None <br />
-    **Reason:** You did not supply the authentication key `x-darkroom-key`
-
-  OR
 
   * **Code:** 404 NOT FOUND <br />
     **Content:**
