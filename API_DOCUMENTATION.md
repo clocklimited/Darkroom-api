@@ -276,75 +276,67 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   `curl -v $(./support/authed-cli /circle/1cfdd3bf942749472093f3b0ed6d4f89 -q x0=100 -n)`
 
-### GET /{width}/{height}/{imageurl}
-or
-### GET /{width}/{imageurl}
 
-With height being optional. This will return a (301 to an image / link to a CDN hosted version in a JSON structure)
+## **GET /info**
 
-## GET /{imageurl}
-or
-## GET /optimise/10/{imageurl}
-## GET /optimize/10/{imageurl}
+  Retrieves image metadata for provided image ID.
 
-This returns with a default optimisation to an image at a specified level from 0-7, 4 being a default and 10 is the most aggressive however more likely to cause artefacts.
+* **URL**
 
-Optimisation level (0-10), default of 4.
+  `/info/imageId:hash`
 
-### Request
+* **Method:**
 
-    { "src": "http://tomg.co/image.png"
-    , "level": 2
+  `GET`
+
+*  **URL Params**
+
+  None
+
+* **Header Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+    ```json
+    {
+      "width": 500,
+      "height": 375
     }
+    ```
 
-### Response
+* **Error Response:**
 
-    { "image": "http://darkroom.io/opt/2/100x200_image.png"
-    }
+  * **Code:** 404 NOT FOUND <br />
+    **Content:**
+      ```json
+      {
+        "code": "ResourceNotFound",
+        "message": "Not Found"
+      }
+      ```
+    **Reason:** The image ID provided was not found
 
+  OR
 
-## GET /original/{imageurl}
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:**
+      ```json
+      {
+        "code": "NotAuthorized",
+        "message": "Checksum does not match for action: /info/"
+      }
+      ```
+    **Reason:** The hash did not match correctly
 
-Returns the original image
+* **Sample Call:**
 
-## GET /info/{imageurl}
+  `curl -v $(./support/authed-cli /info/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
 
-Returns the original images meta information.
-
-### Response
-
-    { "width": "1200"
-    , "height": "1500"
-    }
-
-## POST /crop/{imageurl}
-
-This will preform a manual crop on image using the specified coordinates, for a width and height.
-
-`sizes` - An array of sizes to return, dimensions cannot be larger than the source image.
-
-`sizes.crops` - An object containing the coordinates of the crop to be made. Coordinates are relative to the original image.
-
-### Request
-
-    { "src": "http://tomg.co/image.png"
-    , crops: [
-          { x1: 10
-          , x2: 100
-          , y1: 100
-          , y2: 100
-          , w: 100 // relation to original image
-          , h: 200 // ""           ""
-          }
-        ]
-    }
-
-### Response
-
-    { "200x400": "51aca1f496317c0d2b475768c9303de3"
-    , "100x200": "51aca1f496317c0aaaa75768c9303f5c"
-    }
-
-## GET /
-
-Darkroom.io site.
