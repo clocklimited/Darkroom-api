@@ -13,7 +13,6 @@
     "con.figure": "0.0.0",
     "debug": "^2.6.8",
     "gridfs-stream": "^1.1.1",
-    "lodash": "^3.9.3",
     "lodash.clone": "^4.0.1",
     "mkdirp": "^0.5.1",
     "mmmagic": "^0.5.3",
