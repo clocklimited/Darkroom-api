@@ -6,7 +6,7 @@
   "main": "app.js",
   "dependencies": {
     "@clocklimited/darkroom": "https://github.com/clocklimited/darkroom#feature/re-write",
-    "async": "^1.2.1",
+    "async": "^3.2.0",
     "bunyan": "^1.4.0",
     "busboy": "^0.2.11",
     "clustered": "^1.0.0",
