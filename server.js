@@ -68,7 +68,7 @@ module.exports = function (config, backEndFactory) {
     return next()
   })
 
-  server.get('/_health', function (req, res, next) {
+  server.get('/_health', function (req, res) {
     backEndFactory.isHealthy(function (error, healthy) {
       if (!error && healthy) {
         res.send(200, 'OK')
