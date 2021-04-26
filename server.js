@@ -26,8 +26,8 @@ module.exports = function (config, backEndFactory) {
     name: 'darkroom.io',
     log: config.log && log
   })
-  server.use(restify.acceptParser(server.acceptable))
-  server.use(restify.queryParser())
+  server.use(restify.plugins.acceptParser(server.acceptable))
+  server.use(restify.plugins.queryParser())
 
   if (config.log) {
     log.info('--- VERBOSE ---')
@@ -114,7 +114,7 @@ module.exports = function (config, backEndFactory) {
 
   server.put('/', createKeyAuth(config), putUploader, endpoint.upload)
 
-  server.post('/crop', restify.bodyParser(), endpoint.crop)
+  server.post('/crop', restify.plugins.bodyParser(), endpoint.crop)
 
   // This is being removed until a time when the '@clocklimited/darkroom' implementation is
   // more streamy or a new version of DR is rolled out.
@@ -130,12 +130,13 @@ module.exports = function (config, backEndFactory) {
 
     server.on(
       'after',
-      restify.auditLogger({
+      restify.plugins.auditLogger({
         log: bunyan.createLogger({
           name: 'audit',
           body: true,
           stream: process.stdout
-        })
+        }),
+        event: 'after'
       })
     )
   }

@@ -8,7 +8,7 @@ const createAuthorisedMiddleware = require('../lib/authorised')
 const authorised = createAuthorisedMiddleware(config)
 const imgSrcId = 'b063889dedaee7dae61b8f2dbcf3f962'
 
-server.use(restify.queryParser())
+server.use(restify.plugins.queryParser())
 server.use(function (req, res, next) {
   var tokens = req.url.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
   tokens.shift()
