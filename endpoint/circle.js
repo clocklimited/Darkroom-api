@@ -1,6 +1,6 @@
 const darkroom = require('@clocklimited/darkroom')
 const { PassThrough } = require('stream')
-const restify = require('restify')
+const restifyErrors = require('restify-errors')
 
 module.exports = circleEndpoint
 
@@ -51,6 +51,6 @@ function circleEndpoint(config, backendFactory) {
 
   function showError(req, error, callback) {
     req.log.error(error)
-    return callback(new restify.BadDigestError(error.message))
+    return callback(new restifyErrors.BadDigestError(error.message))
   }
 }

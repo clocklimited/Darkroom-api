@@ -1,7 +1,7 @@
-var darkroom = require('@clocklimited/darkroom'),
-  url = require('url'),
-  async = require('async'),
-  restify = require('restify')
+const darkroom = require('@clocklimited/darkroom')
+const url = require('url')
+const async = require('async')
+const restifyErrors = require('restify-errors')
 
 module.exports = function (config, backendFactory) {
   return function (req, res, next) {
@@ -82,7 +82,7 @@ module.exports = function (config, backendFactory) {
       function (error) {
         if (error) {
           req.log.error({ id: req.requestId }, error)
-          return next(new restify.BadDigestError(error.message))
+          return next(new restifyErrors.BadDigestError(error.message))
         } else {
           res.json(collection)
           return next()

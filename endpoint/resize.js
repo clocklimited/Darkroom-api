@@ -1,6 +1,6 @@
 const { PassThrough } = require('stream')
 const darkroom = require('@clocklimited/darkroom')
-const restify = require('restify')
+const restifyErrors = require('restify-errors')
 const retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
 module.exports = function (config, backendFactory) {
@@ -35,7 +35,7 @@ module.exports = function (config, backendFactory) {
     readStream.on('notFound', function () {
       res.removeHeader('Cache-Control')
       res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
-      next(new restify.ResourceNotFoundError('Image does not exist'))
+      next(new restifyErrors.ResourceNotFoundError('Image does not exist'))
     })
 
     readStream.on('meta', function (meta) {

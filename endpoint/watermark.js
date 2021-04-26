@@ -1,10 +1,10 @@
-var darkroom = require('@clocklimited/darkroom'),
-  path = require('path'),
-  fs = require('fs'),
-  restify = require('restify'),
-  filePath = require('../lib/file-path'),
-  mkdirp = require('mkdirp'),
-  dataHasher = require('../lib/data-hasher')
+const darkroom = require('@clocklimited/darkroom')
+const path = require('path')
+const fs = require('fs')
+const restifyErrors = require('restify-errors')
+const filePath = require('../lib/file-path')
+const mkdirp = require('mkdirp')
+const dataHasher = require('../lib/data-hasher')
 
 module.exports = function (config) {
   return function (req, res, next) {
@@ -57,6 +57,6 @@ module.exports = function (config) {
 
   function showError(req, error, callback) {
     req.log.error(error)
-    return callback(new restify.BadDigestError(error.message))
+    return callback(new restifyErrors.BadDigestError(error.message))
   }
 }

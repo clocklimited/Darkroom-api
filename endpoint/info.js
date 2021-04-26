@@ -1,7 +1,7 @@
 const darkroom = require('@clocklimited/darkroom')
 const { PassThrough } = require('stream')
 const debug = require('debug')('darkroom-api:info')
-const restify = require('restify')
+const restifyErrors = require('restify-errors')
 
 module.exports = function (config, backEndFactory) {
   return function (req, res, next) {
@@ -20,7 +20,7 @@ module.exports = function (config, backEndFactory) {
     stream.pipe(info).pipe(passThrough).pipe(res)
 
     stream.on('notFound', function () {
-      next(new restify.ResourceNotFoundError('Not Found'))
+      next(new restifyErrors.ResourceNotFoundError('Not Found'))
     })
 
     info.on('error', function (e) {

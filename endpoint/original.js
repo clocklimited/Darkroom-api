@@ -1,9 +1,9 @@
-var restify = require('restify')
+const restifyErrors = require('restify-errors')
 
 module.exports = function (config, backendFactory, options) {
   return function (req, res, next) {
     if (!req.params.data) {
-      return next(new restify.ResourceNotFoundError('Not Found'))
+      return next(new restifyErrors.ResourceNotFoundError('Not Found'))
     }
 
     res.set('X-Application-Method', 'Original Image')
@@ -30,7 +30,7 @@ module.exports = function (config, backendFactory, options) {
     stream.on('notFound', function () {
       res.removeHeader('Cache-Control')
       res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
-      next(new restify.ResourceNotFoundError('Not Found'))
+      next(new restifyErrors.ResourceNotFoundError('Not Found'))
     })
     stream.on('error', next)
   }
