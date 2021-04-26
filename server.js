@@ -1,4 +1,5 @@
 const restify = require('restify')
+const corsMiddleware = require('restify-cors-middleware')
 const bunyan = require('bunyan')
 const createEndpoints = require('./endpoint')
 const createKeyAuth = require('./lib/key-auth')
@@ -29,6 +30,21 @@ module.exports = function (config, backEndFactory) {
   server.use(restify.plugins.acceptParser(server.acceptable))
   server.use(restify.plugins.queryParser())
 
+  const cors = corsMiddleware({
+    preflightMaxAge: 3600, //Optional
+    origins: ['*'],
+    allowHeaders: [
+      'X-Requested-With',
+      'Accept-Version',
+      'Content-Type',
+      'Request-Id',
+      'X-Api-Version',
+      'X-Request-Id',
+      'X-Requested-With',
+      'X-Darkroom-Key'
+    ]
+  })
+
   if (config.log) {
     log.info('--- VERBOSE ---')
     server.pre(function (req, res, next) {
@@ -52,21 +68,8 @@ module.exports = function (config, backEndFactory) {
     if (!closed) return next()
   })
 
-  server.use(restify.CORS({ headers: ['X-Requested-With'] }))
-
-  server.opts(/.*/, function (req, res, next) {
-    res.set(
-      'Access-Control-Allow-Headers',
-      'accept-version, content-type, request-id, ' +
-        'x-api-version, x-request-id, x-requested-with, x-darkroom-key'
-    )
-
-    res.set('Access-Control-Allow-Origin', '*')
-    res.set('Access-Control-Allow-Methods', 'POST, GET')
-    res.set('Access-Control-Max-Age', '3600')
-    res.send(200)
-    return next()
-  })
+  server.pre(cors.preflight)
+  server.use(cors.actual)
 
   server.get('/_health', function (req, res) {
     backEndFactory.isHealthy(function (error, healthy) {
