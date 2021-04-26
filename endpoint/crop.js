@@ -7,33 +7,34 @@ module.exports = function (config, backendFactory) {
   return function (req, res, next) {
     if (typeof req.body === 'string') req.body = JSON.parse(req.body)
 
-    var srcUrl = url.parse(req.body.src).path.split('/')
+    const srcUrl = url.parse(req.body.src).path.split('/')
     req.params.data = srcUrl[srcUrl.length - 1]
 
+    if (req.body.crops === undefined) {
+      return next(new restifyErrors.BadDigestError('Crops are undefined'))
+    }
     req.body.crops = !Array.isArray(req.body.crops)
       ? [req.body.crops]
       : req.body.crops
-    if (req.params.crops === undefined)
-      return next(new restify.BadDigestError('Crops are undefined'))
 
     req.log.info(
       { id: req.requestId },
       'Crop Request made for image: ' +
         req.params.data +
         ' with ' +
-        req.params.crops.length +
+        req.body.crops.length +
         ' crops'
     )
     req.log.info(
       { id: req.requestId },
-      'Crop Info: ' + JSON.stringify(req.params.crops)
+      'Crop Info: ' + JSON.stringify(req.body.crops)
     )
 
     var collection = {},
       cropCount = 1
 
     async.eachSeries(
-      req.params.crops,
+      req.body.crops,
       function (data, callback) {
         req.log.info({ id: req.requestId }, 'Creating crop ' + cropCount)
         data.data = req.params.data

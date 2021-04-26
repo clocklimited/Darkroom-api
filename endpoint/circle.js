@@ -11,24 +11,25 @@ function circleEndpoint(config, backendFactory) {
     )
     let readStream = originalReadStream
 
-    if (req.params.width && req.params.height) {
+    if (req.query.width && req.query.height) {
       const re = new darkroom.Resize()
       const resizePassThrough = new PassThrough()
 
       readStream = originalReadStream.pipe(re).pipe(resizePassThrough, {
-        width: Number(req.params.width),
-        height: Number(req.params.height),
+        width: Number(req.query.width),
+        height: Number(req.query.height),
         quality: config.quality,
+        // TODO not obtainable here
         mode: req.params.mode
       })
     }
 
     const circleOptions = {
-      x0: req.params.x0,
-      y0: req.params.y0,
-      x1: req.params.x1,
-      y1: req.params.y1,
-      colour: req.params.colour
+      x0: req.query.x0,
+      y0: req.query.y0,
+      x1: req.query.x1,
+      y1: req.query.y1,
+      colour: req.query.colour
     }
     const circle = new darkroom.Circle(circleOptions)
     const store = backendFactory.createCacheWriteStream(req.cacheKey)
