@@ -20,12 +20,8 @@ module.exports = function (config, backendFactory) {
 
   function resizeImage(req, res, next) {
     const modes = ['fit', 'stretch', 'cover', 'pad']
-    req.params.width = req.params.width || req.params[0]
-    req.params.height = req.params.height || req.params[1]
     req.params.mode =
-      req.params.mode || modes.indexOf(req.params[2]) === -1
-        ? 'fit'
-        : req.params[2]
+      modes.indexOf(req.params.mode) === -1 ? 'fit' : req.params.mode
 
     const isHttp = req.params.data.indexOf('http') === 0
     const readStream = isHttp

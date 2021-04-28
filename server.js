@@ -85,33 +85,28 @@ module.exports = function (config, backEndFactory) {
   })
 
   server.get(
-    /^\/+circle\/+(.*)$/,
+    '/circle/*',
     checkRoute,
     createCacheDealer(config, backEndFactory, createCacheKey),
     endpoint.circle
   )
-  server.get(/^\/+info\/+(.*)$/, checkRoute, cacheDealer, endpoint.info)
+  server.get('/info/*', checkRoute, cacheDealer, endpoint.info)
   server.get(
-    /^\/([0-9]+)\/([0-9]+)\/(fit|cover|stretch|pad)\/(.*)$/,
+    '/:width/:height/:mode/*',
     checkRoute,
     cacheDealer,
     endpoint.resize.both
   )
   server.get(
-    /^\/+([0-9]+)\/([0-9]+)\/+(.*)$/,
+    '/:width/:height/*',
     checkRoute,
     cacheDealer,
     endpoint.resize.width
   )
-  server.get(
-    /^\/+([0-9]+)\/+(.*)$/,
-    checkRoute,
-    cacheDealer,
-    endpoint.resize.width
-  )
-  server.get(/^\/+original\/+(.*)$/, checkRoute, endpoint.original)
-  server.get(/^\/+download\/+(.*)$/, checkRoute, endpoint.download)
-  server.get(/^\/(.*)$/, endpoint.original)
+  server.get('/:width/*', checkRoute, cacheDealer, endpoint.resize.width)
+  server.get('/original/*', checkRoute, endpoint.original)
+  server.get('/download/*', checkRoute, endpoint.download)
+  server.get('/*', endpoint.original)
 
   server.post('/', createKeyAuth(config), postUploader, endpoint.upload)
 
