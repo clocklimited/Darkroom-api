@@ -20,7 +20,7 @@ server.use(function (req, res, next) {
   return next()
 })
 
-server.get(/^\/(.*)$/, function (req, res) {
+server.get('/*', function (req, res) {
   if (!req.authorised) return res.send(400)
 
   res.send(200)
