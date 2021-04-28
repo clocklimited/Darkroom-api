@@ -61,10 +61,10 @@ module.exports = function (config, backEndFactory) {
   server.use(function (req, res, next) {
     res.set('D-Cache', 'MISS')
     let closed = false
-    res.on('close', function () {
-      closed = true
-      return next(new Error('Response was closed before end.'))
-    })
+    // res.on('close', function () {
+    // closed = true
+    // return next(new Error('Response was closed before end.'))
+    // })
     if (!closed) return next()
   })
 
