@@ -22,7 +22,8 @@
     "restify-cors-middleware": "^1.1.1",
     "restify-errors": "^8.0.2",
     "rimraf": "^3.0.2",
-    "temp": "^0.9.4"
+    "temp": "^0.9.4",
+    "tmp": "^0.2.1"
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",
