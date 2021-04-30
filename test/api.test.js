@@ -50,28 +50,20 @@ backends().forEach(function (backend) {
       })
 
       it('should upload a single image via PUT', function (done) {
-        var originalEnd,
-          req = request(darkroom)
-            .put('/')
-            .set('x-darkroom-key', 'key')
-            .set('Accept', 'application/json')
-
-        originalEnd = req.end
-        req.end = function () {}
-
-        var stream = fs.createReadStream(__dirname + '/fixtures/jpeg.jpeg')
-
-        stream.pipe(req)
-
-        stream.on('end', function () {
-          originalEnd.call(req, function (err, res) {
+        request(darkroom)
+          .put('/')
+          .set('x-darkroom-key', 'key')
+          .set('Accept', 'application/json')
+          .send(fs.readFileSync(__dirname + '/fixtures/jpeg.jpeg'))
+          .end((err, res) => {
+            if (err) return done(err)
             assert.strictEqual(res.statusCode, 200, res.text)
             assert(res.body.id !== undefined)
+            assert.strictEqual(res.body.id, '1cfdd3bf942749472093f3b0ed6d4f89')
             assert.strictEqual(res.body.size, 104680)
             assert.strictEqual(res.body.type, 'image/jpeg; charset=binary')
             done()
           })
-        })
       })
 
       it('should fail upload from empty PUT', function (done) {
@@ -96,9 +88,17 @@ backends().forEach(function (backend) {
             if (err) return done(err)
             assert(Array.isArray(res.body), 'not an array')
             assert(res.body[0].id !== undefined)
+            assert.strictEqual(
+              res.body[0].id,
+              '1cfdd3bf942749472093f3b0ed6d4f89'
+            )
             assert.strictEqual(res.body[0].size, 104680)
             assert.strictEqual(res.body[0].type, 'image/jpeg; charset=binary')
             assert(res.body[1].id !== undefined)
+            assert.strictEqual(
+              res.body[1].id,
+              'b055a237334923b3b33e9999cee2bcec'
+            )
             assert.strictEqual(res.body[1].size, 147532)
             assert.strictEqual(res.body[1].type, 'image/png; charset=binary')
             done()
