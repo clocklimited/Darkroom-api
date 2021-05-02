@@ -1,6 +1,6 @@
-const restify = require('restify')
+const express = require('express')
+const bodyParser = require('body-parser')
 const corsMiddleware = require('restify-cors-middleware')
-const bunyan = require('bunyan')
 const createEndpoints = require('./endpoint')
 const createKeyAuth = require('./lib/key-auth')
 const createCacheDealer = require('./lib/middleware/cache-dealer')
@@ -9,26 +9,18 @@ const createCacheKey = require('./endpoint/circle/cache-key-adaptor')
 const createPostUploader = require('./lib/middleware/post-uploader')
 const createPutUploader = require('./lib/middleware/put-uploader')
 
-module.exports = function (config, backEndFactory) {
-  const endpoint = createEndpoints(config, backEndFactory)
+module.exports = function (serviceLocator, backEndFactory) {
+  const { config, logger } = serviceLocator
+  const endpoint = createEndpoints(serviceLocator, backEndFactory)
   const cacheDealer = createCacheDealer(config, backEndFactory)
   const checkRoute = createRouteChecker(config)
   const postUploader = createPostUploader(backEndFactory)
   const putUploader = createPutUploader(backEndFactory)
 
-  const log = bunyan.createLogger({
-    name: 'darkroom',
-    level: process.env.LOG_LEVEL || 'debug',
-    stream: process.stdout,
-    serializers: restify.bunyan.stdSerializers
-  })
-  const server = restify.createServer({
-    version: config.version,
-    name: 'darkroom.io',
-    log: config.log && log
-  })
-  server.use(restify.plugins.acceptParser(server.acceptable))
-  server.use(restify.plugins.queryParser())
+  const app = express()
+  app.disable('x-powered-by')
+  // TODO
+  // app.use(restify.plugins.acceptParser(server.acceptable))
 
   const cors = corsMiddleware({
     preflightMaxAge: 3600, //Optional
@@ -46,19 +38,20 @@ module.exports = function (config, backEndFactory) {
   })
 
   if (config.log) {
-    log.info('--- VERBOSE ---')
-    server.pre(function (req, res, next) {
+    logger.info('--- VERBOSE ---')
+    // TODO
+    app.use(function (req, res, next) {
       req.requestId = +Date.now() + Math.random()
-      req.log.info({ req: req.url, id: req.requestId }, 'start')
+      logger.info({ req: req.url, id: req.requestId }, 'start')
       return next()
     })
 
-    server.on('after', function (req) {
-      req.log.info({ req: req.url, id: req.requestId }, 'end')
+    app.on('after', function (req) {
+      logger.info({ req: req.url, id: req.requestId }, 'end')
     })
   }
 
-  server.use(function (req, res, next) {
+  app.use(function (req, res, next) {
     res.set('D-Cache', 'MISS')
     let closed = false
     // res.on('close', function () {
@@ -68,65 +61,68 @@ module.exports = function (config, backEndFactory) {
     if (!closed) return next()
   })
 
-  server.pre(cors.preflight)
-  server.use(cors.actual)
+  app.use(cors.preflight)
+  app.use(cors.actual)
 
-  server.get('/_health', function (req, res) {
+  app.get('/_health', function (req, res) {
     backEndFactory.isHealthy(function (error, healthy) {
       if (!error && healthy) {
         res.send(200, 'OK')
       } else {
         if (error) {
-          req.log.error(error, 'health check failed')
+          logger.error(error, 'health check failed')
         }
         res.send(500, 'ERROR')
       }
     })
   })
 
-  server.get(
+  app.get(
     '/circle/*',
     checkRoute,
     createCacheDealer(config, backEndFactory, createCacheKey),
     endpoint.circle
   )
-  server.get('/info/*', checkRoute, cacheDealer, endpoint.info)
-  server.get(
+  app.get('/info/*', checkRoute, cacheDealer, endpoint.info)
+  app.get('/original/*', checkRoute, endpoint.original)
+  app.get('/download/*', checkRoute, endpoint.download)
+  app.get(
     '/:width/:height/:mode/*',
     checkRoute,
     cacheDealer,
-    endpoint.resize.both
+    endpoint.resize.mode
   )
-  server.get(
-    '/:width/:height/*',
-    checkRoute,
-    cacheDealer,
-    endpoint.resize.width
-  )
-  server.get('/:width/*', checkRoute, cacheDealer, endpoint.resize.width)
-  server.get('/original/*', checkRoute, endpoint.original)
-  server.get('/download/*', checkRoute, endpoint.download)
-  server.get('/*', endpoint.original)
+  app.get('/:width/:height/*', checkRoute, cacheDealer, endpoint.resize.both)
+  app.get('/:width/*', checkRoute, cacheDealer, endpoint.resize.width)
+  app.get('/*', endpoint.original)
 
-  server.post('/', createKeyAuth(config), postUploader, endpoint.upload)
+  app.post('/', createKeyAuth(config), postUploader, endpoint.upload)
 
-  server.put('/', createKeyAuth(config), putUploader, endpoint.upload)
+  app.put('/', createKeyAuth(config), putUploader, endpoint.upload)
 
-  server.post('/crop', restify.plugins.bodyParser(), endpoint.crop)
+  app.post('/crop', bodyParser.json(), endpoint.crop)
 
   // This is being removed until a time when the '@clocklimited/darkroom' implementation is
   // more streamy or a new version of DR is rolled out.
   //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
 
+  // eslint-disable-next-line
+  app.use((error, req, res, next) => {
+    if (error.statusCode && typeof error.toJSON === 'function') {
+      // is a RestifyError
+      return res.status(error.statusCode).json(error.toJSON())
+    }
+    res.status(500).json(error)
+  })
   if (config.log) {
-    server.on('uncaughtException', function (req, res, route, error) {
-      req.log.error(error, 'uncaughtException')
+    app.on('uncaughtException', function (req, res, route, error) {
+      logger.error(error, 'uncaughtException')
       res.send(error)
-      req.log.error('Exiting process')
+      logger.error('Exiting process')
       process.exit(1)
     })
-
-    server.on(
+    /* TODO
+    app.on(
       'after',
       restify.plugins.auditLogger({
         log: bunyan.createLogger({
@@ -136,8 +132,8 @@ module.exports = function (config, backEndFactory) {
         }),
         event: 'after'
       })
-    )
+    )*/
   }
 
-  return server
+  return app
 }

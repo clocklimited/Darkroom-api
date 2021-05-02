@@ -3,7 +3,8 @@ const url = require('url')
 const async = require('async')
 const restifyErrors = require('restify-errors')
 
-module.exports = function (config, backendFactory) {
+module.exports = function (serviceLocator, backendFactory) {
+  const { logger } = serviceLocator
   return function (req, res, next) {
     if (typeof req.body === 'string') req.body = JSON.parse(req.body)
 
@@ -17,7 +18,7 @@ module.exports = function (config, backendFactory) {
       ? [req.body.crops]
       : req.body.crops
 
-    req.log.info(
+    logger.info(
       { id: req.requestId },
       'Crop Request made for image: ' +
         req.params.data +
@@ -25,7 +26,7 @@ module.exports = function (config, backendFactory) {
         req.body.crops.length +
         ' crops'
     )
-    req.log.info(
+    logger.info(
       { id: req.requestId },
       'Crop Info: ' + JSON.stringify(req.body.crops)
     )
@@ -36,19 +37,19 @@ module.exports = function (config, backendFactory) {
     async.eachSeries(
       req.body.crops,
       function (data, callback) {
-        req.log.info({ id: req.requestId }, 'Creating crop ' + cropCount)
+        logger.info({ id: req.requestId }, 'Creating crop ' + cropCount)
         data.data = req.params.data
         var store = backendFactory.createDataWriteStream(),
           crop = new darkroom.Crop()
 
         store.once('error', function (error) {
-          req.log.error({ id: req.requestId }, 'StoreStream:', error)
+          logger.error({ id: req.requestId }, 'StoreStream:', error)
           callback(error)
         })
 
         // changed from “once” to “on” because with “once” the server would crash on an error
         crop.on('error', function (error) {
-          req.log.error(
+          logger.error(
             { id: req.requestId },
             'Crop',
             error.toString ? error.toString() : error
@@ -65,7 +66,7 @@ module.exports = function (config, backendFactory) {
 
           key = values.join(':')
           collection[key] = file.id
-          req.log.info(
+          logger.info(
             { id: req.requestId },
             'Successfully created crop ' + cropCount + ': ' + file.id
           )
@@ -82,7 +83,7 @@ module.exports = function (config, backendFactory) {
       },
       function (error) {
         if (error) {
-          req.log.error({ id: req.requestId }, error)
+          logger.error({ id: req.requestId }, error)
           return next(new restifyErrors.BadDigestError(error.message))
         } else {
           res.json(collection)

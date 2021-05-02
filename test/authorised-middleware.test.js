@@ -1,6 +1,6 @@
 const config = require('con.figure')(require('./config')())
-const restify = require('restify')
-const server = restify.createServer()
+const express = require('express')
+const server = express()
 const request = require('supertest')
 const querystring = require('querystring')
 const hashHelper = require('./hash-helper')
@@ -8,7 +8,6 @@ const createAuthorisedMiddleware = require('../lib/authorised')
 const authorised = createAuthorisedMiddleware(config)
 const imgSrcId = 'b063889dedaee7dae61b8f2dbcf3f962'
 
-server.use(restify.plugins.queryParser())
 server.use(function (req, res, next) {
   var tokens = req.url.match(/([a-zA-Z0-9]{32,}):([a-zA-Z0-9]{32,})/)
   tokens.shift()
@@ -21,9 +20,9 @@ server.use(function (req, res, next) {
 })
 
 server.get('/*', function (req, res) {
-  if (!req.authorised) return res.send(400)
+  if (!req.authorised) return res.sendStatus(400)
 
-  res.send(200)
+  res.sendStatus(200)
 })
 
 describe('Authorised middleware', function () {

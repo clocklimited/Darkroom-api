@@ -1,3 +1,4 @@
+const mockServiceLocator = require('./mock-service-locator')
 const createDarkroom = require('../server')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const request = require('supertest')
@@ -17,9 +18,10 @@ backends().forEach(function (backend) {
       imgSrcFormat = 'jpeg'
 
     before(function (done) {
-      createBackendFactory(config, function (err, backendFactory) {
+      const sl = mockServiceLocator(config)
+      createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
-        darkroom = createDarkroom(config, factory)
+        darkroom = createDarkroom(sl, factory)
         done()
       })
     })

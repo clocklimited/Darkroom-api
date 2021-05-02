@@ -3,29 +3,34 @@ const darkroom = require('@clocklimited/darkroom')
 const restifyErrors = require('restify-errors')
 const retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
-module.exports = function (config, backendFactory) {
+module.exports = function (serviceLocator, backendFactory) {
+  const { config, logger } = serviceLocator
   const resize = {}
 
   resize.width = function (req, res, next) {
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
-    res.set('Cache-Control', 'max-age=' + config.http.maxage)
     return resizeImage.call(this, req, res, next)
   }
 
   resize.both = function (req, res, next) {
     res.set('X-Application-Method', 'Resize both dimensions')
-    res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    return resizeImage.call(this, req, res, next)
+  }
+
+  resize.mode = function (req, res, next) {
+    res.set('X-Application-Method', 'Resize both dimensions with fill mode')
     return resizeImage.call(this, req, res, next)
   }
 
   function resizeImage(req, res, next) {
+    res.set('Cache-Control', 'max-age=' + config.http.maxage)
     const modes = ['fit', 'stretch', 'cover', 'pad']
     req.params.mode =
       modes.indexOf(req.params.mode) === -1 ? 'fit' : req.params.mode
 
     const isHttp = req.params.data.indexOf('http') === 0
     const readStream = isHttp
-      ? retrieveImageByUrl(req.params.data, req.log)
+      ? retrieveImageByUrl(req.params.data, logger)
       : backendFactory.createDataReadStream(req.params.data)
 
     readStream.on('notFound', function () {
@@ -43,12 +48,12 @@ module.exports = function (config, backendFactory) {
     const cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
 
     cacheStore.on('error', function (error) {
-      req.log.warn('StoreStream:', error.message)
+      logger.warn(error, 'StoreStream error')
       next(error)
     })
 
     re.on('error', function (error) {
-      req.log.error('Resize', error)
+      logger.error(error, 'Resize stream error')
       next(error)
     })
 

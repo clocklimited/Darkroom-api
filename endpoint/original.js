@@ -1,6 +1,7 @@
 const restifyErrors = require('restify-errors')
 
-module.exports = function (config, backendFactory, options) {
+module.exports = function (serviceLocator, backendFactory, options) {
+  const { config } = serviceLocator
   return function (req, res, next) {
     if (!req.params.data) {
       return next(new restifyErrors.ResourceNotFoundError('Not Found'))

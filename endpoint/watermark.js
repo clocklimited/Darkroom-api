@@ -6,7 +6,8 @@ const filePath = require('../lib/file-path')
 const mkdirp = require('mkdirp')
 const dataHasher = require('../lib/data-hasher')
 
-module.exports = function (config) {
+module.exports = function (serviceLocator) {
+  const { config, logger } = serviceLocator
   return function (req, res, next) {
     req.body = JSON.parse(req.body)
 
@@ -56,7 +57,7 @@ module.exports = function (config) {
   }
 
   function showError(req, error, callback) {
-    req.log.error(error)
+    logger.error(error)
     return callback(new restifyErrors.BadDigestError(error.message))
   }
 }
