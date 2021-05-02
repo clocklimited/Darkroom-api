@@ -44,10 +44,10 @@
   "scripts": {
     "lint": "eslint -f unix .",
     "pretest": "yarn run lint",
-    "test": "istanbul cover _mocha -- --recursive",
-    "testonly": "istanbul cover _mocha -- --recursive",
+    "test": "istanbul cover _mocha -- --recursive --exit",
+    "testonly": "istanbul cover _mocha -- --recursive --exit",
     "posttest": "istanbul check-coverage --statements 80 --branches 75 --functions 70 --lines 80 && rm -rf coverage",
-    "run-test": "mocha $@",
+    "run-test": "mocha --exit $@",
     "dev": "nodemon --ext .js app.js",
     "start": "node app"
   },
