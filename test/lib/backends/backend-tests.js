@@ -80,6 +80,7 @@ module.exports = function (Backend, getConfig) {
 
     it('should emit meta on read data', function (done) {
       const stream = backend.createDataWriteStream()
+      let metaCalled = false
       stream.on('error', done)
       stream.on('done', function (id) {
         const response = []
@@ -95,6 +96,10 @@ module.exports = function (Backend, getConfig) {
               meta.lastModified instanceof Date,
               'meta.lastModified should be a date' + meta.lastModified
             )
+            metaCalled = true
+          })
+          .on('end', () => {
+            assert.strictEqual(metaCalled, true, 'Did not recieve meta')
             done()
           })
       })
@@ -129,6 +134,7 @@ module.exports = function (Backend, getConfig) {
 
     it('should emit meta on read data', function (done) {
       const stream = backend.createCacheWriteStream('1234')
+      let metaCalled = false
       stream.on('error', done)
       stream.on('done', function (id) {
         const response = []
@@ -144,6 +150,10 @@ module.exports = function (Backend, getConfig) {
               meta.lastModified instanceof Date,
               'meta.lastModified should be a date' + meta.lastModified
             )
+            metaCalled = true
+          })
+          .on('end', () => {
+            assert.strictEqual(metaCalled, true, 'Did not recieve meta')
             done()
           })
       })
