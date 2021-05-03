@@ -38,8 +38,6 @@ module.exports = function (serviceLocator, backEndFactory) {
         res.setHeader('X-Response-Time', `${time.toFixed(2)}ms`)
       })
     )
-  // TODO
-  // app.use(restify.plugins.acceptParser(server.acceptable))
 
   app.use(function (req, res, next) {
     req.requestId = +Date.now() + Math.random()
