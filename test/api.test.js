@@ -33,6 +33,23 @@ backends().forEach(function (backend) {
       it('should 404 for non API endpoints', function (done) {
         request(darkroom).get('/favicon.ico').expect(404).end(done)
       })
+
+      it('should 200 for health check', function (done) {
+        request(darkroom).get('/_health').expect(200, 'OK').end(done)
+      })
+
+      it('should 500 if health check fails', function (done) {
+        const oldHealthCheck = factory.isHealthy
+        factory.isHealthy = (cb) => cb(null, false)
+        request(darkroom)
+          .get('/_health')
+          .expect(500, 'ERROR')
+          .end((error) => {
+            if (error) return done(error)
+            factory.isHealthy = oldHealthCheck
+            done()
+          })
+      })
     })
 
     describe('#upload', function () {
@@ -47,6 +64,9 @@ backends().forEach(function (backend) {
           .end(function (err, res) {
             if (err) return done(err)
             assert(res.body.id !== undefined, 'invalid id ' + res.body)
+            assert.strictEqual(res.body.id, '1cfdd3bf942749472093f3b0ed6d4f89')
+            assert.strictEqual(res.body.size, 104680)
+            assert.strictEqual(res.body.type, 'image/jpeg; charset=binary')
             done()
           })
       })
