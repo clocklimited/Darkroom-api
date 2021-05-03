@@ -77,12 +77,12 @@ module.exports = function (serviceLocator, backEndFactory) {
   app.get('/_health', function (req, res) {
     backEndFactory.isHealthy(function (error, healthy) {
       if (!error && healthy) {
-        res.send(200, 'OK')
+        res.status(200).send('OK')
       } else {
         if (error) {
           logger.error(error, 'health check failed')
         }
-        res.send(500, 'ERROR')
+        res.status(500).send('ERROR')
       }
     })
   })
