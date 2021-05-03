@@ -129,10 +129,12 @@ backends().forEach(function (backend) {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
-        .end(function (error) {
+        .end(function (error, res) {
           if (error) return done(error)
-          // TODO add tests for returned error message?
-          // res.body.results.should.have.length(0)
+          assert.strictEqual(
+            res.body['10:100:100:200:' + imgSrcId],
+            'd29f9f855f8b11f71264f8850619b305'
+          )
           done()
         })
     })
