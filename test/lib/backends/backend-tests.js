@@ -99,7 +99,7 @@ module.exports = function (Backend, getConfig) {
             metaCalled = true
           })
           .on('end', () => {
-            assert.strictEqual(metaCalled, true, 'Did not recieve meta')
+            assert.strictEqual(metaCalled, true, 'Did not receive meta')
             done()
           })
       })
@@ -153,7 +153,7 @@ module.exports = function (Backend, getConfig) {
             metaCalled = true
           })
           .on('end', () => {
-            assert.strictEqual(metaCalled, true, 'Did not recieve meta')
+            assert.strictEqual(metaCalled, true, 'Did not receive meta')
             done()
           })
       })
