@@ -41,7 +41,9 @@ createBackendFactory(serviceLocator, (error, factory) => {
     clustered(
       function () {
         app.listen(port, function () {
-          logger.info(`${serviceLocator.name} listening at http://127.0.0.1:${port}`)
+          logger.info(
+            `${serviceLocator.name} listening at http://127.0.0.1:${port}`
+          )
         })
       },
       { logger, size: clusterSize }
