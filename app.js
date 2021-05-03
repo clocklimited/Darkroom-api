@@ -7,6 +7,7 @@ const createServer = require('./server')
 const config = require('con.figure')(require('./config')())
 const clustered = require('clustered')
 const clusterSize = process.env.API_PROCESSES || config.apiProcesses
+const port = process.env.PORT || config.http.port
 const createBackendFactory = require('./lib/backend-factory-creator')
 const logger = createLogger('darkroom', { logLevel })
 
@@ -39,8 +40,8 @@ createBackendFactory(serviceLocator, (error, factory) => {
 
     clustered(
       function () {
-        app.listen(process.env.PORT || config.http.port, function () {
-          logger.info(`${serviceLocator.name} listening at ${app.url}`)
+        app.listen(port, function () {
+          logger.info(`${serviceLocator.name} listening at http://127.0.0.1:${port}`)
         })
       },
       { logger, size: clusterSize }
