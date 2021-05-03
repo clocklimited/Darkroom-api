@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const responseTime = require('response-time')
 const bodyParser = require('body-parser')
 const corsMiddleware = require('restify-cors-middleware')
 const createEndpoints = require('./endpoint')
@@ -28,7 +29,15 @@ module.exports = function (serviceLocator, backEndFactory) {
   }
 
   const app = express()
-  app.disable('x-powered-by').use(morgan(logLevel, logOptions))
+  app
+    .disable('x-powered-by')
+    .use(morgan(logLevel, logOptions))
+    .use(
+      responseTime((req, res, time) => {
+        logger.info({ req: req.url, id: req.requestId }, 'end')
+        res.setHeader('X-Response-Time', `${time.toFixed(2)}ms`)
+      })
+    )
   // TODO
   // app.use(restify.plugins.acceptParser(server.acceptable))
 
@@ -47,19 +56,12 @@ module.exports = function (serviceLocator, backEndFactory) {
     ]
   })
 
-  if (config.log) {
-    logger.info('--- VERBOSE ---')
-    // TODO
-    app.use(function (req, res, next) {
-      req.requestId = +Date.now() + Math.random()
-      logger.info({ req: req.url, id: req.requestId }, 'start')
-      return next()
-    })
-
-    app.on('after', function (req) {
-      logger.info({ req: req.url, id: req.requestId }, 'end')
-    })
-  }
+  // TODO
+  app.use(function (req, res, next) {
+    req.requestId = +Date.now() + Math.random()
+    logger.info({ req: req.url, id: req.requestId }, 'start')
+    return next()
+  })
 
   app.use(function (req, res, next) {
     res.set('D-Cache', 'MISS')
