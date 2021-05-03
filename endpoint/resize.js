@@ -53,7 +53,7 @@ module.exports = function (serviceLocator, backendFactory) {
     })
 
     re.on('error', function (error) {
-      logger.error(error, 'Resize stream error')
+      logger.error(error.toString(), 'Resize stream error')
       next(error)
     })
 
