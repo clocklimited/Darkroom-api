@@ -32,8 +32,7 @@ createBackendFactory(serviceLocator, (error, factory) => {
 
     if (isNaN(clusterSize)) {
       logger.fatal(
-        'Invalid cluster size: "%s", please set/update API_PROCESSES (env) or config.apiProcesses',
-        clusterSize
+        `Invalid cluster size: "${clusterSize}", please set/update API_PROCESSES (env) or config.apiProcesses`
       )
       return process.exit(1)
     }
