@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const corsMiddleware = require('restify-cors-middleware')
 const createEndpoints = require('./endpoint')
@@ -16,9 +17,18 @@ module.exports = function (serviceLocator, backEndFactory) {
   const checkRoute = createRouteChecker(config)
   const postUploader = createPostUploader(backEndFactory)
   const putUploader = createPutUploader(backEndFactory)
+  const inDevelopmentMode = serviceLocator.env === 'development'
+  const logLevel = inDevelopmentMode ? 'dev' : 'combined'
+  const logOptions = {
+    stream: {
+      write: (data) => {
+        serviceLocator.logger.info((data + '').trim())
+      }
+    }
+  }
 
   const app = express()
-  app.disable('x-powered-by')
+  app.disable('x-powered-by').use(morgan(logLevel, logOptions))
   // TODO
   // app.use(restify.plugins.acceptParser(server.acceptable))
 
