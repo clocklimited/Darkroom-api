@@ -19,3 +19,4 @@ locations.js
 data/*
 cache/*
 coverage/
+.nyc_output/
