@@ -124,14 +124,6 @@ module.exports = function (serviceLocator, backEndFactory) {
     }
     res.status(500).json(error)
   })
-  if (config.log) {
-    app.on('uncaughtException', function (req, res, route, error) {
-      logger.error(error, 'uncaughtException')
-      res.send(error)
-      logger.error('Exiting process')
-      process.exit(1)
-    })
-  }
 
   return app
 }
