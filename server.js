@@ -2,7 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const responseTime = require('response-time')
 const bodyParser = require('body-parser')
-const corsMiddleware = require('restify-cors-middleware')
+const corsMiddleware = require('cors')
 const createEndpoints = require('./endpoint')
 const createKeyAuth = require('./lib/key-auth')
 const createCacheDealer = require('./lib/middleware/cache-dealer')
@@ -41,21 +41,6 @@ module.exports = function (serviceLocator, backEndFactory) {
   // TODO
   // app.use(restify.plugins.acceptParser(server.acceptable))
 
-  const cors = corsMiddleware({
-    preflightMaxAge: 3600, //Optional
-    origins: ['*'],
-    allowHeaders: [
-      'X-Requested-With',
-      'Accept-Version',
-      'Content-Type',
-      'Request-Id',
-      'X-Api-Version',
-      'X-Request-Id',
-      'X-Requested-With',
-      'X-Darkroom-Key'
-    ]
-  })
-
   app.use(function (req, res, next) {
     req.requestId = +Date.now() + Math.random()
     logger.info({ req: req.url, id: req.requestId }, 'start')
@@ -73,8 +58,23 @@ module.exports = function (serviceLocator, backEndFactory) {
     if (!closed) return next()
   })
 
-  app.use(cors.preflight)
-  app.use(cors.actual)
+  app.use(
+    corsMiddleware({
+      maxAge: 3600,
+      origins: true,
+      methods: ['GET', 'PUT', 'POST'],
+      allowedHeaders: [
+        'X-Requested-With',
+        'Accept-Version',
+        'Content-Type',
+        'Request-Id',
+        'X-Api-Version',
+        'X-Request-Id',
+        'X-Requested-With',
+        'X-Darkroom-Key'
+      ]
+    })
+  )
 
   app.get('/_health', function (req, res) {
     backEndFactory.isHealthy(function (error, healthy) {
