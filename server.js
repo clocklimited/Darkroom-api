@@ -56,10 +56,10 @@ module.exports = function (serviceLocator, backEndFactory) {
     ]
   })
 
-  // TODO
   app.use(function (req, res, next) {
     req.requestId = +Date.now() + Math.random()
     logger.info({ req: req.url, id: req.requestId }, 'start')
+    res.setHeader('X-Request-Id', req.requestId)
     return next()
   })
 
