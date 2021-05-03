@@ -131,18 +131,6 @@ module.exports = function (serviceLocator, backEndFactory) {
       logger.error('Exiting process')
       process.exit(1)
     })
-    /* TODO
-    app.on(
-      'after',
-      restify.plugins.auditLogger({
-        log: bunyan.createLogger({
-          name: 'audit',
-          body: true,
-          stream: process.stdout
-        }),
-        event: 'after'
-      })
-    )*/
   }
 
   return app
