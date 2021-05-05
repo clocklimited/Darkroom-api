@@ -87,6 +87,7 @@ module.exports = function (serviceLocator, backEndFactory) {
     })
   })
 
+  app.get('/', (req, res) => res.sendStatus(418))
   app.get(
     '/circle/*',
     checkRoute,

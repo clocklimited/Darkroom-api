@@ -26,8 +26,8 @@ backends().forEach(function (backend) {
     after((done) => factory.clean(done))
 
     describe('#get', function () {
-      it('should 404 for site root', function (done) {
-        request(darkroom).get('/').expect(404).end(done)
+      it('should 418 for site root', function (done) {
+        request(darkroom).get('/').expect(418).end(done)
       })
 
       it('should 404 for non API endpoints', function (done) {
