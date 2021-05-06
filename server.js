@@ -87,7 +87,6 @@ module.exports = function (serviceLocator, backEndFactory) {
     })
   })
 
-  app.get('/', (req, res) => res.sendStatus(418))
   app.get(
     '/circle/*',
     checkRoute,
@@ -111,11 +110,13 @@ module.exports = function (serviceLocator, backEndFactory) {
   )
   app.get('/:width(\\d+)/*', checkRoute, cacheDealer, endpoint.resize.width)
 
+  app.post('/crop', bodyParser.json(), endpoint.crop)
+
+  app.get('/', (req, res) => res.sendStatus(418))
+
   app.post('/', createKeyAuth(config), postUploader, endpoint.upload)
 
   app.put('/', createKeyAuth(config), putUploader, endpoint.upload)
-
-  app.post('/crop', bodyParser.json(), endpoint.crop)
 
   // This is being removed until a time when the '@clocklimited/darkroom' implementation is
   // more streamy or a new version of DR is rolled out.
