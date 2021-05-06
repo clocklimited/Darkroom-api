@@ -103,7 +103,6 @@ module.exports = function (serviceLocator, backEndFactory) {
     cacheDealer,
     endpoint.resize.mode
   )
-  app.get('/*', endpoint.original)
   app.get(
     '/:width(\\d+)/:height(\\d+)/*',
     checkRoute,
