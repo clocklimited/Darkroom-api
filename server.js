@@ -98,14 +98,19 @@ module.exports = function (serviceLocator, backEndFactory) {
   app.get('/original/*', checkRoute, endpoint.original)
   app.get('/download/*', checkRoute, endpoint.download)
   app.get(
-    '/:width/:height/:mode/*',
+    '/:width(\\d+)/:height(\\d+)/:mode/*',
     checkRoute,
     cacheDealer,
     endpoint.resize.mode
   )
-  app.get('/:width/:height/*', checkRoute, cacheDealer, endpoint.resize.both)
-  app.get('/:width/*', checkRoute, cacheDealer, endpoint.resize.width)
   app.get('/*', endpoint.original)
+  app.get(
+    '/:width(\\d+)/:height(\\d+)/*',
+    checkRoute,
+    cacheDealer,
+    endpoint.resize.both
+  )
+  app.get('/:width(\\d+)/*', checkRoute, cacheDealer, endpoint.resize.width)
 
   app.post('/', createKeyAuth(config), postUploader, endpoint.upload)
 
