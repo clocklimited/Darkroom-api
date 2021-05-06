@@ -128,6 +128,7 @@ module.exports = function (serviceLocator, backEndFactory) {
       // is a RestifyError
       return res.status(error.statusCode).json(error.toJSON())
     }
+    logger.error(error, 'Unhandled error')
     res.status(500).json(error)
   })
 
