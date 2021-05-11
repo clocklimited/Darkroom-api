@@ -12,6 +12,7 @@ function circleEndpoint(config, backendFactory) {
     let readStream = originalReadStream
 
     if (width && height) {
+      res.set('X-Application-Method', 'Circular crop with resize')
       const resize = new darkroom.Resize()
       const resizePassThrough = new PassThrough()
 
@@ -22,6 +23,8 @@ function circleEndpoint(config, backendFactory) {
         // TODO not obtainable here
         mode
       })
+    } else {
+      res.set('X-Application-Method', 'Circular crop')
     }
 
     const circleOptions = {

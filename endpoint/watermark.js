@@ -9,6 +9,7 @@ const dataHasher = require('../lib/data-hasher')
 module.exports = function (serviceLocator) {
   const { config, logger } = serviceLocator
   return function (req, res, next) {
+    res.set('X-Application-Method', 'Watermark application to image')
     req.body = JSON.parse(req.body)
 
     var baseSrcPath = path.join(

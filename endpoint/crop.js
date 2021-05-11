@@ -6,6 +6,7 @@ const restifyErrors = require('restify-errors')
 module.exports = function (serviceLocator, backendFactory) {
   const { logger } = serviceLocator
   return function (req, res, next) {
+    res.set('X-Application-Method', 'User defined image crop')
     if (typeof req.body === 'string') req.body = JSON.parse(req.body)
     let { src, crops } = req.body
 

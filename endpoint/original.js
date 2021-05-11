@@ -7,7 +7,6 @@ module.exports = function (serviceLocator, backendFactory, options) {
       return next(new restifyErrors.ResourceNotFoundError('Not Found'))
     }
 
-    res.set('X-Application-Method', 'Original Image')
     const stream = backendFactory.createDataReadStream(req.params.data)
     stream.on('meta', function (meta) {
       res.set({
@@ -17,13 +16,16 @@ module.exports = function (serviceLocator, backendFactory, options) {
       })
       res.set('Cache-Control', 'max-age=' + config.http.maxage)
       if (options && options.download) {
-        var filename = 'download',
-          urlParts = req.url.split('/'),
-          lastPart = urlParts[urlParts.length - 1]
+        const urlParts = req.url.split('/')
+        let filename = 'download'
+        let lastPart = urlParts[urlParts.length - 1]
         if (urlParts.length === 4) {
           filename = lastPart
         }
         res.set('Content-Disposition', 'attachment;filename="' + filename + '"')
+        res.set('X-Application-Method', 'Original image downloaded')
+      } else {
+        res.set('X-Application-Method', 'Original image')
       }
 
       stream.pipe(res)

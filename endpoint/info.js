@@ -8,6 +8,8 @@ module.exports = function (serviceLocator, backEndFactory) {
     const info = new darkroom.Info()
     const store = backEndFactory.createCacheWriteStream(req.cacheKey)
 
+    res.set('X-Application-Method', 'Image information')
+
     store.on('error', function (error) {
       logger.error(error, 'Cache error')
     })
