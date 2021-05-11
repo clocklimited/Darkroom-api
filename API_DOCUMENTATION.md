@@ -194,7 +194,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 ## Crop
 
-  Create one or many crops for a particular image.
+  Create one or many crops for a particular image. Will return an object with keys representing crops containing new image IDs.
 
 * **URL**
 
