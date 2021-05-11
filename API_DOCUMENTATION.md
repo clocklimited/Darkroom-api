@@ -341,6 +341,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `curl -v $(./support/authed-cli /info/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
 
 ## Resize
+
   Resize an image to a specified width and height, with an optional fill mode.
 
 * **Fill Modes**
@@ -426,3 +427,76 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `curl -v $(./support/authed-cli /100/800/stretch/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
   `curl -v $(./support/authed-cli /100/800/cover/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
   `curl -v $(./support/authed-cli /100/800/pad/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
+
+## Original / Download
+
+  Get the original image. Optionally, a header can be set to cause a browser to download the file as an attachment.
+
+* **URL**
+
+  `/original/imageId:hash`
+  `/download/imageId:hash`
+  `/download/imageId:hash/filename`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+    If downloading the image, a filename can be provided. This does not need to be hashed in the URL.
+
+* **Header Params**
+
+    None
+
+* **Data Params**
+
+    None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `<image data of type specified in Content-Type header>`
+
+* **Error Response:**
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "ResourceNotFound",
+        "message": "Not Found"
+      }
+      ```
+    **Reason:** The image ID provided was not found
+
+  OR
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "NotAuthorized",
+        "message": "Checksum does not match for action: /circle/"
+      }
+      ```
+    **Reason:** The hash did not match correctly
+
+  OR
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "BadDigest",
+        "message": "<variable message dependant on error location>"
+      }
+      ```
+    **Reason:** The reason for the error will be in the response message
+
+* **Sample Call:**
+
+  `curl -v $(./support/authed-cli /original/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
+  `curl -v $(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
+  `curl -v "$(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)/foobar"`
+
