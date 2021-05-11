@@ -37,13 +37,12 @@ function circleEndpoint(config, backendFactory) {
     const circle = new darkroom.Circle(circleOptions)
     const store = backendFactory.createCacheWriteStream(req.cacheKey)
 
-    store.once('error', function (error) {
-      return showError(req, error, next)
+    originalReadStream.once('notFound', () => {
+      next(new restifyErrors.ResourceNotFoundError('Not Found'))
     })
+    store.once('error', (error) => showError(req, error, next))
 
-    circle.once('error', function (error) {
-      return showError(req, error, next)
-    })
+    circle.once('error', (error) => showError(req, error, next))
 
     const passThrough = new PassThrough()
     passThrough.pipe(store)
