@@ -42,6 +42,7 @@ backends().forEach(function (backend) {
       request(darkroom)
         .get(url)
         .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8')
         .end(function (error, res) {
           assert.strictEqual(res.text, '{"width":500,"height":375}', res.text)
           done(error)
@@ -51,7 +52,11 @@ backends().forEach(function (backend) {
     it('should 404 if image is not found', function (done) {
       var uri = '/info/f3205aa9a406642cff624998ccc4dd78',
         url = uri + ':' + hashHelper(uri)
-      request(darkroom).get(url).expect(404).end(done)
+      request(darkroom)
+        .get(url)
+        .expect(404)
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .end(done)
     })
   })
 })

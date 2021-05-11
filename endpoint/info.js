@@ -9,6 +9,7 @@ module.exports = function (serviceLocator, backEndFactory) {
     const store = backEndFactory.createCacheWriteStream(req.cacheKey)
 
     res.set('X-Application-Method', 'Image information')
+    res.set('Content-Type', 'application/json')
 
     store.on('error', function (error) {
       logger.error(error, 'Cache error')
