@@ -72,6 +72,10 @@ module.exports = function (serviceLocator, backendFactory) {
         })
         const readStream = backendFactory.createDataReadStream(req.params.data)
 
+        readStream.once('notFound', () => {
+          next(new restifyErrors.ResourceNotFoundError('Not Found'))
+        })
+
         readStream.pipe(crop).pipe(store, {
           crop: data,
           gravity: req.params.gravity,
