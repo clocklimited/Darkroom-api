@@ -2,6 +2,46 @@
 
 Note, when running examples for image manipulation, make sure you've uploaded the test files so you've got something to play with.
 
+## GET /
+
+  Used to retrieve coffee from the server. Use at own peril.
+
+* **URL**
+
+  `/`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+   None
+
+* **Header Params**
+
+   None
+
+* **Data Params**
+
+   None
+
+* **Success Response:**
+
+  * **Code:** 418 <br />
+    **Content:** `text/plain` (may also be short and stout)
+      ```
+      I'm a teapot
+      ```
+
+* **Error Response:**
+
+  Does not error. The server has no doubt about its status as a teapot.
+
+* **Sample Call:**
+
+  `curl -v localhost:17999/`
+
 ## Upload (multiple)
 
   Creates a number of images on Darkroom. If the image(s) already exist in the backend store, they will not be stored again.
