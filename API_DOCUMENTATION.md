@@ -192,6 +192,100 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
   `curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999/`
 
+## Crop
+
+  Create one or many crops for a particular image.
+
+* **URL**
+
+  `/crop`
+
+* **Method:**
+
+  `POST`
+
+*  **URL Params**
+
+   None
+
+* **Header Params**
+
+  None
+
+* **Data Params**
+
+  Requires an image ID in `src` and either an array of `crops` or a single object defining one crop.
+
+  ```json
+  {
+    "crops": [
+      {
+        "h": 120,
+        "w": 300,
+        "x1": 0,
+        "x2": 300,
+        "y1": 85,
+        "y2": 205
+      },
+      {
+        "h": 168,
+        "w": 300,
+        "x1": 0,
+        "x2": 300,
+        "y1": 0,
+        "y2": 168
+      }
+    ],
+    "src": "1cfdd3bf942749472093f3b0ed6d4f89"
+  }
+  ```
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `application/json`
+      ```json
+      {
+        '0:300:85:205:300:120:1cfdd3bf942749472093f3b0ed6d4f89':
+          '8ef22819f51c38d6b5c077bf5d812358',
+        '0:300:0:168:300:168:1cfdd3bf942749472093f3b0ed6d4f89':
+          '5c1e108fe3561188e67b8c0d77e15bc9'
+      }
+      ```
+
+* **Error Response:**
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:** None <br />
+    **Reason:** You did not supply the authentication key `x-darkroom-key`
+
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "ResourceNotFound",
+        "message": "Not Found"
+      }
+      ```
+    **Reason:** The image ID provided was not found
+
+  OR
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "BadDigest",
+        "message": "<variable message dependant on error location>"
+      }
+      ```
+    **Reason:** The reason for the error will be in the response message
+
+* **Sample Call:**
+
+  `curl -v localhost:17999/ --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","crops":[{"x1":0,"x2":300,"y1":85,"y2":205,"w":300,"h":120},{"x1":0,"x2":300,"y1":0,"y2":168,"w":300,"h":168}]}'`
 
 ## Health Check
 
