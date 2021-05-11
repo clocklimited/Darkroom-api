@@ -285,7 +285,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 * **Sample Call:**
 
-  `curl -v localhost:17999/ --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","crops":[{"x1":0,"x2":300,"y1":85,"y2":205,"w":300,"h":120},{"x1":0,"x2":300,"y1":0,"y2":168,"w":300,"h":168}]}'`
+  `curl -v localhost:17999/crop --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","crops":[{"x1":0,"x2":300,"y1":85,"y2":205,"w":300,"h":120},{"x1":0,"x2":300,"y1":0,"y2":168,"w":300,"h":168}]}'`
 
 ## Health Check
 
