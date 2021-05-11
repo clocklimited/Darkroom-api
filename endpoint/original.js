@@ -8,7 +8,7 @@ module.exports = function (serviceLocator, backendFactory, options) {
     }
 
     res.set('X-Application-Method', 'Original Image')
-    var stream = backendFactory.createDataReadStream(req.params.data)
+    const stream = backendFactory.createDataReadStream(req.params.data)
     stream.on('meta', function (meta) {
       res.set({
         'Content-Type': meta.type,

@@ -7,40 +7,36 @@ module.exports = function (serviceLocator, backendFactory) {
   const { logger } = serviceLocator
   return function (req, res, next) {
     if (typeof req.body === 'string') req.body = JSON.parse(req.body)
+    let { src, crops } = req.body
 
-    const srcUrl = url.parse(req.body.src).path.split('/')
+    const srcUrl = url.parse(src).path.split('/')
     req.params.data = srcUrl[srcUrl.length - 1]
 
-    if (req.body.crops === undefined) {
+    if (crops === undefined) {
       return next(new restifyErrors.BadDigestError('Crops are undefined'))
     }
-    req.body.crops = !Array.isArray(req.body.crops)
-      ? [req.body.crops]
-      : req.body.crops
+    crops = !Array.isArray(crops) ? [crops] : crops
 
     logger.info(
       { id: req.requestId },
       'Crop Request made for image: ' +
         req.params.data +
         ' with ' +
-        req.body.crops.length +
+        crops.length +
         ' crops'
     )
-    logger.info(
-      { id: req.requestId },
-      'Crop Info: ' + JSON.stringify(req.body.crops)
-    )
+    logger.info({ id: req.requestId }, 'Crop Info: ' + JSON.stringify(crops))
 
-    var collection = {},
-      cropCount = 1
+    const collection = {}
+    let cropCount = 1
 
     async.eachSeries(
-      req.body.crops,
+      crops,
       function (data, callback) {
         logger.info({ id: req.requestId }, 'Creating crop ' + cropCount)
         data.data = req.params.data
-        var store = backendFactory.createDataWriteStream(),
-          crop = new darkroom.Crop()
+        const store = backendFactory.createDataWriteStream()
+        const crop = new darkroom.Crop()
 
         store.once('error', function (error) {
           logger.error({ id: req.requestId }, 'StoreStream:', error)
@@ -58,8 +54,8 @@ module.exports = function (serviceLocator, backendFactory) {
         })
 
         store.once('done', function (file) {
-          var values = [],
-            key = null
+          const values = []
+          let key = null
           for (key in data) {
             values.push(data[key])
           }
@@ -73,7 +69,7 @@ module.exports = function (serviceLocator, backendFactory) {
           cropCount++
           callback()
         })
-        var readStream = backendFactory.createDataReadStream(req.params.data)
+        const readStream = backendFactory.createDataReadStream(req.params.data)
 
         readStream.pipe(crop).pipe(store, {
           crop: data,
@@ -87,7 +83,6 @@ module.exports = function (serviceLocator, backendFactory) {
           return next(new restifyErrors.BadDigestError(error.message))
         } else {
           res.json(collection)
-          return next()
         }
       }
     )

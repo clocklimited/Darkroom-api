@@ -5,19 +5,19 @@ const retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
 module.exports = function (serviceLocator, backendFactory) {
   const { config, logger } = serviceLocator
-  const resize = {}
+  const resizeEndpoint = {}
 
-  resize.width = function (req, res, next) {
+  resizeEndpoint.width = function (req, res, next) {
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
     return resizeImage.call(this, req, res, next)
   }
 
-  resize.both = function (req, res, next) {
+  resizeEndpoint.both = function (req, res, next) {
     res.set('X-Application-Method', 'Resize both dimensions')
     return resizeImage.call(this, req, res, next)
   }
 
-  resize.mode = function (req, res, next) {
+  resizeEndpoint.mode = function (req, res, next) {
     res.set('X-Application-Method', 'Resize both dimensions with fill mode')
     return resizeImage.call(this, req, res, next)
   }
@@ -25,13 +25,13 @@ module.exports = function (serviceLocator, backendFactory) {
   function resizeImage(req, res, next) {
     res.set('Cache-Control', 'max-age=' + config.http.maxage)
     const modes = ['fit', 'stretch', 'cover', 'pad']
-    req.params.mode =
-      modes.indexOf(req.params.mode) === -1 ? 'fit' : req.params.mode
+    let { mode, data, format, width, height } = req.params
+    mode = modes.includes(mode) ? mode : 'fit'
 
-    const isHttp = req.params.data.indexOf('http') === 0
+    const isHttp = data.indexOf('http') === 0
     const readStream = isHttp
-      ? retrieveImageByUrl(req.params.data, logger)
-      : backendFactory.createDataReadStream(req.params.data)
+      ? retrieveImageByUrl(data, logger)
+      : backendFactory.createDataReadStream(data)
 
     readStream.on('notFound', function () {
       res.removeHeader('Cache-Control')
@@ -44,7 +44,7 @@ module.exports = function (serviceLocator, backendFactory) {
       res.set('Last-Modified', new Date().toUTCString())
     })
 
-    const re = new darkroom.Resize()
+    const resize = new darkroom.Resize()
     const cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
 
     cacheStore.on('error', function (error) {
@@ -52,7 +52,7 @@ module.exports = function (serviceLocator, backendFactory) {
       next(error)
     })
 
-    re.on('error', function (error) {
+    resize.on('error', function (error) {
       logger.error(error.toString(), 'Resize stream error')
       next(error)
     })
@@ -62,13 +62,13 @@ module.exports = function (serviceLocator, backendFactory) {
     passThrough.pipe(cacheStore)
     passThrough.pipe(res)
 
-    readStream.pipe(re).pipe(passThrough, {
-      width: Number(req.params.width),
-      height: Number(req.params.height),
+    readStream.pipe(resize).pipe(passThrough, {
+      width: Number(width),
+      height: Number(height),
       quality: config.quality,
-      mode: req.params.mode,
-      format: req.params.format
+      mode,
+      format
     })
   }
-  return resize
+  return resizeEndpoint
 }

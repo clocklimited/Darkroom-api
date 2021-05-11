@@ -6,30 +6,30 @@ module.exports = circleEndpoint
 
 function circleEndpoint(config, backendFactory) {
   return function processCircle(req, res, next) {
-    const originalReadStream = backendFactory.createDataReadStream(
-      req.params.data
-    )
+    const { x0, y0, x1, y1, colour, width, height } = req.query
+    const { data, mode } = req.params
+    const originalReadStream = backendFactory.createDataReadStream(data)
     let readStream = originalReadStream
 
-    if (req.query.width && req.query.height) {
-      const re = new darkroom.Resize()
+    if (width && height) {
+      const resize = new darkroom.Resize()
       const resizePassThrough = new PassThrough()
 
-      readStream = originalReadStream.pipe(re).pipe(resizePassThrough, {
-        width: Number(req.query.width),
-        height: Number(req.query.height),
+      readStream = originalReadStream.pipe(resize).pipe(resizePassThrough, {
+        width: Number(width),
+        height: Number(height),
         quality: config.quality,
         // TODO not obtainable here
-        mode: req.params.mode
+        mode
       })
     }
 
     const circleOptions = {
-      x0: req.query.x0,
-      y0: req.query.y0,
-      x1: req.query.x1,
-      y1: req.query.y1,
-      colour: req.query.colour
+      x0,
+      y0,
+      x1,
+      y1,
+      colour
     }
     const circle = new darkroom.Circle(circleOptions)
     const store = backendFactory.createCacheWriteStream(req.cacheKey)
