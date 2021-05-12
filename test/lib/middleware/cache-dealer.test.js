@@ -32,6 +32,16 @@ describe('cache-dealer-middleware', function () {
     assert.strictEqual(typeof cacheDealer, 'function')
   })
 
+  it('should call next() with NO_CACHE env set', function (done) {
+    const req = {}
+    const cacheDealer = createCacheDealer(config)
+    process.env.NO_CACHE = 1
+    cacheDealer(req, null, function () {
+      delete process.env.NO_CACHE
+      done()
+    })
+  })
+
   it('should call next on not found', function (done) {
     var mockBackend = new MockBackend(),
       cacheDealer = createCacheDealer(config, mockBackend)
