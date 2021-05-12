@@ -6,8 +6,8 @@ module.exports = circleEndpoint
 
 function circleEndpoint(config, backendFactory) {
   return function processCircle(req, res, next) {
-    const { x0, y0, x1, y1, colour, width, height } = req.query
-    const { data, mode } = req.params
+    const { x0, y0, x1, y1, colour, width, height, mode } = req.query
+    const { data } = req.params
     const originalReadStream = backendFactory.createDataReadStream(data)
     let readStream = originalReadStream
 
@@ -20,7 +20,6 @@ function circleEndpoint(config, backendFactory) {
         width: Number(width),
         height: Number(height),
         quality: config.quality,
-        // TODO not obtainable here
         mode
       })
     } else {

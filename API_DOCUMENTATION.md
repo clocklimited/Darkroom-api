@@ -355,6 +355,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
    | `y1` | No | Forms the Y component of the outer edge of the circle |
    | `width` | No | If set with `height`, will crop the image to this dimension after applying circular mask |
    | `height` | No | If set with `width`, will crop the image to this dimension after applying circular mask |
+   | `mode` | No | If set with `width` and `height`, will crop the image using this fill mode |
    | `colour` | No | Sets the colour of the mask, defaults to white. Use hex colour codes, i.e. #9966FF |
 
 * **Header Params**

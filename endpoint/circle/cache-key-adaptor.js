@@ -10,7 +10,8 @@ function createCacheKey(req) {
     req.query.x0,
     req.query.y0,
     req.query.x1,
-    req.query.y1
+    req.query.y1,
+    req.query.mode
   ]
 
   return parts.join(':')
