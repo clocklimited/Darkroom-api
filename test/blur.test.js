@@ -57,6 +57,7 @@ backends().forEach(function (backend) {
       it('should return a working blur with a png', function (done) {
         request(darkroom)
           .post(path)
+          .set('x-darkroom-key', 'key')
           .send({
             src: pngId,
             masks: [
@@ -74,16 +75,17 @@ backends().forEach(function (backend) {
             if (error) return done(error)
             assert.strictEqual(Object.keys(res.body).length, 3)
             assert(res.body instanceof Object)
-            assert.deepStrictEqual(res.body.src, jpegId)
-            assert.doesNotMatch(res.body.id, jpegId)
-            assert.doesNotMatch(res.body.id, undefined)
+            assert.deepStrictEqual(res.body.src, pngId)
+            assert.notDeepStrictEqual(res.body.id, pngId)
+            assert.notDeepStrictEqual(res.body.id, undefined)
             done()
           })
       })
 
-      it('should return a working crop with a jpeg', function (done) {
+      it('should return a working blur with a jpeg', function (done) {
         request(darkroom)
           .post(path)
+          .set('x-darkroom-key', 'key')
           .send({
             src: jpegId,
             masks: [
@@ -102,8 +104,8 @@ backends().forEach(function (backend) {
             assert.strictEqual(Object.keys(res.body).length, 3)
             assert(res.body instanceof Object)
             assert.deepStrictEqual(res.body.src, jpegId)
-            assert.doesNotMatch(res.body.id, jpegId)
-            assert.doesNotMatch(res.body.id, undefined)
+            assert.notDeepStrictEqual(res.body.id, jpegId)
+            assert.notDeepStrictEqual(res.body.id, undefined)
             done()
           })
       })
@@ -112,10 +114,33 @@ backends().forEach(function (backend) {
     it('should succeed with src only', function (done) {
       request(darkroom)
         .post(path)
-        .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
+        .set('x-darkroom-key', 'key')
+        .send({ src: jpegId })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
+        .end(done)
+    })
+
+    it('should fail with invalid masks', function (done) {
+      request(darkroom)
+        .post(path)
+        .set('x-darkroom-key', 'key')
+        .send({ src: jpegId, masks: ['lmao'] })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end(done)
+    })
+
+    it('should 404 with unknown asset', function (done) {
+      request(darkroom)
+        .post(path)
+        .set('x-darkroom-key', 'key')
+        .send({ src: 'abc123' })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404)
         .end(done)
     })
   })

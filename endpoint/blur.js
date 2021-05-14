@@ -7,6 +7,8 @@ module.exports = function (serviceLocator, backendFactory) {
     res.set('X-Application-Method', 'User defined image blur')
     let { src, masks, method } = req.body
 
+    if (!masks) masks = []
+
     logger.info(
       { id: req.requestId },
       'Blur Request made for image: ' + src + ' with ' + masks.length + ' masks'
