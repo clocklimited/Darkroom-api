@@ -47,19 +47,11 @@ module.exports = function (serviceLocator, backendFactory) {
     })
 
     store.once('done', function (file) {
-      const values = []
-      let key = null
-      for (const mask of masks) {
-        values.push(mask.map(([x, y]) => `${x},${y}`).join(' '))
-      }
-
-      key = values.join(':')
       collection.id = file.id
       collection.src = src
-      collection.key = key
       logger.info(
         { id: req.requestId },
-        'Successfully created blur with ' + values.length + ' areas: ' + file.id
+        'Successfully created blur with ' + masks.length + ' areas: ' + file.id
       )
       if (!error) {
         res.json(collection)
