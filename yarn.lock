@@ -216,7 +216,7 @@
 
 "@clocklimited/darkroom@https://github.com/clocklimited/darkroom#feature/blur":
   version "5.1.0"
-  resolved "https://github.com/clocklimited/darkroom#001528d453c9056403072c91a11ba97fe9af4ad4"
+  resolved "https://github.com/clocklimited/darkroom#e55b3aaaf16811ca49b7bfaee5ad895d6204cfb3"
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
