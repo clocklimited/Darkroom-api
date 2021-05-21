@@ -36,6 +36,8 @@ steps:
     pull: if-not-exists
     depends_on:
       - install
+    environment:
+      MONGO_URL: mongodb://mongo:27017/test
     commands:
       - yarn run test
     when:
