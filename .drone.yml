@@ -20,7 +20,7 @@ steps:
         - push
 
   - name: install
-    image: node:10.14.1-alpine
+    image: node:14.16.1-alpine
     depends_on:
       - restore-cache
     commands:
@@ -31,7 +31,7 @@ steps:
         - push
 
   - name: test
-    image: node:10.14.1-alpine
+    image: node:14.16.1-alpine
     depends_on:
       - install
     commands:
