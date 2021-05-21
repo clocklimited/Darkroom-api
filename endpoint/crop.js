@@ -1,5 +1,4 @@
 const darkroom = require('@clocklimited/darkroom')
-const url = require('url')
 const async = require('async')
 const restifyErrors = require('restify-errors')
 
