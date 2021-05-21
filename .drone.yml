@@ -40,6 +40,9 @@ steps:
       MONGO_URL: mongodb://mongo:27017/test
     commands:
       - yarn run test
+    volumes:
+      - name: fs
+        path: /tmp
     when:
       event:
         - push
@@ -82,6 +85,8 @@ volumes:
   - name: cache
     host:
       path: /var/cache/drone
+  - name: fs
+    temp: {}
   - name: docker
     host:
       path: /var/run/docker.sock
