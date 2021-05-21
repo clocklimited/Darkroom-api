@@ -661,7 +661,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   whole image
 
   Blurring is done by pixellating the portion of the image by default. To blur, pass an additional 
-  `method: blur`
+  `method: 'gaussian'`
 
   ```json
   {
