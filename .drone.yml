@@ -33,7 +33,7 @@ steps:
   - name: test
     image: node:10.14.1-alpine
     depends_on:
-      - prepare
+      - install
     commands:
       - yarn run test
     when:
@@ -62,7 +62,6 @@ steps:
     image: plugins/slack
     depends_on:
       - rebuild-cache
-      - install-deploy
     settings:
       channel: darkroom-coders
       username: drone
