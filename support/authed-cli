@@ -1,8 +1,48 @@
-#!/usr/local/bin/node
-var config = require('con.figure')(require('../config')())
-  , url = process.argv[2]
-  , salt = process.argv[3] || config.salt
-  , host = config.http.url || ''
-  , hash = require('crypto').createHash('md5').update(url + salt).digest('hex')
+#!/usr/bin/env node
+const yargs = require('yargs/yargs')
+const { hideBin } = require('yargs/helpers')
+const config = require('con.figure')(require('../config')())
+const crypto = require('crypto')
+const querystring = require('querystring')
 
-console.log('\nURL: %s\n', [ host, url, ':', hash ].join(''))
+yargs(hideBin(process.argv))
+  .option('salt', {
+    alias: 's',
+    type: 'string',
+    default: config.salt,
+    description: 'Custom salt'
+  })
+  .option('host', {
+    alias: 'h',
+    type: 'string',
+    default: config.http.url,
+    description: 'Custom host'
+  })
+  .option('query', {
+    alias: 'q',
+    type: 'string',
+    description: 'Querystring parameter in format a=1&b=2'
+  })
+  .option('nonewline', {
+    alias: 'n',
+    type: 'boolean',
+    default: false,
+    description: 'Disable additional newline for usage in scripts'
+  })
+  .command({
+    command: '$0 <url>',
+    desc: 'Create a hashed url',
+    handler: (argv) => {
+      const { host, url, salt, query, nonewline } = argv
+      const qs = querystring.parse(query)
+      const stringToHash = url + (query ? querystring.stringify(qs) : '') + salt
+      const hash = crypto.createHash('md5').update(stringToHash).digest('hex')
+      const hashedUrl =
+        `${host}${url}:${hash}` + (query ? `?${querystring.stringify(qs)}` : '')
+      process.stdout.write(hashedUrl)
+      if (!nonewline) {
+        process.stdout.write('\n')
+      }
+      process.exit(0)
+    }
+  }).argv

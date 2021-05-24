@@ -1,35 +1,32 @@
-var createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , querystring = require('querystring')
-  , baseUrl = '/circle/'
-  , gm = require('gm')
-  , assert = require('assert-diff')
-  , hashHelper = require('./hash-helper')
-  , async = require('async')
-  , backends = require('./lib/backends')
+const mockServiceLocator = require('./mock-service-locator')
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const querystring = require('querystring')
+const baseUrl = '/circle/'
+const gm = require('gm')
+const assert = require('assert-diff')
+const hashHelper = require('./hash-helper')
+const backends = require('./lib/backends')
 
 backends().forEach(function (backend) {
   var config = backend.config
-  describe('Circle ' + backend.name + ' backend', function() {
-    var imgSrcId = null
-      , darkroom
-      , factory
+  describe('Circle ' + backend.name + ' backend', function () {
+    var imgSrcId = null,
+      darkroom,
+      factory
 
     before(function (done) {
-      createBackendFactory(config, function (err, backendFactory) {
+      const sl = mockServiceLocator(config)
+      createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
-        darkroom = createDarkroom(config, factory)
+        darkroom = createDarkroom(sl, factory)
         done()
       })
     })
 
-    function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
-    }
-
-    before(clean)
-    after(clean)
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
 
     before(function (done) {
       request(darkroom)
@@ -43,7 +40,7 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return a circular cropped image', function(done) {
+    it('should return a circular cropped image', function (done) {
       var uri = baseUrl + imgSrcId
 
       request(darkroom)
@@ -52,9 +49,16 @@ backends().forEach(function (backend) {
         .end(done)
     })
 
-    it('allow you to pass in circular co-ordinates', function(done) {
-      var qs = querystring.stringify({ x0: '100', y0: '100', x1: '0', y1: '0', height: '100', width: '100' })
-        , uri = baseUrl + imgSrcId
+    it('allow you to pass in circular co-ordinates', function (done) {
+      var qs = querystring.stringify({
+          x0: '100',
+          y0: '100',
+          x1: '0',
+          y1: '0',
+          height: '100',
+          width: '100'
+        }),
+        uri = baseUrl + imgSrcId
 
       request(darkroom)
         .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
@@ -62,9 +66,9 @@ backends().forEach(function (backend) {
         .end(done)
     })
 
-    it('allow you to pass in a background colour', function(done) {
-      var qs = querystring.stringify({ colour: '#9966FF' })
-        , uri = baseUrl + imgSrcId
+    it('allow you to pass in a background colour', function (done) {
+      var qs = querystring.stringify({ colour: '#9966FF' }),
+        uri = baseUrl + imgSrcId
 
       request(darkroom)
         .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
@@ -79,13 +83,17 @@ backends().forEach(function (backend) {
         res.data += chunk
       })
       res.on('end', function () {
-        cb(null, new Buffer(res.data, 'binary'))
+        cb(null, new Buffer.from(res.data, 'binary'))
       })
     }
 
-    it('allow you to resize an image', function(done) {
-      var qs = querystring.stringify({ colour: '#9966FF', height: '225', width: '300' })
-        , uri = baseUrl + imgSrcId
+    it('allow you to resize an image', function (done) {
+      var qs = querystring.stringify({
+          colour: '#9966FF',
+          height: '225',
+          width: '300'
+        }),
+        uri = baseUrl + imgSrcId
 
       request(darkroom)
         .get(uri + ':' + hashHelper(baseUrl + imgSrcId + qs) + '?' + qs)
@@ -93,18 +101,18 @@ backends().forEach(function (backend) {
         .parse(binaryParser)
         .end(function (err, res) {
           if (err) return done(err)
-          gm(new Buffer(res.body)).size(function (err, size) {
+          gm(new Buffer.from(res.body)).size(function (err, size) {
             if (err) return done(err)
 
-            assert.deepEqual(size, { width: 300, height: 225 })
+            assert.deepStrictEqual(size, { width: 300, height: 225 })
             done()
           })
         })
     })
 
     it('should error if the checksum does not match', function (done) {
-      var uri = baseUrl + imgSrcId
-        , qs = querystring.stringify({ width: 50000 })
+      var uri = baseUrl + imgSrcId,
+        qs = querystring.stringify({ width: 50000 })
 
       request(darkroom)
         .get(uri + ':' + hashHelper(uri) + '?' + qs)
@@ -112,5 +120,4 @@ backends().forEach(function (backend) {
         .end(done)
     })
   })
-
 })

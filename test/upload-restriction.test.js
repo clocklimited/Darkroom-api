@@ -1,40 +1,34 @@
-var request = require('supertest')
-  , fs = require('fs')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , assert = require('assert')
-  , async = require('async')
-  , backends = require('./lib/backends')
-  , extend = require('lodash.assign')
+const mockServiceLocator = require('./mock-service-locator')
+const createDarkroom = require('../server')
+const request = require('supertest')
+const fs = require('fs')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const assert = require('assert')
+const backends = require('./lib/backends')
+const extend = require('lodash.assign')
 
 backends().forEach(function (backend) {
   var config = extend({}, backend.config)
 
-  describe('API ' + backend.name + ' backend', function() {
-
-    var createDarkroom = require('../server')
-
-    describe('API ' + backend.name + ' backend', function() {
-      var darkroom
-        , factory
-        , testConfig = extend({}, config, { upload: { allow: [ 'image/png' ] } })
-
-      function clean(done) {
-        async.series([ factory.clean, factory.setup ], done)
-      }
+  describe('API ' + backend.name + ' backend', function () {
+    describe('API ' + backend.name + ' backend', function () {
+      var darkroom,
+        factory,
+        testConfig = extend({}, config, { upload: { allow: ['image/png'] } })
 
       before(function (done) {
-        createBackendFactory(testConfig, function (err, backendFactory) {
+        const sl = mockServiceLocator(testConfig)
+        createBackendFactory(sl, function (err, backendFactory) {
           factory = backendFactory
-          darkroom = createDarkroom(testConfig, factory)
+          darkroom = createDarkroom(sl, factory)
           done()
         })
       })
 
-      before(clean)
-      after(clean)
+      before((done) => factory.setup(done))
+      after((done) => factory.clean(done))
 
       it('should not allow POST upload of certain any type', function (done) {
-
         request(darkroom)
           .post('/')
           .set('x-darkroom-key', 'key')
@@ -44,35 +38,32 @@ backends().forEach(function (backend) {
           .expect('Content-Type', /json/)
           .end(function (err, res) {
             if (err) return done(err)
-            assert.equal(res.body.message, 'Forbidden type detected: text/plain; charset=us-ascii')
+            assert.strictEqual(
+              res.body.message,
+              'Forbidden type detected: text/plain; charset=us-ascii'
+            )
             done()
           })
       })
 
       it('should not allow PUT upload of certain any type', function (done) {
-        var originalEnd
-          , req = request(darkroom).put('/')
-            .set('x-darkroom-key', 'key')
-            .set('Accept', 'application/json')
+        request(darkroom)
+          .put('/')
+          .set('x-darkroom-key', 'key')
+          .set('Accept', 'application/json')
+          .send(fs.readFileSync(__dirname + '/fixtures/test.txt'))
 
-        originalEnd = req.end
-        req.end = function() {}
-
-        var stream = fs.createReadStream(__dirname + '/fixtures/test.txt')
-
-        stream.pipe(req)
-
-        stream.on('end', function() {
-          originalEnd.call(req, function(err, res) {
-            assert.equal(res.body.message, 'Forbidden type detected: text/plain; charset=us-ascii')
+          .end(function (err, res) {
+            if (err) return done(err)
+            assert.strictEqual(
+              res.body.message,
+              'Forbidden type detected: text/plain; charset=us-ascii'
+            )
             done()
           })
-        })
-
       })
 
       it('should allow POST upload of whitelisted types', function (done) {
-
         request(darkroom)
           .post('/')
           .set('x-darkroom-key', 'key')
@@ -82,31 +73,23 @@ backends().forEach(function (backend) {
           .expect('Content-Type', /json/)
           .end(function (err, res) {
             if (err) return done(err)
-            assert.equal(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
             done()
           })
       })
 
       it('should allow PUT upload of whitelisted any type', function (done) {
-        var originalEnd
-          , req = request(darkroom).put('/')
-            .set('x-darkroom-key', 'key')
-            .set('Accept', 'application/json')
+        request(darkroom)
+          .put('/')
+          .set('x-darkroom-key', 'key')
+          .set('Accept', 'application/json')
+          .send(fs.readFileSync(__dirname + '/fixtures/png.png'))
 
-        originalEnd = req.end
-        req.end = function() {}
-
-        var stream = fs.createReadStream(__dirname + '/fixtures/png.png')
-
-        stream.pipe(req)
-
-        stream.on('end', function() {
-          originalEnd.call(req, function(err, res) {
-            assert.equal(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+          .end(function (err, res) {
+            if (err) return done(err)
+            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
             done()
           })
-        })
-
       })
     })
   })

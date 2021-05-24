@@ -1,39 +1,32 @@
-var darkroom = require('@clocklimited/darkroom')
-  , PassThrough = require('stream').PassThrough
-  , debug = require('debug')('darkroom-api:info')
-  , restify = require('restify')
+const darkroom = require('@clocklimited/darkroom')
+const { PassThrough } = require('stream')
+const restifyErrors = require('restify-errors')
 
-module.exports = function (config, backEndFactory) {
+module.exports = function (serviceLocator, backEndFactory) {
+  const { logger } = serviceLocator
   return function (req, res, next) {
-    var info = new darkroom.Info()
-      , store = backEndFactory.createCacheWriteStream(req.cacheKey)
+    const info = new darkroom.Info()
+    const store = backEndFactory.createCacheWriteStream(req.cacheKey)
+
+    res.set('X-Application-Method', 'Image information')
+    res.set('Content-Type', 'application/json')
 
     store.on('error', function (error) {
-      req.log.error('Cache:', error.message)
-      debug(error.message)
+      logger.error(error, 'Cache error')
     })
 
-    var passThrough = new PassThrough()
+    const passThrough = new PassThrough()
     passThrough.pipe(store)
-    debug('info for', req.params.data)
-    var stream = backEndFactory.createDataReadStream(req.params.data)
-    stream
-      .pipe(info)
-      .pipe(passThrough
-        , { width: Number(req.params.width)
-          , height: Number(req.params.height)
-          , crop: req.params.crop
-          }
-      )
-      .pipe(res)
+    logger.debug('info for', req.params.data)
+    const stream = backEndFactory.createDataReadStream(req.params.data)
+    stream.pipe(info).pipe(passThrough).pipe(res)
 
     stream.on('notFound', function () {
-      next(new restify.ResourceNotFoundError('Not Found'))
+      next(new restifyErrors.ResourceNotFoundError('Not Found'))
     })
 
     info.on('error', function (e) {
-      req.log.error(e, 'info.error')
-      debug(e.message)
+      logger.error(e, 'info.error')
       return next(e)
     })
   }

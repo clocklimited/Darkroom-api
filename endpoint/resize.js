@@ -1,39 +1,42 @@
-var PassThrough = require('stream').PassThrough
-  , darkroom = require('@clocklimited/darkroom')
-  , restify = require('restify')
-  , retrieveImageByUrl = require('../lib/image-by-url-retriever')
+const { PassThrough } = require('stream')
+const darkroom = require('@clocklimited/darkroom')
+const restifyErrors = require('restify-errors')
+const retrieveImageByUrl = require('../lib/image-by-url-retriever')
 
-module.exports = function (config, backendFactory) {
+module.exports = function (serviceLocator, backendFactory) {
+  const { config, logger } = serviceLocator
+  const resizeEndpoint = {}
 
-  var resize = {}
-
-  resize.width = function (req, res, next) {
+  resizeEndpoint.width = function (req, res, next) {
     res.set('X-Application-Method', 'Resize width and maintain aspect ratio')
-    res.set('Cache-Control', 'max-age=' + config.http.maxage)
     return resizeImage.call(this, req, res, next)
   }
 
-  resize.both = function (req, res, next) {
+  resizeEndpoint.both = function (req, res, next) {
     res.set('X-Application-Method', 'Resize both dimensions')
-    res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    return resizeImage.call(this, req, res, next)
+  }
+
+  resizeEndpoint.mode = function (req, res, next) {
+    res.set('X-Application-Method', 'Resize both dimensions with fill mode')
     return resizeImage.call(this, req, res, next)
   }
 
   function resizeImage(req, res, next) {
-    /* jshint maxcomplexity:6 */
-    var modes = [ 'fit', 'stretch', 'cover', 'pad' ]
-    req.params.width = req.params.width || req.params[0]
-    req.params.height = req.params.height || req.params[1]
-    req.params.mode = req.params.mode || modes.indexOf(req.params[2]) === -1 ? 'fit' : req.params[2]
-    req.params.format = req.params.format
+    res.set('Cache-Control', 'max-age=' + config.http.maxage)
+    const modes = ['fit', 'stretch', 'cover', 'pad']
+    let { mode, data, format, width, height } = req.params
+    mode = modes.includes(mode) ? mode : 'fit'
 
-    var isHttp = req.params.data.indexOf('http') === 0
-    var readStream = isHttp ? retrieveImageByUrl(req.params.data, req.log) : backendFactory.createDataReadStream(req.params.data)
+    const isHttp = data.indexOf('http') === 0
+    const readStream = isHttp
+      ? retrieveImageByUrl(data, logger)
+      : backendFactory.createDataReadStream(data)
 
     readStream.on('notFound', function () {
       res.removeHeader('Cache-Control')
       res.set('Cache-Control', 'max-age=' + config.http.pageNotFoundMaxage)
-      next(new restify.ResourceNotFoundError('Image does not exist'))
+      next(new restifyErrors.ResourceNotFoundError('Image does not exist'))
     })
 
     readStream.on('meta', function (meta) {
@@ -41,33 +44,31 @@ module.exports = function (config, backendFactory) {
       res.set('Last-Modified', new Date().toUTCString())
     })
 
-    var re = new darkroom.Resize()
-      , cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
+    const resize = new darkroom.Resize()
+    const cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
 
     cacheStore.on('error', function (error) {
-      req.log.warn('StoreStream:', error.message)
+      logger.warn(error, 'StoreStream error')
       next(error)
     })
 
-    re.on('error', function (error) {
-      req.log.error('Resize', error)
+    resize.on('error', function (error) {
+      logger.error(error.toString(), 'Resize stream error')
       next(error)
     })
 
-    var passThrough = new PassThrough()
+    const passThrough = new PassThrough()
 
     passThrough.pipe(cacheStore)
     passThrough.pipe(res)
 
-    readStream
-      .pipe(re)
-      .pipe(passThrough
-        , { width: Number(req.params.width)
-          , height: Number(req.params.height)
-          , quality: config.quality
-          , mode: req.params.mode
-          , format: req.params.format
-          })
+    readStream.pipe(resize).pipe(passThrough, {
+      width: Number(width),
+      height: Number(height),
+      quality: config.quality,
+      mode,
+      format
+    })
   }
-  return resize
+  return resizeEndpoint
 }

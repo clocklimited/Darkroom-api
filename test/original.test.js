@@ -1,35 +1,28 @@
-var createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , hashHelper = require('./hash-helper')
-  , async = require('async')
-  , backends = require('./lib/backends')
-  , assert = require('assert')
+const mockServiceLocator = require('./mock-service-locator')
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const hashHelper = require('./hash-helper')
+const backends = require('./lib/backends')
+const assert = require('assert')
 
 backends().forEach(function (backend) {
-  var config = backend.config
+  const config = backend.config
 
-  describe('Original ' + backend.name + ' backend', function() {
-
-    var imgSrcId
-      , darkroom
-      , factory
-      , dateUploaded
+  describe('Original ' + backend.name + ' backend', function () {
+    let imgSrcId, darkroom, factory, dateUploaded
 
     before(function (done) {
-      createBackendFactory(config, function (err, backendFactory) {
+      const sl = mockServiceLocator(config)
+      createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
-        darkroom = createDarkroom(config, factory)
+        darkroom = createDarkroom(sl, factory)
         done()
       })
     })
 
-    function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
-    }
-
-    before(clean)
-    after(clean)
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
 
     before(function (done) {
       request(darkroom)
@@ -44,33 +37,32 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return an image if the image exists (with the correct cache headers)', function(done) {
-      var uri = '/original/' + imgSrcId
-        , url = uri + ':' + hashHelper(uri)
+    it('should return an image if the image exists (with the correct cache headers)', function (done) {
+      var uri = '/original/' + imgSrcId,
+        url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['cache-control'], 'max-age=10')
-          assert.equal(res.headers['last-modified'], dateUploaded)
+          assert.strictEqual(res.headers['cache-control'], 'max-age=10')
+          assert.strictEqual(res.headers['last-modified'], dateUploaded)
           done()
         })
     })
 
-    it('should return 404 if an image doesnt exist (with the correct cache headers)', function(done) {
-      var uri = '/original/1cfdd3bf942749472093f3b0ed6d4f88'
-        , url = uri + ':' + hashHelper(uri)
+    it('should return 404 if an image doesnt exist (with the correct cache headers)', function (done) {
+      var uri = '/original/1cfdd3bf942749472093f3b0ed6d4f88',
+        url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(404)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['cache-control'], 'max-age=0')
-          assert.equal(res.headers['last-modified'], undefined)
+          assert.strictEqual(res.headers['cache-control'], 'max-age=0')
+          assert.strictEqual(res.headers['last-modified'], undefined)
           done()
         })
     })
-
   })
 })

@@ -1,34 +1,28 @@
-var createDarkroom = require('../server')
-  , createBackendFactory = require('../lib/backend-factory-creator')
-  , request = require('supertest')
-  , hashHelper = require('./hash-helper')
-  , async = require('async')
-  , backends = require('./lib/backends')
-  , assert = require('assert')
+const mockServiceLocator = require('./mock-service-locator')
+const createDarkroom = require('../server')
+const createBackendFactory = require('../lib/backend-factory-creator')
+const request = require('supertest')
+const hashHelper = require('./hash-helper')
+const backends = require('./lib/backends')
+const assert = require('assert')
 
 backends().forEach(function (backend) {
   var config = backend.config
 
-  describe('Download ' + backend.name + ' backend', function() {
-
-    var imgSrcId
-      , darkroom
-      , factory
+  describe('Download ' + backend.name + ' backend', function () {
+    var imgSrcId, darkroom, factory
 
     before(function (done) {
-      createBackendFactory(config, function (err, backendFactory) {
+      const sl = mockServiceLocator(config)
+      createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
-        darkroom = createDarkroom(config, factory)
+        darkroom = createDarkroom(sl, factory)
         done()
       })
     })
 
-    function clean(done) {
-      async.series([ factory.clean, factory.setup ], done)
-    }
-
-    before(clean)
-    after(clean)
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
 
     before(function (done) {
       request(darkroom)
@@ -42,28 +36,34 @@ backends().forEach(function (backend) {
         })
     })
 
-    it('should return an image if the image exists (with the correct header for downloading if no filename present)', function(done) {
-      var uri = '/download/' + imgSrcId
-        , url = uri + ':' + hashHelper(uri)
+    it('should return an image if the image exists (with the correct header for downloading if no filename present)', function (done) {
+      var uri = '/download/' + imgSrcId,
+        url = uri + ':' + hashHelper(uri)
       request(darkroom)
         .get(url)
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['content-disposition'], 'attachment;filename="download"')
+          assert.strictEqual(
+            res.headers['content-disposition'],
+            'attachment;filename="download"'
+          )
           done()
         })
     })
 
-    it('should return an image if the image exists (with the correct header for downloading if filename is present)', function(done) {
-      var uri = '/download/' + imgSrcId
-        , url = uri + ':' + hashHelper(uri) + '/audio.mp3'
+    it('should return an image if the image exists (with the correct header for downloading if filename is present)', function (done) {
+      var uri = '/download/' + imgSrcId,
+        url = uri + ':' + hashHelper(uri) + '/audio.mp3'
       request(darkroom)
         .get(url)
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.equal(res.headers['content-disposition'], 'attachment;filename="audio.mp3"')
+          assert.strictEqual(
+            res.headers['content-disposition'],
+            'attachment;filename="audio.mp3"'
+          )
           done()
         })
     })
