@@ -1,5 +1,4 @@
 const darkroom = require('@clocklimited/darkroom')
-const url = require('url')
 const async = require('async')
 const restifyErrors = require('restify-errors')
 
@@ -7,11 +6,7 @@ module.exports = function (serviceLocator, backendFactory) {
   const { logger } = serviceLocator
   return function (req, res, next) {
     res.set('X-Application-Method', 'User defined image crop')
-    if (typeof req.body === 'string') req.body = JSON.parse(req.body)
     let { src, crops } = req.body
-
-    const srcUrl = url.parse(src).path.split('/')
-    req.params.data = srcUrl[srcUrl.length - 1]
 
     if (crops === undefined) {
       return next(new restifyErrors.BadDigestError('Crops are undefined'))
@@ -20,11 +15,7 @@ module.exports = function (serviceLocator, backendFactory) {
 
     logger.info(
       { id: req.requestId },
-      'Crop Request made for image: ' +
-        req.params.data +
-        ' with ' +
-        crops.length +
-        ' crops'
+      'Crop Request made for image: ' + src + ' with ' + crops.length + ' crops'
     )
     logger.info({ id: req.requestId }, 'Crop Info: ' + JSON.stringify(crops))
 
@@ -35,7 +26,7 @@ module.exports = function (serviceLocator, backendFactory) {
       crops,
       function (data, callback) {
         logger.info({ id: req.requestId }, 'Creating crop ' + cropCount)
-        data.data = req.params.data
+        data.data = src
         const store = backendFactory.createDataWriteStream()
         const crop = new darkroom.Crop()
 
@@ -70,7 +61,7 @@ module.exports = function (serviceLocator, backendFactory) {
           cropCount++
           callback()
         })
-        const readStream = backendFactory.createDataReadStream(req.params.data)
+        const readStream = backendFactory.createDataReadStream(src)
 
         readStream.once('notFound', () => {
           next(new restifyErrors.ResourceNotFoundError('Not Found'))

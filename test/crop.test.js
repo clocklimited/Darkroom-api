@@ -46,6 +46,7 @@ backends().forEach(function (backend) {
             crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
           })
           .set('Accept', 'application/json')
+          .set('x-darkroom-key', 'key')
           .expect('Content-Type', /json/)
           .expect(200)
           .end(function (error, res) {
@@ -66,6 +67,7 @@ backends().forEach(function (backend) {
             crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
           })
           .set('Accept', 'application/json')
+          .set('x-darkroom-key', 'key')
           .expect('Content-Type', /json/)
           .expect(200)
           .end(function (error, res) {
@@ -88,6 +90,7 @@ backends().forEach(function (backend) {
         .set('x-darkroom-key', 'key')
         .send(body)
         .set('Accept', 'application/json')
+        .set('x-darkroom-key', 'key')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (error, res) {
@@ -107,6 +110,7 @@ backends().forEach(function (backend) {
         .set('x-darkroom-key', 'key')
         .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
         .set('Accept', 'application/json')
+        .set('x-darkroom-key', 'key')
         .expect('Content-Type', /json/)
         .expect(400)
         .end(done)
@@ -132,6 +136,7 @@ backends().forEach(function (backend) {
         .set('x-darkroom-key', 'key')
         .send(body)
         .set('Accept', 'application/json')
+        .set('x-darkroom-key', 'key')
         .expect('Content-Type', /json/)
         .expect(200)
         .end(function (error, res) {
