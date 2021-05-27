@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## Version 8.0.0
+
+Almost complete re-write of the project including many improvements to the code, replacement of restify for express, and bugfixes.
+
+Please see [the upgrade PR](https://github.com/clocklimited/Darkroom-api/pull/65) for more information.
+
+One BREAKING change has been implemented so a small change is required to the CMS, which [you can see here](https://github.com/clocklimited/Contagious/commit/7df240458cad8882d6b7067814f84f110bd2fef3)
+
+```diff
+diff --git a/components/admin/asset/models/image.js b/components/admin/asset/models/image.js
+index 3f703fb06e..fbf5aef78e 100644
+--- a/components/admin/asset/models/image.js
++++ b/components/admin/asset/models/image.js
+@@ -66,6 +66,7 @@ module.exports = BaseModel.extend({
+       type: 'POST',
+       url: url,
+       data: JSON.stringify(data),
++      headers: { 'x-darkroom-key': config.darkroom.key },
+       success: this.cropsReceived,
+       context: this,
+       error() {
+```
+
+
 ## Version 7.5.0
 
 Renames `fill` to `pad` and adds transparency.

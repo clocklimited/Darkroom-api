@@ -1,95 +1,108 @@
-pipeline:
-  create-build-image:
-    image: docker
-    group: preinstall
-    commands:
-      - docker build --target build -t ${DRONE_REPO,,}:${DRONE_BUILD_NUMBER} .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+kind: pipeline
+name: default
 
-  prepare:
-    image: microadam/graphicsmagick-alpine:1.3.28
-    group: preinstall
-    commands:
-      - cp /usr/bin/gm /drone/
-      - cp -R /usr/lib /drone/lib
-
-  restore-cache:
+steps:
+  - name: restore-cache
     image: drillster/drone-volume-cache
-    group: preinstall
-    restore: true
-    mount:
-      - /drone/pkg-cache
-      - node_modules
+    pull: if-not-exists
+    settings:
+      restore: true
+      cache_key: [DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH]
+      mount:
+        - .eslintcache
+        - node_modules
+        - /drone/babel-cache.json
+        - /drone/yarn-cache
     volumes:
-      - /var/lib/drone/cache-new:/cache
+      - name: cache
+        path: /cache
+    when:
+      event:
+        - push
 
-  install:
-    image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
+  - name: install
+    image: node:14.16.1-alpine
+    depends_on:
+      - restore-cache
     commands:
+      - apk add --update zeromq-dev python build-base git
       - yarn install --silent --no-emoji --prefer-offline
-
-  test:
-    image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
-    environment:
-      - MONGO_URL=mongodb://mongo:27017/test
-    commands:
-      - cp /drone/gm /usr/bin/
-      - cp -R /drone/lib/* /usr/lib/
-      - yarn test
-
-  compile-app:
-    image: "${DRONE_REPO,,}:${DRONE_BUILD_NUMBER}"
-    environment:
-      - PKG_CACHE_PATH=/drone/pkg-cache
-    commands:
-      - mv locations.js.env locations.js
-      - pkg -t host app.js -o darkroom
     when:
-      event: tag
+      event:
+        - push
 
-  rebuild-cache:
+  - name: test
+    image: node:14.16.1-alpine
+    pull: if-not-exists
+    depends_on:
+      - install
+    environment:
+      MONGO_URL: mongodb://mongo:27017/test
+    commands:
+      - apk add graphicsmagick gifsicle
+      - yarn run test
+    when:
+      event:
+        - push
+
+  - name: rebuild-cache
     image: drillster/drone-volume-cache
-    rebuild: true
-    mount:
-      - /drone/pkg-cache
-      - node_modules
+    pull: if-not-exists
+    depends_on:
+      - test
+    settings:
+      rebuild: true
+      cache_key: [DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH]
+      mount:
+        - .eslintcache
+        - node_modules
+        - /drone/yarn-cache
     volumes:
-      - /var/lib/drone/cache-new:/cache
-
-  publish-release-image:
-    image: docker
-    commands:
-      - echo "$GOOGLE_CREDENTIALS" | docker login -u _json_key --password-stdin https://eu.gcr.io
-      - "docker build --target release -t eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v} ."
-      - "docker push eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}"
-      - "docker rmi eu.gcr.io/test-k8s-1289/darkroom:${DRONE_TAG##v}"
-    secrets: [ google_credentials ]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - name: cache
+        path: /cache
     when:
-      event: tag
+      event:
+        - push
 
-  delete-previous-build-image:
-    image: docker
-    commands:
-      - docker rmi -f ${DRONE_REPO,,}:${DRONE_PREV_BUILD_NUMBER}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    when:
-      status: [ success, failure ]
-
-  notify:
+  - name: notify
     image: plugins/slack
-    channel: adam-test
-    username: drone
-    secrets: [ slack_webhook ]
+    pull: if-not-exists
+    depends_on:
+      - rebuild-cache
+    settings:
+      channel: darkroom-coders
+      username: drone
+      webhook:
+        from_secret: slack_webhook
     when:
-      status: [ success, failure ]
+      status:
+        - success
+        - failure
+
+volumes:
+  - name: cache
+    host:
+      path: /var/cache/drone
+  - name: docker
+    host:
+      path: /var/run/docker.sock
 
 services:
-  mongo:
+  - name: mongo
     image: mongo:3.4
-    command: [ "--smallfiles" ]
+    pull: if-not-exists
+    command: ['--smallfiles']
     when:
-      event: push
+      event:
+        - push
+
+trigger:
+  event:
+    exclude:
+      - pull_request
+
+---
+kind: secret
+name: slack_webhook
+get:
+  name: slackWebhook

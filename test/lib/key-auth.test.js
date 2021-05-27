@@ -20,7 +20,7 @@ describe('Key Auth', function () {
   it('should call send() with invalid key', function (done) {
     const req = { headers: { 'x-darkroom-key': 'BAD' } }
     const res = {
-      send: function () {
+      sendStatus: function () {
         done()
       }
     }
