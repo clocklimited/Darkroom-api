@@ -73,7 +73,7 @@ backends().forEach(function (backend) {
           .expect(200)
           .end(function (error, res) {
             if (error) return done(error)
-            assert.strictEqual(Object.keys(res.body).length, 3)
+            assert.strictEqual(Object.keys(res.body).length, 2)
             assert(res.body instanceof Object)
             assert.deepStrictEqual(res.body.src, pngId)
             assert.notDeepStrictEqual(res.body.id, pngId)
@@ -101,7 +101,7 @@ backends().forEach(function (backend) {
           .expect(200)
           .end(function (error, res) {
             if (error) return done(error)
-            assert.strictEqual(Object.keys(res.body).length, 3)
+            assert.strictEqual(Object.keys(res.body).length, 2)
             assert(res.body instanceof Object)
             assert.deepStrictEqual(res.body.src, jpegId)
             assert.notDeepStrictEqual(res.body.id, jpegId)
