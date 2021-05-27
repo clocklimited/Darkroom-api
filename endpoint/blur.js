@@ -2,7 +2,7 @@ const darkroom = require('@clocklimited/darkroom')
 const restifyErrors = require('restify-errors')
 
 module.exports = function (serviceLocator, backendFactory) {
-  const { logger } = serviceLocator
+  const { logger, config } = serviceLocator
   return async function (req, res, next) {
     res.set('X-Application-Method', 'User defined image blur')
     let { src, masks, method } = req.body
@@ -65,8 +65,8 @@ module.exports = function (serviceLocator, backendFactory) {
     })
 
     readStream.pipe(blur).pipe(store, {
-      gravity: req.params.gravity,
-      format: req.params.format
+      format: req.params.format,
+      quality: config.quality
     })
   }
 }

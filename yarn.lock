@@ -214,9 +214,9 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@clocklimited/darkroom@https://github.com/clocklimited/darkroom#feature/blur":
-  version "5.1.0"
-  resolved "https://github.com/clocklimited/darkroom#e55b3aaaf16811ca49b7bfaee5ad895d6204cfb3"
+"@clocklimited/darkroom@https://github.com/clocklimited/darkroom#feature/blur-quality":
+  version "6.0.2"
+  resolved "https://github.com/clocklimited/darkroom#22c167c0c55085fc63cfc5783888ebbe0fdf35d1"
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
