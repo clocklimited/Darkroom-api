@@ -214,9 +214,10 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@clocklimited/darkroom@https://github.com/clocklimited/darkroom#feature/blur-quality":
-  version "6.0.2"
-  resolved "https://github.com/clocklimited/darkroom#22c167c0c55085fc63cfc5783888ebbe0fdf35d1"
+"@clocklimited/darkroom@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-6.1.0.tgz#ca0366e477203f6f29c8dd4d354de0830b73d592"
+  integrity sha512-ayWmmGwfcWBGkukbSV+7P2ImvYIthCqVjI6gCLmXOFJItWL8wdWG3pRN/FSP6Qdx9G2Kqo4B18JNWUVHZ5Jx7Q==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
@@ -296,6 +297,7 @@
   version "15.3.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.3.0.tgz#d6fed7d6bc6854306da3dea1af9f874b00783e26"
   integrity sha512-8/bnjSZD86ZfpBsDlCIkNXIvm+h6wi9g7IqL+kmFkQ+Wvu3JrasgLElfiPgoo8V8vVfnEi0QVS12gbl94h9YsQ==
+
 "@types/node@^10.3.4":
   version "10.17.60"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.60.tgz#35f3d6213daed95da7f0f73e75bcc6980e90597b"
