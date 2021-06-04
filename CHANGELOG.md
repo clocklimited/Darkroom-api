@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 8.1.1
+
+Fixes wrong dependency reference
+
 ## Version 8.1.0
 
 Adds quality querystring parameter to resize
