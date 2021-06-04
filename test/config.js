@@ -20,7 +20,8 @@ module.exports = function () {
       version: '0.0.1',
       salt: 'salt',
       key: 'key',
-      allowedResponseFormats: ['png']
+      allowedResponseFormats: ['png'],
+      quality: 80
     }
   }
   if (process.env.MONGO_BACKEND)
