@@ -5,7 +5,7 @@
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "dependencies": {
-    "@clocklimited/darkroom": "^6.0.2",
+    "@clocklimited/darkroom": "https://github.com/clocklimited/darkroom#feature/blur-quality",
     "@serby/logger": "^3.1.0",
     "async": "^3.2.0",
     "body-parser": "^1.19.0",

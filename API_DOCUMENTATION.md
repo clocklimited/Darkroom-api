@@ -635,3 +635,88 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `curl -v $(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
   `curl -v "$(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)/foobar"`
 
+## Blur
+
+  Take a single image and, given a set of masks, blur the image in those areas and return a new asset
+
+* **URL**
+
+  `/blur`
+
+* **Method:**
+
+  `POST`
+
+* **URL Params**
+
+   None
+
+* **Header Params**
+
+  None
+
+* **Data Params**
+
+  Requires an image ID in `src`. Also accepts an array of masks, which if not provided will blur the 
+  whole image
+
+  Blurring is done by pixellating the portion of the image by default. To blur, pass an additional 
+  `method: 'gaussian'`
+
+  ```json
+  {
+    "masks": [
+      [
+        [0, 100],
+        [100, 100],
+        [100, 0]
+      ]
+    ],
+    "src": "1cfdd3bf942749472093f3b0ed6d4f89"
+  }
+  ```
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "src": "1cfdd3bf942749472093f3b0ed6d4f89", // the original src
+        "id": "8ef22819f51c38d6b5c077bf5d812358" // the resulting image
+      }
+      ```
+
+* **Error Response:**
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:** None <br />
+    **Reason:** You did not supply the authentication key `x-darkroom-key`
+
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "ResourceNotFound",
+        "message": "Not Found"
+      }
+      ```
+    **Reason:** The image ID provided was not found
+
+  OR
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `application/json`
+      ```json
+      {
+        "code": "BadDigest",
+        "message": "<variable message dependant on error location>"
+      }
+      ```
+    **Reason:** The reason for the error will be in the response message
+
+* **Sample Call:**
+
+  `curl -v localhost:17999/blur --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","crops":[[[0, 100],[100, 100],[100, 0]]]}'`

@@ -40,6 +40,7 @@ backends().forEach(function (backend) {
       it('should return a working crop with a png', function (done) {
         request(darkroom)
           .post(path)
+          .set('x-darkroom-key', 'key')
           .send({
             src: imgSrcId,
             crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
@@ -60,6 +61,7 @@ backends().forEach(function (backend) {
       it('should return a working crop with a jpeg', function (done) {
         request(darkroom)
           .post(path)
+          .set('x-darkroom-key', 'key')
           .send({
             src: imgSrcId,
             crops: [{ x1: 10, x2: 100, y1: 100, y2: 100, w: 100, h: 200 }]
@@ -85,6 +87,7 @@ backends().forEach(function (backend) {
       }
       request(darkroom)
         .post(path)
+        .set('x-darkroom-key', 'key')
         .send(body)
         .set('Accept', 'application/json')
         .set('x-darkroom-key', 'key')
@@ -104,6 +107,7 @@ backends().forEach(function (backend) {
     it('should return a http error if sizes not provided', function (done) {
       request(darkroom)
         .post(path)
+        .set('x-darkroom-key', 'key')
         .send({ src: '3bec4be4b95328cb281a47429c8aed8e' })
         .set('Accept', 'application/json')
         .set('x-darkroom-key', 'key')
@@ -129,6 +133,7 @@ backends().forEach(function (backend) {
 
       request(darkroom)
         .post(path)
+        .set('x-darkroom-key', 'key')
         .send(body)
         .set('Accept', 'application/json')
         .set('x-darkroom-key', 'key')

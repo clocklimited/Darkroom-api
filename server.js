@@ -112,6 +112,7 @@ module.exports = function (serviceLocator, backEndFactory) {
   app.get('/:width(\\d+)/*', checkRoute, cacheDealer, endpoint.resize.width)
 
   app.post('/crop', keyAuth, bodyParser.json(), endpoint.crop)
+  app.post('/blur', keyAuth, bodyParser.json(), endpoint.blur)
 
   app.get('/', (req, res) => res.sendStatus(418))
 
