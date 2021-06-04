@@ -77,7 +77,8 @@ describe('Authorised middleware', function () {
         y1: '0',
         height: '100',
         width: '100',
-        colour: '#fff'
+        colour: '#fff',
+        quality: 80
       },
       qs = querystring.stringify(qsObject),
       baseUrl = '/circle/',

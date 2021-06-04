@@ -506,6 +506,12 @@ Note, when running examples for image manipulation, make sure you've uploaded th
    | `height` | No | Specifies height of the new image. |
    | `mode` | No | One of `fit`, `stretch`, `cover`, `pad`. |
 
+* **Query Params**
+
+   | Param | Required | Usage |
+   |-------|----------|-------|
+   | `quality` | No | Specifies quality of the new image (excluded for PNGs). See [here](http://www.graphicsmagick.org/GraphicsMagick.html#details-quality)
+
 * **Header Params**
 
     None

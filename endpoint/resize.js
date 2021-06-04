@@ -65,7 +65,7 @@ module.exports = function (serviceLocator, backendFactory) {
     readStream.pipe(resize).pipe(passThrough, {
       width: Number(width),
       height: Number(height),
-      quality: config.quality,
+      quality: req.query.quality || config.quality,
       mode,
       format
     })

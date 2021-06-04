@@ -203,6 +203,43 @@ backends().forEach(function (backend) {
         })
     })
 
+    it('should set quality based on querystring', function (done) {
+      var uri = '/160/' + imgSrcId,
+        qs = 'quality=60',
+        url = uri + ':' + hashHelper(uri, qs) + '?' + qs
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).identify(function (err, data) {
+            assert.equal(data['JPEG-Quality'], '60')
+            done(err)
+          })
+        })
+    })
+
+    it('should set quality based on config if not provided by querystring', function (done) {
+      var uri = '/160/' + imgSrcId,
+        url = uri + ':' + hashHelper(uri)
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).identify(function (err, data) {
+            assert.equal(data['JPEG-Quality'], config.quality)
+            done(err)
+          })
+        })
+    })
+
     describe('Cache Control Headers', function () {
       it('should return a high max age header of successful requests', function (done) {
         var uri = '/100/' + imgSrcId,
