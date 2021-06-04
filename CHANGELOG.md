@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 8.1.0
+
+Adds quality querystring parameter to resize
+Adds blurring of images
+
 ## Version 8.0.0
 
 Almost complete re-write of the project including many improvements to the code, replacement of restify for express, and bugfixes.
