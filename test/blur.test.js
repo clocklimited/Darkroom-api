@@ -122,6 +122,28 @@ backends().forEach(function (backend) {
         .end(done)
     })
 
+    it('should not crash with an non numeric blur amount', function (done) {
+      request(darkroom)
+        .post(path)
+        .set('x-darkroom-key', 'key')
+        .send({ src: jpegId, blurAmount: 'invalid' })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(done)
+    })
+
+    it('should allow blur amount', function (done) {
+      request(darkroom)
+        .post(path)
+        .set('x-darkroom-key', 'key')
+        .send({ src: jpegId, blurAmount: 100 })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .end(done)
+    })
+
     it('should fail with invalid masks', function (done) {
       request(darkroom)
         .post(path)
