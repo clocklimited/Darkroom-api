@@ -214,9 +214,10 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@clocklimited/darkroom@github:clocklimited/darkroom.git":
-  version "6.1.0"
-  resolved "https://codeload.github.com/clocklimited/darkroom/tar.gz/be1d97608b5978eade32fd493aec468fe0633f99"
+"@clocklimited/darkroom@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-7.0.0.tgz#4f21eec09c2e9d988b4f57983352435ec97b83af"
+  integrity sha512-vE8F+wHOAleFAy/xOlH7qEERv9ERKUy3fBMa1/tBmcmATDBhLgfSBN5LUBU9FME0Ok3HIAs+qoNUkmRXPNodag==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
