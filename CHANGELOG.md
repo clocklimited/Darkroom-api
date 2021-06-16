@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 9.0.0
+
+Blur is now much faster and only offers a gaussian blur
+
 ## Version 8.1.1
 
 Fixes wrong dependency reference
