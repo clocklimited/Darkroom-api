@@ -5,7 +5,7 @@ module.exports = function (serviceLocator, backendFactory) {
   const { logger, config } = serviceLocator
   return async function (req, res, next) {
     res.set('X-Application-Method', 'User defined image blur')
-    let { src, masks, method } = req.body
+    let { src, masks, blurAmount } = req.body
 
     if (!masks) masks = []
 
@@ -29,7 +29,7 @@ module.exports = function (serviceLocator, backendFactory) {
 
     logger.info({ id: req.requestId }, 'Creating blurred ')
     const store = backendFactory.createDataWriteStream()
-    const blur = new darkroom.Blur({ masks, method })
+    const blur = new darkroom.Blur({ masks, blurAmount })
 
     store.once('error', function (error) {
       logger.error({ id: req.requestId }, 'StoreStream:', error)
