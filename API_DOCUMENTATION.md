@@ -666,8 +666,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   Requires an image ID in `src`. Also accepts an array of masks, which if not provided will blur the 
   whole image
 
-  Blurring is done by pixellating the portion of the image by default. To blur, pass an additional 
-  `method: 'gaussian'`
+  To control the amount of blur, add in an extra `blurAmount: 10`
 
   ```json
   {
@@ -725,4 +724,4 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 * **Sample Call:**
 
-  `curl -v localhost:17999/blur --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","crops":[[[0, 100],[100, 100],[100, 0]]]}'`
+  `curl -v localhost:17999/blur --data-raw '{"src":"1cfdd3bf942749472093f3b0ed6d4f89","masks":[[[0, 100],[100, 100],[100, 0]]]}'`
