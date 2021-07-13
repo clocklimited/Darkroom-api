@@ -10,6 +10,7 @@ module.exports = function (serviceLocator, backendFactory) {
     info: require('./info')(serviceLocator, backendFactory),
     watermark: require('./watermark')(serviceLocator, backendFactory),
     circle: require('./circle')(serviceLocator, backendFactory),
-    upload: require('./upload')
+    upload: require('./upload'),
+    delete: require('./delete')(serviceLocator, backendFactory)
   }
 }

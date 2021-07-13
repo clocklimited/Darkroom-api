@@ -641,6 +641,58 @@ Note, when running examples for image manipulation, make sure you've uploaded th
   `curl -v $(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)`
   `curl -v "$(./support/authed-cli /download/1cfdd3bf942749472093f3b0ed6d4f89 -n)/foobar"`
 
+## Delete Data
+
+  Delete data stored in the storage backend.
+
+* **URL**
+
+  `/data/:id`
+
+* **Method:**
+
+  `DELETE`
+
+* **URL Params**
+
+   | Param | Required | Usage |
+   |-------|----------|-------|
+   | `id` | Yes | Specifies the  MD5 of the asset to delete. |
+
+* **Success Response:**
+
+  * **Code:** 204 <br />
+
+* **Sample Call:**
+
+  `curl -IXDELETE localhost:17999/data/544fcb446671c3e1e980ccecd4579b37 -H "x-darkroom-key: key"`
+
+## Delete Cache
+
+  Delete cache stored in the storage backend.
+
+* **URL**
+
+  `/cache/:id`
+
+* **Method:**
+
+  `DELETE`
+
+* **URL Params**
+
+   | Param | Required | Usage |
+   |-------|----------|-------|
+   | `id` | Yes | Specifies the MD5 of the file whose cache to delete. |
+
+* **Success Response:**
+
+  * **Code:** 204 <br />
+
+* **Sample Call:**
+
+  `curl -IXDELETE localhost:17999/data/544fcb446671c3e1e980ccecd4579b37 -H "x-darkroom-key: key"`
+
 ## Blur
 
   Take a single image and, given a set of masks, blur the image in those areas and return a new asset

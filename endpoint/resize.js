@@ -45,7 +45,10 @@ module.exports = function (serviceLocator, backendFactory) {
     })
 
     const resize = new darkroom.Resize()
-    const cacheStore = backendFactory.createCacheWriteStream(req.cacheKey)
+    const cacheStore = backendFactory.createCacheWriteStream(
+      req.cacheKey,
+      req.params.data
+    )
 
     cacheStore.on('error', function (error) {
       logger.warn(error, 'StoreStream error')
