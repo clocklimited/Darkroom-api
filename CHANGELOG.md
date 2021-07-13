@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 9.1.0
+
+Adds deletion endpoints for data and cache.
+
 ## Version 9.0.0
 
 Blur is now much faster and only offers a gaussian blur
