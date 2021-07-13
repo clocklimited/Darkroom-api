@@ -63,7 +63,8 @@ describe('cache-dealer-middleware', function () {
     mockBackend.readStream.emit('meta', {
       size: 1,
       lastModified: '2016-01-26 12:02:00',
-      type: 'image/png'
+      type: 'image/png',
+      originalId: 1
     })
 
     assert.deepStrictEqual(res.headers, {
@@ -75,5 +76,27 @@ describe('cache-dealer-middleware', function () {
     })
 
     done()
+  })
+
+  it('should set originalId on cached item if not set', function (done) {
+    var mockBackend = new MockBackend(),
+      cacheDealer = createCacheDealer(config, mockBackend),
+      res = new Response(),
+      data = 100
+
+    mockBackend.updateCacheOriginalId = (key, id) => {
+      assert.equal(id, data)
+      done()
+    }
+
+    cacheDealer({ params: { data } }, res, function () {
+      done(new Error('Next should not be called'))
+    })
+
+    mockBackend.readStream.emit('meta', {
+      size: 1,
+      lastModified: '2016-01-26 12:02:00',
+      type: 'image/png'
+    })
   })
 })

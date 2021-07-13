@@ -132,6 +132,20 @@ module.exports = function (Backend, getConfig) {
       stream.end()
     })
 
+    it('should write metadata', function (done) {
+      const originalId = 'original'
+      const stream = backend.createCacheWriteStream('1234', originalId)
+      stream.on('done', async () => {
+        const { metadata } = await backend._db.collection('fs.files').findOne()
+
+        assert.strictEqual(metadata.type, 'cache')
+        assert.strictEqual(metadata.originalId, originalId)
+        done()
+      })
+      stream.write('data')
+      stream.end()
+    })
+
     it('should emit meta on read data', function (done) {
       const stream = backend.createCacheWriteStream('1234')
       let metaCalled = false
@@ -159,6 +173,134 @@ module.exports = function (Backend, getConfig) {
       })
       stream.write('hello')
       stream.end()
+    })
+  })
+
+  describe('cache', async () => {
+    it('should be cleared by id', function (done) {
+      this.timeout(6000)
+
+      const originalId = 'original'
+      const otherOriginalId = 'other'
+      const stream1 = backend.createCacheWriteStream('1234', originalId)
+
+      stream1.on('done', () => {
+        const stream2 = backend.createCacheWriteStream('4321', otherOriginalId)
+
+        stream2.on('done', async () => {
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': originalId }),
+            1
+          )
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': otherOriginalId }),
+            1
+          )
+
+          await backend.clearCache(originalId)
+
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': originalId }),
+            0
+          )
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': otherOriginalId }),
+            1
+          )
+
+          done()
+        })
+
+        stream2.write('data')
+        stream2.end()
+      })
+
+      stream1.write('data')
+      stream1.end()
+    })
+  })
+
+  describe('data', async () => {
+    it('should delete data', function (done) {
+      backend.clean()
+      this.timeout(6000)
+
+      const dataStream = backend.createDataWriteStream()
+
+      dataStream.on('done', async ({ id }) => {
+        assert.strictEqual(
+          await backend._db
+            .collection('fs.files')
+            .count({ md5: id, 'metadata.type': 'data' }),
+          1
+        )
+
+        await backend.deleteData(id)
+
+        assert.strictEqual(
+          await backend._db.collection('fs.files').count({ md5: id }),
+          0
+        )
+
+        done()
+      })
+
+      dataStream.write('data')
+      dataStream.end()
+    })
+
+    it('should clear cache when deleted', function (done) {
+      this.timeout(6000)
+
+      const dataStream = backend.createDataWriteStream()
+
+      dataStream.on('done', ({ id }) => {
+        const cacheStream = backend.createCacheWriteStream('1234', id)
+
+        cacheStream.on('done', async () => {
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ md5: id, 'metadata.type': 'data' }),
+            1
+          )
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': id }),
+            1
+          )
+
+          await backend.deleteData(id)
+
+          assert.strictEqual(
+            await backend._db.collection('fs.files').count({ md5: id }),
+            0
+          )
+          assert.strictEqual(
+            await backend._db
+              .collection('fs.files')
+              .count({ 'metadata.originalId': id }),
+            0
+          )
+
+          done()
+        })
+
+        cacheStream.write('cachedata')
+        cacheStream.end()
+      })
+
+      dataStream.write('data')
+      dataStream.end()
     })
   })
 }

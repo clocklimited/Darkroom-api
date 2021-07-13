@@ -120,6 +120,9 @@ module.exports = function (serviceLocator, backEndFactory) {
 
   app.put('/', keyAuth, putUploader, endpoint.upload)
 
+  app.delete('/data/:id', keyAuth, endpoint.delete.data)
+  app.delete('/cache/:id', keyAuth, endpoint.delete.cache)
+
   // This is being removed until a time when the '@clocklimited/darkroom' implementation is
   // more streamy or a new version of DR is rolled out.
   //server.post('/watermark', restify.bodyParser(), endpoint.watermark)
