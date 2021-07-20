@@ -106,7 +106,7 @@ describe('Route checker', () => {
     })
   })
 
-  it('should set req.params properties with format if provided', (done) => {
+  it('should set req.params.format if provided', (done) => {
     const checkRoute = createRouteChecker(config)
 
     const req = {
@@ -122,6 +122,102 @@ describe('Route checker', () => {
         assert.strictEqual(
           value,
           '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939/a.png'
+        )
+      }
+    }
+    checkRoute(req, res, (error) => {
+      assert.ifError(error)
+      assert.deepStrictEqual(req.params, {
+        0: 160,
+        data: '1cfdd3bf942749472093f3b0ed6d4f89',
+        hash: '93e7b6c489485692e96ec3de52c7a939',
+        action: '/160/',
+        format: 'png'
+      })
+      done()
+    })
+  })
+
+  it('should set req.params.format even there is a querystring', (done) => {
+    const checkRoute = createRouteChecker(config)
+
+    const req = {
+      method: 'GET',
+      params: { 0: 160 },
+      query: {},
+      url:
+        '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939/a.png?quality=100'
+    }
+    const res = {
+      set: (header, value) => {
+        assert.strictEqual(header, 'Authorized-Request')
+        assert.strictEqual(
+          value,
+          '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939/a.png?quality=100'
+        )
+      }
+    }
+    checkRoute(req, res, (error) => {
+      assert.ifError(error)
+      assert.deepStrictEqual(req.params, {
+        0: 160,
+        data: '1cfdd3bf942749472093f3b0ed6d4f89',
+        hash: '93e7b6c489485692e96ec3de52c7a939',
+        action: '/160/',
+        format: 'png'
+      })
+      done()
+    })
+  })
+
+  it('should set req.params.format when there is no file name before extension', (done) => {
+    const checkRoute = createRouteChecker(config)
+
+    const req = {
+      method: 'GET',
+      params: { 0: 160 },
+      query: {},
+      url:
+        '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939/.png?quality=100'
+    }
+    const res = {
+      set: (header, value) => {
+        assert.strictEqual(header, 'Authorized-Request')
+        assert.strictEqual(
+          value,
+          '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939/.png?quality=100'
+        )
+      }
+    }
+    checkRoute(req, res, (error) => {
+      assert.ifError(error)
+      assert.deepStrictEqual(req.params, {
+        0: 160,
+        data: '1cfdd3bf942749472093f3b0ed6d4f89',
+        hash: '93e7b6c489485692e96ec3de52c7a939',
+        action: '/160/',
+        format: 'png'
+      })
+      done()
+    })
+  })
+
+  it('should set req.params.format when there is no / before extension', (done) => {
+    const checkRoute = createRouteChecker(config)
+
+    const req = {
+      method: 'GET',
+      params: { 0: 160 },
+      query: {},
+      url:
+        '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939.png?quality=100'
+    }
+    const res = {
+      set: (header, value) => {
+        assert.strictEqual(header, 'Authorized-Request')
+        assert.strictEqual(
+          value,
+          '/160/1cfdd3bf942749472093f3b0ed6d4f89:93e7b6c489485692e96ec3de52c7a939.png?quality=100'
         )
       }
     }
