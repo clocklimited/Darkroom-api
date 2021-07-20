@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 10.0.0
+
+Adds /_version endpoint
+Fixes and improves custom response formats
+
 ## Version 9.1.0
 
 Adds deletion endpoints for data and cache.
