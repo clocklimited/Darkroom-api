@@ -11,6 +11,7 @@ module.exports = function (serviceLocator, backendFactory) {
     watermark: require('./watermark')(serviceLocator, backendFactory),
     circle: require('./circle')(serviceLocator, backendFactory),
     upload: require('./upload'),
-    delete: require('./delete')(serviceLocator, backendFactory)
+    delete: require('./delete')(serviceLocator, backendFactory),
+    version: require('./version')
   }
 }

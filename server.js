@@ -88,6 +88,8 @@ module.exports = function (serviceLocator, backEndFactory) {
     })
   })
 
+  app.get('/_version', endpoint.version)
+
   app.get(
     '/circle/*',
     checkRoute,
