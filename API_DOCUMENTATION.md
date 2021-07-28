@@ -190,7 +190,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 * **Sample Call:**
 
-  `curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" -F upload=@./test/fixtures/jpeg.jpeg localhost:17999/`
+  `cat file | xargs -I {} curl -v -X PUT -H "x-darkroom-key: YOUR_KEY" --data-binary {} localhost:17999/`
 
 ## Crop
 
