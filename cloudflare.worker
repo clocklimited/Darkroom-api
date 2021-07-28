@@ -9,7 +9,6 @@ async function makeWebp(request) {
         && request.headers.get('Accept').match(/image\/webp/)
         && (request.url.match(extensionRegex) || request.url.match(noExtensionRegex))
         && !request.url.includes('/original/')) {
-        console.log('hit')
 
         const { origin, pathname, search } = new URL(request.url)
 
