@@ -1,0 +1,74 @@
+addEventListener('fetch', event => {
+    event.respondWith(makeWebp(event.request))
+})
+
+async function makeWebp(request) {
+    let extensionRegex = /(\.jpg|\.jpeg|\.png)(\?.*)?$/i
+    let noExtensionRegex = /\/[^\.]*$/
+    if(request.headers.get('Accept')
+        && request.headers.get('Accept').match(/image\/webp/)
+        && (request.url.match(extensionRegex) || request.url.match(noExtensionRegex))
+        && !request.url.includes('/original/')) {
+        console.log('hit')
+
+        const { origin, pathname, search } = new URL(request.url)
+
+        /**
+         * Replace jpg / png with webp
+         */
+        let url = request.url.replace(extensionRegex, '.webp') + search
+
+        /**
+         * Add .webp to extensionless urls
+         */
+        if (!url.includes('.webp')) {
+            url = origin + pathname + '.webp' + search
+        }
+
+        url = new URL(url)
+
+        /**
+         * Create a new request with the webp url
+         */
+        const modifiedRequest = new Request(url, {
+            method: request.method,
+            headers: request.headers
+        })
+
+        /**
+         * Fetch the webp response
+         */
+        const webpResponse = await fetch(modifiedRequest)
+
+        /**
+         * Add webworker header to the webp response so we can
+         * check live if the webworking is doing what it should do
+         */
+        const webpHeaders = new Headers(webpResponse.headers)
+        webpHeaders.set('Content-Type', 'image/webp')
+        webpHeaders.append('X-WebWorker', 'active')
+
+        /**
+         * Return a new response object
+         */
+        return new Response(webpResponse.body, {
+            status: webpResponse.status,
+            statusText: webpResponse.statusText,
+            headers: webpHeaders
+        })
+
+    } else {
+        /**
+         * Set the CORS header so that we can use prod darkroom on staging CMS
+         */
+        const original = await fetch(request)
+
+        if (original.headers.get('Access-Control-Allow-Origin') && request.headers.get('Origin')) {
+          response = new Response(original.body, original)
+          response.headers.set('Access-Control-Allow-Origin', request.headers.get('Origin') || 'test')
+          return response
+        }
+
+        return original
+    }
+}
