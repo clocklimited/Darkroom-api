@@ -511,6 +511,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
    | Param | Required | Usage |
    |-------|----------|-------|
    | `quality` | No | Specifies quality of the new image (excluded for PNGs). See [here](http://www.graphicsmagick.org/GraphicsMagick.html#details-quality)
+   | `gravity` | No | Specifies the direction that the image gravitates, when using some fill modes. See [here](http://www.graphicsmagick.org/GraphicsMagick.html#details-gravity)
 
 * **Header Params**
 
@@ -715,7 +716,7 @@ Note, when running examples for image manipulation, make sure you've uploaded th
 
 * **Data Params**
 
-  Requires an image ID in `src`. Also accepts an array of masks, which if not provided will blur the 
+  Requires an image ID in `src`. Also accepts an array of masks, which if not provided will blur the
   whole image
 
   To control the amount of blur, add in an extra `blurAmount: 10`

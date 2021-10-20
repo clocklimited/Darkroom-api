@@ -240,6 +240,49 @@ backends().forEach(function (backend) {
         })
     })
 
+    it('should accept gravity set in querystring', function (done) {
+      var uri = '/160/' + imgSrcId,
+        qs = 'gravity=South',
+        url = uri + ':' + hashHelper(uri, qs) + '?' + qs
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).identify(function (err, data) {
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.strictEqual(data.size.width, 160)
+            assert.strictEqual(data.size.height, 120)
+            done(err)
+          })
+        })
+    })
+
+    it('should accept multiple querystring options', function (done) {
+      var uri = '/160/' + imgSrcId,
+        qs = 'quality=60&gravity=South',
+        url = uri + ':' + hashHelper(uri, qs) + '?' + qs
+
+      config.allowedResponseFormats = allowedResponseFormats
+
+      request(darkroom)
+        .get(url)
+        .expect(200)
+        .end(function (error, res) {
+          if (error) return done(error)
+          gm(res.body).identify(function (err, data) {
+            assert.strictEqual(res.headers['d-cache'], 'MISS')
+            assert.equal(data['JPEG-Quality'], 60)
+            assert.strictEqual(data.size.width, 160)
+            assert.strictEqual(data.size.height, 120)
+            done(err)
+          })
+        })
+    })
+
     describe('Cache Control Headers', function () {
       it('should return a high max age header of successful requests', function (done) {
         var uri = '/100/' + imgSrcId,
