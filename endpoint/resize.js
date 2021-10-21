@@ -69,6 +69,7 @@ module.exports = function (serviceLocator, backendFactory) {
       width: Number(width),
       height: Number(height),
       quality: req.query.quality || config.quality,
+      gravity: req.query.gravity,
       mode,
       format
     })
