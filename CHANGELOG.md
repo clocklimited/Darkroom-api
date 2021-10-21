@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 10.1.0
+
+Exposes gravity option for resize.
+
 ## Version 10.0.0
 
 Adds /_version endpoint

@@ -214,10 +214,10 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@clocklimited/darkroom@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-7.0.0.tgz#4f21eec09c2e9d988b4f57983352435ec97b83af"
-  integrity sha512-vE8F+wHOAleFAy/xOlH7qEERv9ERKUy3fBMa1/tBmcmATDBhLgfSBN5LUBU9FME0Ok3HIAs+qoNUkmRXPNodag==
+"@clocklimited/darkroom@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-7.1.0.tgz#4222407e30421a03890919f9b47c4ca255be3f4d"
+  integrity sha512-wCLfPJEl080OZUlz19ZxPXWeupHn9Dkdn3FLxxF8MySIQmZjx/u8PT19n2KG+6duJNA1I+z9r5Lf+qsDaIhK0Q==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
