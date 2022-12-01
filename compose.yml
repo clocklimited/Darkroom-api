@@ -1,0 +1,33 @@
+name: darkroom-api
+
+services:
+  mongo:
+    pull_policy: if_not_present
+    image: mongo:4.2.17
+    command: 'mongod'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "mongo admin --quiet 'db.runCommand({ serverStatus: 1 }).ok' | grep 1 -q || exit 1",
+        ]
+      interval: 5s
+
+  application:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URI: mongodb://mongo:27017/darkroom
+      KEY: key
+      SALT: salt
+      CACHE_DIR: ./cache
+      DATA_DIR: ./data
+    ports:
+      - 17999:17999
+    depends_on:
+      mongo:
+       condition: service_healthy
+    links:
+      - mongo
+
