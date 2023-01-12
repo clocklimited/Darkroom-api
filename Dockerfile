@@ -1,18 +1,20 @@
-FROM node:8.11.2-alpine AS build
+FROM node:14.16.1-alpine AS build
 
 RUN apk add --update \
     python \
     build-base \
+    libstdc++ \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    gifsicle \
+    graphicsmagick \
   && rm -rf /var/cache/apk/*
 
-RUN yarn global add pkg
+COPY . .
 
-FROM microadam/graphicsmagick-alpine:1.3.28 AS release
+COPY locations.js.env locations.js
 
-RUN apk add --update libstdc++ libgcc gifsicle && rm -rf /var/cache/apk/*
+RUN yarn install && yarn cache clean
 
-WORKDIR /app
-COPY darkroom .
-COPY node_modules/mmmagic/build/Release/magic.node .
-
-CMD /app/darkroom
+CMD ["node", "app.js"]

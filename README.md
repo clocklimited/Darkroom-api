@@ -1,5 +1,5 @@
-Darkroom
-========
+Darkroom API
+============
 
 An image manipulation service.
 
