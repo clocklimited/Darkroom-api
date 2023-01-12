@@ -1,12 +1,16 @@
 # CHANGELOG
 
+## Version 11.0.0
+
+Migrates Resize and Crop to use Sharp (libvips) instead of GraphicsMagick.
+
 ## Version 10.1.0
 
 Exposes gravity option for resize.
 
 ## Version 10.0.0
 
-Adds /_version endpoint
+Adds /\_version endpoint
 Fixes and improves custom response formats
 
 ## Version 9.1.0
@@ -49,7 +53,6 @@ index 3f703fb06e..fbf5aef78e 100644
        error() {
 ```
 
-
 ## Version 7.5.0
 
 Renames `fill` to `pad` and adds transparency.
@@ -88,7 +91,7 @@ Adds a fix for the `/original` endpoint to ensure the correct cache headers are 
 
 ## Version 6.6.3
 
-Adds a fix for the `/original` endpoint, where meta headers would be sent *after* the file has begun sending.
+Adds a fix for the `/original` endpoint, where meta headers would be sent _after_ the file has begun sending.
 
 ## Version 6.6.2
 
@@ -109,7 +112,11 @@ This feature could be used to increase CPU load. This needs to/will be resolved 
 Now has the ability to white list upload file types. To only allow png and jpg add the following to the config.
 
 ```js
-{ upload: { allow: [ 'image/png', 'image/jpeg', 'image/pjpeg' ] } }
+{
+  upload: {
+    allow: ['image/png', 'image/jpeg', 'image/pjpeg']
+  }
+}
 ```
 
 Leaving upload/allow empty will allow any filetype to be uploaded.
@@ -150,6 +157,7 @@ It will still mostly work with GraphicsMagick 1.3.18+ but the resize({ mode: 'fi
 v4 will not work well with GraphicsMagick pre 1.3.18
 
 ## Version 3.0.0
+
 Changes the folder structure and naming of images when uploaded and cropped.
 
 With the previous convention of `data/<hash>/image` on **ext3** you have a maximum limitation of 32k images and crops within `data/`. This is not so much an issue on **ext4** but eventually performance will degrade.
@@ -159,36 +167,39 @@ Version 3.0.0 changes the folder structure to `data/<3 char hash>/<hash>` meanin
 By using the image hash for the name means that less sub directories need to be created which is an improvement gain on disk usage and memory.
 
 ## Upgrading Darkroom on a Site
+
 ### From a keyless version to 2.1.0
 
-1. Add a property for darkroomKey to your properties.js (or config.js)
-2. Add that property to admin-properties.js
-3. Update asset/lib/file-uploader.js `$el.fileupload(` to include an extra property in the options it is passed.
+1.  Add a property for darkroomKey to your properties.js (or config.js)
+2.  Add that property to admin-properties.js
+3.  Update asset/lib/file-uploader.js `$el.fileupload(` to include an extra property in the options it is passed.
 
         , beforeSend: function(xhr) {
             xhr.setRequestHeader('x-darkroom-key', properties.darkroomKey);
           }
 
 ### From < 2.1.0 to 3.0.0
+
 1. follow the instructions on upgrading **from an older version to 2.1.0**
 2. follow the instructions on upgrading **from version 2.1.0 to 3.0.0**
 
 ### From version 2.1.0 to 3.0.0
+
 1. Stop darkroom.
 2. Run the 2.1 to 3.0 migration script, `support/upgrade-scripts/2.1.0-to-3.0.0.sh`. Please check you have passed all necessary options.
 
-  This script will move files from `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
+This script will move files from `data/<hash>/image` to `data/<first 3 digits of hash>/<hash>`. E.g `data/ef5c9d3b6a62e566536b439ebca9f952/image` to `data/ef5/ef5c9d3b6a62e566536b439ebca9f952`
 
-   Please note: **This step is irreversible once run**
+Please note: **This step is irreversible once run**
 
-   This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script.
+This script should be executed by someone can run sudo to modify the file ownership, as changing file ownership can cause Darkroom to break when it tries to update an existing file. This step will be attempted at the end of the script.
 
-  This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
+This may take some time to complete due to the volume of disk IO required. The script will automatically `ionice` itself to de-prioritise its operations to permit other system functions to continue normally.
 
- Running without options or with `-h` will show the usage message.
+Running without options or with `-h` will show the usage message.
 
 3. Start darkroom.
 
 ## Version 2.1.0
-Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
 
+Introduces significant changes to how resize works, allowing for modes to be supplied, e.g `fit`, `stretch` or `cover`
