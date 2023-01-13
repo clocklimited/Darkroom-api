@@ -4,4 +4,5 @@ module.exports =
 , salt: {SALT}
 , key: {KEY}
 , databaseUri: {DATABASE_URI}
+, databaseName: {DATABASE_NAME}
 }

@@ -19,7 +19,7 @@
     "lodash.clone": "^4.0.1",
     "mkdirp": "^1.0.4",
     "mmmagic": "^0.5.3",
-    "mongodb": "^2.0.45",
+    "mongodb": "3.7.3",
     "morgan": "^1.10.0",
     "mv": "^2.0.3",
     "response-time": "^2.3.2",

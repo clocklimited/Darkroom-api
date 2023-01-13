@@ -16,6 +16,7 @@ module.exports = function () {
       upload: {},
       apiProcesses: 1,
       databaseUri: locations.databaseUri,
+      databaseName: locations.databaseName,
       paths: {
         data: function () {
           return locations.data
