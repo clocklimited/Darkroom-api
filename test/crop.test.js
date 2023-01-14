@@ -143,7 +143,7 @@ backends().forEach(function (backend) {
           if (error) return done(error)
           assert.strictEqual(
             res.body['10:100:100:200:' + imgSrcId],
-            'd29f9f855f8b11f71264f8850619b305'
+            '61cdfca7520435dc028ca254745bd3a5'
           )
           done()
         })

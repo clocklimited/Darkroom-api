@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@appveen/gridfs-stream@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@appveen/gridfs-stream/-/gridfs-stream-1.0.0.tgz#58eb9711784b05bbe8efc770161ad2095b95efe1"
+  integrity sha512-HK39PN5SyJT95o9Cw8f5smkfCWnnWUyBIIHsdcoeCP9vOc3/uKn1fSIZv/W8dIhKB+S0bdlRg/g3bAYUFL1JzQ==
+  dependencies:
+    flushwritable "^1.0.0"
+
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -214,10 +221,10 @@
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
 
-"@clocklimited/darkroom@^8.0.0":
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-8.0.0.tgz#e97036b3ed5fcd1618a0de8fc3bdfa381e579e82"
-  integrity sha512-0ULkSNNKynoHp/7k6tNmVxAmoPaucOWZoN254SpbNCSbQmh5n3ddr/PB6aBhM3+vbjw8Bvw/DmxNrL4+PtjN4A==
+"@clocklimited/darkroom@^8.0.1":
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/@clocklimited/darkroom/-/darkroom-8.0.1.tgz#3e6dc6cc3e1efb99044854d5be1b8ef1f64b73cd"
+  integrity sha512-Ekrm7bo4p28ZsqwoErvaBECit+uyQppHhakF9dS46R5gKe7wEDyg3Mpk/yZCZwIV9WW+ukJ5hqEykD12fD2UXA==
   dependencies:
     async "^2.6.1"
     file-type "^10.7.0"
