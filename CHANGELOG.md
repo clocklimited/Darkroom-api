@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 11.2.0
+
+Passes concurrency options to Darkroom
+
+## Version 11.1.0
+
+Adds/update Dockerfile
+
 ## Version 11.0.0
 
 Migrates Resize and Crop to use Sharp (libvips) instead of GraphicsMagick.

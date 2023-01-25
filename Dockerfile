@@ -9,6 +9,7 @@ RUN apk add --update \
     libwebp-dev \
     gifsicle \
     graphicsmagick \
+    git \
   && rm -rf /var/cache/apk/*
 
 COPY . .

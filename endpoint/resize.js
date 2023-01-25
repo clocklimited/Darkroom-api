@@ -44,7 +44,9 @@ module.exports = function (serviceLocator, backendFactory) {
       res.set('Last-Modified', new Date().toUTCString())
     })
 
-    const resize = new darkroom.Resize()
+    const resize = new darkroom.Resize({
+      concurrency: process.env.NF_CPU_RESOURCES || config.concurrency
+    })
     const cacheStore = backendFactory.createCacheWriteStream(
       req.cacheKey,
       req.params.data

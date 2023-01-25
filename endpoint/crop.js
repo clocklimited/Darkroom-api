@@ -3,7 +3,7 @@ const async = require('async')
 const restifyErrors = require('restify-errors')
 
 module.exports = function (serviceLocator, backendFactory) {
-  const { logger } = serviceLocator
+  const { config, logger } = serviceLocator
   return function (req, res, next) {
     res.set('X-Application-Method', 'User defined image crop')
     let { src, crops } = req.body
@@ -28,7 +28,9 @@ module.exports = function (serviceLocator, backendFactory) {
         logger.info({ id: req.requestId }, 'Creating crop ' + cropCount)
         data.data = src
         const store = backendFactory.createDataWriteStream()
-        const crop = new darkroom.Crop()
+        const crop = new darkroom.Crop({
+          concurrency: process.env.NF_CPU_RESOURCES || config.concurrency
+        })
 
         store.once('error', function (error) {
           logger.error({ id: req.requestId }, 'StoreStream:', error)
