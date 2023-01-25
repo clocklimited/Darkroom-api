@@ -6,7 +6,10 @@ const logLevel = process.env.LOG_LEVEL || (inDevelopmentMode ? 'debug' : 'info')
 const createServer = require('./server')
 const config = require('con.figure')(require('./config')())
 const clustered = require('clustered')
-const clusterSize = process.env.API_PROCESSES || config.apiProcesses
+const clusterSize =
+  process.env.API_PROCESSES ||
+  process.env.NF_CPU_RESOURCES ||
+  config.apiProcesses
 const port = process.env.PORT || config.http.port
 const createBackendFactory = require('./lib/backend-factory-creator')
 const logger = createLogger('darkroom', { logLevel })
