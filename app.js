@@ -20,7 +20,7 @@ serviceLocator
   .register('config', config)
   .register('logger', logger)
 
-createBackendFactory(serviceLocator, (error, factory) => {
+createBackendFactory('S3', serviceLocator, (error, factory) => {
   if (error) {
     logger.fatal(error, 'Error starting darkroom')
     return process.exit(1)
