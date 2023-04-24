@@ -15,19 +15,19 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       -
         name: Get NODE_VERSION
         run: echo "NODE_VERSION=$(cat .naverc)" >> $GITHUB_ENV
       -
         name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '${{ env.NODE_VERSION }}'
 
       - name: Yarn Cache Directory Path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Cache
         uses: actions/cache@v3
@@ -54,7 +54,7 @@ jobs:
         name: Install Dependencies
         run: |
           yarn install --silent --no-emoji --prefer-offline
-          apt install graphicsmagick gifsicle
+          sudo apt-get install -y graphicsmagick gifsicle
 
       -
         name: Tests
@@ -104,43 +104,3 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
-  deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [test]
-    if: ${{ 'skipped' == 'not-in-development-workflow' }}
-    steps:
-      -
-        uses: actions/checkout@v3
-      -
-        name: Check if latest
-        id: if-latest
-        run: |
-          git fetch origin master
-          HEAD_SHA=$(git rev-parse HEAD)
-          MASTER_SHA=$(git rev-parse origin/master)
-          echo "::set-output name=isLatestMaster::$(test \"$HEAD_SHA\" = \"$MASTER_SHA\" && echo true || echo false)"
-
-      - name: Navy Prepare
-        id: navy-prepare
-        if: ${{ steps.if-latest.outputs.isLatestMaster == 'true' }}
-        uses: clocklimited/navy-action@main
-        with:
-          admiralHost: ${{ secrets.ADMIRAL_HOST }}
-          appId: 'nuk-timesphoenix'
-          order: 'prepare'
-          version: ${{ github.sha }}
-          environment: 'staging'
-
-      - name: Navy Install
-        id: navy-install
-        if: ${{ steps.if-latest.outputs.isLatestMaster == 'true' }} && ${{ steps.navy-prepare.outputs.success == 'true' }}
-        uses: clocklimited/navy-action@main
-        with:
-          admiralHost: ${{ secrets.ADMIRAL_HOST }}
-          appId: 'nuk-timesphoenix'
-          order: 'install'
-          version: ${{ github.sha }}
-          environment: 'staging'
-
