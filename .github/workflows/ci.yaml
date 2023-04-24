@@ -53,8 +53,8 @@ jobs:
       -
         name: Install Dependencies
         run: |
-          yarn install --silent --no-emoji --prefer-offline
           sudo apt-get install -y graphicsmagick gifsicle
+          yarn install --silent --no-emoji --prefer-offline
 
       -
         name: Tests
