@@ -77,7 +77,7 @@ backends().forEach(function (backend) {
     })
 
     it('should resize /100/50/:url to fit when an actual URL is requested', function (done) {
-      var uri = '/100/50/' + 'http://img.clock.co.uk/1000x1000',
+      var uri = '/100/50/' + 'https://img.clock.co.uk/1000x1000',
         url = uri + ':' + hashHelper(uri)
 
       request(darkroom)
