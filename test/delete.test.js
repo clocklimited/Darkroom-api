@@ -2,6 +2,7 @@ const mockServiceLocator = require('./mock-service-locator')
 const createDarkroom = require('../server')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const request = require('supertest')
+const fs = require('fs')
 const backends = require('./lib/backends')
 const assert = require('assert')
 
@@ -12,17 +13,16 @@ backends().forEach(function (backend) {
   describe(`Delete ${backend.name} backend`, function () {
     let darkroom
     let factory
-    const findCache = async (imgSrcId) => {
-      return await factory._db
-        .collection('fs.files')
-        .findOne({ 'metadata.originalId': imgSrcId })
-    }
+    let findCache
+    let findData
 
     before(function (done) {
       const sl = mockServiceLocator(config)
       createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
         darkroom = createDarkroom(sl, factory)
+        findCache = backend.cacheFinder.bind(null, factory)
+        findData = backend.dataFinder.bind(null, factory)
         done()
       })
     })
@@ -30,7 +30,7 @@ backends().forEach(function (backend) {
     before((done) => factory.setup(done))
     after((done) => factory.clean(done))
 
-    it('should delete cache', async () => {
+    it('should delete cache', async function () {
       this.timeout(4000)
 
       // I've manually created this using darkroom-url-builder, soz
@@ -54,12 +54,12 @@ backends().forEach(function (backend) {
       assert.strictEqual(createCache.statusCode, 200)
 
       // need to wait for `backend.createCacheWriteStream` to be done
-      await timeout(500)
+      await timeout(1000)
       let cache = await findCache(imgSrcId)
 
       // assert there is cache now
-      assert(cache._id)
-      assert.strictEqual(cache.metadata.type, 'cache')
+      assert(cache, 'cache not created')
+      assert.strictEqual(cache.originalId, imgSrcId)
 
       // clear that cache
       const deleteRes = await request(darkroom)
@@ -72,15 +72,12 @@ backends().forEach(function (backend) {
       assert.deepStrictEqual(await findCache(imgSrcId), null)
     })
 
-    it('should delete file and its cache', async () => {
+    it('should delete file and its cache', async function () {
       this.timeout(4000)
 
       // I've manually created this using darkroom-url-builder, soz
       const imageUrl =
         '/500/500/1cfdd3bf942749472093f3b0ed6d4f89:f87edf7c8f55aeb90cfacaf4e11a28d5?quality=2'
-      const findData = async () => {
-        return await factory._db.collection('fs.files').findOne()
-      }
       let imgSrcId
 
       const upload = await request(darkroom)
@@ -95,8 +92,7 @@ backends().forEach(function (backend) {
       let data = await findData(imgSrcId)
 
       // assert there is data now
-      assert(data._id)
-      assert.strictEqual(data.metadata.type, 'data')
+      assert(data, 'no data object')
 
       // request a resize so cache gets created
       const createCache = await request(darkroom).get(imageUrl)
@@ -104,12 +100,12 @@ backends().forEach(function (backend) {
       assert.strictEqual(createCache.statusCode, 200)
 
       // need to wait for `backend.createCacheWriteStream` to be done
-      await timeout(500)
+      await timeout(1000)
       let cache = await findCache(imgSrcId)
 
       // assert there is cache now
-      assert(cache._id)
-      assert.strictEqual(cache.metadata.type, 'cache')
+      assert(cache, 'cache not created')
+      assert.strictEqual(cache.originalId, imgSrcId)
 
       // delete the data (which also clears the cache)
       const deleteRes = await request(darkroom)
