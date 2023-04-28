@@ -2,7 +2,6 @@ const mockServiceLocator = require('./mock-service-locator')
 const createDarkroom = require('../server')
 const createBackendFactory = require('../lib/backend-factory-creator')
 const request = require('supertest')
-const fs = require('fs')
 const backends = require('./lib/backends')
 const assert = require('assert')
 
