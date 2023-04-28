@@ -33,7 +33,6 @@ module.exports = function (serviceLocator, backendFactory) {
         })
 
         store.once('error', function (error) {
-          console.log(111, error)
           logger.error({ id: req.requestId }, 'StoreStream:', error)
           callback(error)
         })
