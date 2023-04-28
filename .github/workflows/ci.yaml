@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mongodb:
+        image: mongo:4
+        ports:
+          - 27017:27017
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Get NODE_VERSION
+        run: echo "NODE_VERSION=$(cat .naverc)" >> $GITHUB_ENV
+      -
+        name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+
+      - name: Yarn Cache Directory Path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache
+        uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION  }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-${{ env.NODE_VERSION  }}
+
+      -
+        name: Setup Nave
+        run: |
+          wget https://raw.githubusercontent.com/isaacs/nave/main/nave.sh
+          mkdir -p $GITHUB_WORKSPACE/bin
+          mv nave.sh $GITHUB_WORKSPACE/bin/nave
+          chmod +x $GITHUB_WORKSPACE/bin/nave
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
+      -
+        name: Install Yarn
+        run: npm i -g yarn@1
+
+      -
+        name: Install Dependencies
+        run: |
+          sudo apt-get install -y graphicsmagick gifsicle
+          yarn install --silent --no-emoji --prefer-offline
+
+      -
+        name: Tests
+        run: yarn run test
+        env:
+          MONGO_URL: mongodb://127.0.0.1:27017/test
+
+      -
+        name: Notify Slack
+        id: slack
+        if: always()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "text": "${{ (job.status == 'success' && '✓') || '✘' }} CI Run Finished: ${{ job.status }}",
+              "attachments": [
+                {
+                  "color": "${{ (job.status == 'success' && '#00ff00') || '#ff0000' }}",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "${{ (job.status == 'success' && '✓') || '✘' }} CI Run Finished: ${{ job.status }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "Repository: ${{ github.repository }}\nBranch: <https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}|${{ github.ref_name }}>\nCommit: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\nAuthor: `${{ github.actor }}`\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Visit action run page>"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Run"
+                        },
+                        "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
