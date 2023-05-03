@@ -4,7 +4,7 @@ var assert = require('assert'),
 module.exports = function (Backend, getConfig) {
   let backend
   function setup(done) {
-    backend = new Backend(getConfig())
+    backend = new Backend({ config: getConfig() })
     backend.setup(done)
   }
   function clean(done) {

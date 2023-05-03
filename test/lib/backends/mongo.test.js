@@ -14,7 +14,7 @@ describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
 
   let backend
   function setup(done) {
-    backend = new MongoBackend(getConfig())
+    backend = new MongoBackend({ config: getConfig() })
     backend.setup(done)
   }
   function clean(done) {
