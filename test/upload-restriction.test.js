@@ -10,87 +10,85 @@ const extend = require('lodash.assign')
 backends().forEach(function (backend) {
   var config = extend({}, backend.config)
 
-  describe('API ' + backend.name + ' backend', function () {
-    describe('API ' + backend.name + ' backend', function () {
-      var darkroom,
-        factory,
-        testConfig = extend({}, config, { upload: { allow: ['image/png'] } })
+  describe('Upload Restriction ' + backend.name + ' backend', function () {
+    var darkroom,
+      factory,
+      testConfig = extend({}, config, { upload: { allow: ['image/png'] } })
 
-      before(function (done) {
-        const sl = mockServiceLocator(testConfig)
-        createBackendFactory(sl, function (err, backendFactory) {
-          factory = backendFactory
-          darkroom = createDarkroom(sl, factory)
+    before(function (done) {
+      const sl = mockServiceLocator(testConfig)
+      createBackendFactory(sl, function (err, backendFactory) {
+        factory = backendFactory
+        darkroom = createDarkroom(sl, factory)
+        done()
+      })
+    })
+
+    before((done) => factory.setup(done))
+    after((done) => factory.clean(done))
+
+    it('should not allow POST upload of certain any type', function (done) {
+      request(darkroom)
+        .post('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .attach('file', 'test/fixtures/test.txt')
+        .expect(403)
+        .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(
+            res.body.message,
+            'Forbidden type detected: text/plain; charset=us-ascii'
+          )
           done()
         })
-      })
+    })
 
-      before((done) => factory.setup(done))
-      after((done) => factory.clean(done))
+    it('should not allow PUT upload of certain any type', function (done) {
+      request(darkroom)
+        .put('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .send(fs.readFileSync(__dirname + '/fixtures/test.txt'))
 
-      it('should not allow POST upload of certain any type', function (done) {
-        request(darkroom)
-          .post('/')
-          .set('x-darkroom-key', 'key')
-          .set('Accept', 'application/json')
-          .attach('file', 'test/fixtures/test.txt')
-          .expect(403)
-          .expect('Content-Type', /json/)
-          .end(function (err, res) {
-            if (err) return done(err)
-            assert.strictEqual(
-              res.body.message,
-              'Forbidden type detected: text/plain; charset=us-ascii'
-            )
-            done()
-          })
-      })
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(
+            res.body.message,
+            'Forbidden type detected: text/plain; charset=us-ascii'
+          )
+          done()
+        })
+    })
 
-      it('should not allow PUT upload of certain any type', function (done) {
-        request(darkroom)
-          .put('/')
-          .set('x-darkroom-key', 'key')
-          .set('Accept', 'application/json')
-          .send(fs.readFileSync(__dirname + '/fixtures/test.txt'))
+    it('should allow POST upload of whitelisted types', function (done) {
+      request(darkroom)
+        .post('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .attach('file', 'test/fixtures/png.png')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+          done()
+        })
+    })
 
-          .end(function (err, res) {
-            if (err) return done(err)
-            assert.strictEqual(
-              res.body.message,
-              'Forbidden type detected: text/plain; charset=us-ascii'
-            )
-            done()
-          })
-      })
+    it('should allow PUT upload of whitelisted any type', function (done) {
+      request(darkroom)
+        .put('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .send(fs.readFileSync(__dirname + '/fixtures/png.png'))
 
-      it('should allow POST upload of whitelisted types', function (done) {
-        request(darkroom)
-          .post('/')
-          .set('x-darkroom-key', 'key')
-          .set('Accept', 'application/json')
-          .attach('file', 'test/fixtures/png.png')
-          .expect(200)
-          .expect('Content-Type', /json/)
-          .end(function (err, res) {
-            if (err) return done(err)
-            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
-            done()
-          })
-      })
-
-      it('should allow PUT upload of whitelisted any type', function (done) {
-        request(darkroom)
-          .put('/')
-          .set('x-darkroom-key', 'key')
-          .set('Accept', 'application/json')
-          .send(fs.readFileSync(__dirname + '/fixtures/png.png'))
-
-          .end(function (err, res) {
-            if (err) return done(err)
-            assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
-            done()
-          })
-      })
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(res.body.id, 'b055a237334923b3b33e9999cee2bcec')
+          done()
+        })
     })
   })
 })
