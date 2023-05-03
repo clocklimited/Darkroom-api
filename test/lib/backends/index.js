@@ -16,9 +16,10 @@ module.exports = function () {
       name: 'Mongo Grid FS',
       config: mongoConfig,
       cacheFinder: async (backend, id) => {
-        return backend._db
+        const cache = await backend._db
           .collection('fs.files')
           .findOne({ 'metadata.originalId': id })
+        return cache ? cache.metadata : null
       },
       dataFinder: async (backend) => {
         return await backend._db.collection('fs.files').findOne()
