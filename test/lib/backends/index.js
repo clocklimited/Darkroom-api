@@ -1,5 +1,7 @@
 const mongoConfig = require('con.figure')(require('../../config')())
 const s3Config = require('con.figure')(require('../../config')())
+const MongoBackend = require('../../../lib/backends/MongoBackend')
+const S3Backend = require('../../../lib/backends/S3Backend')
 
 mongoConfig.databaseUri =
   process.env.MONGO_URL || 'mongodb://localhost:27017/darkroom-test'
@@ -15,6 +17,7 @@ module.exports = function () {
     {
       name: 'Mongo Grid FS',
       config: mongoConfig,
+      backend: MongoBackend,
       cacheFinder: async (backend, id) => {
         const cache = await backend._db
           .collection('fs.files')
@@ -28,6 +31,7 @@ module.exports = function () {
     {
       name: 'S3',
       config: s3Config,
+      backend: S3Backend,
       cacheFinder: async (backend, id) => {
         const listParams = {
           Bucket: backend.config.bucket,
