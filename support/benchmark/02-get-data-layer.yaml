@@ -1,0 +1,43 @@
+
+# GET Tests:
+# GET originals (data entries)
+# Burst: 10, 100, 1000 simultaneous
+# Sustained: 10, 100, 1000 simultaneous for 30 seconds
+
+config:
+  target: 'http://localhost:17999'
+  http:
+    extendedMetrics: true
+  processor: './artillery-fns.js'
+  phases:
+    - name: 10x
+      duration: 30
+      arrivalRate: 10
+    - name: 100x
+      duration: 30
+      arrivalRate: 100
+    - name: 1000x
+      duration: 30
+      arrivalRate: 1000
+
+before:
+  flow:
+    - log: 'Upload Image'
+    - post:
+        url: '/'
+        beforeRequest:
+          - 'addTestImageBody'
+          - 'addDarkroomKeyHeader'
+        headers:
+          accept: application/json
+        capture:
+          json: "$.id"
+          as: "id"
+
+scenarios:
+  - name: 'GET Burst (data layer)'
+    flow:
+      - get:
+          url: '/'
+          beforeRequest:
+            - 'generateImageUrl'
