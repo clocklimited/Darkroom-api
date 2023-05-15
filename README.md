@@ -35,7 +35,15 @@ module.exports =
 , cache: './cache'
 , salt: 'salt'
 , key: 'key'
+, backend: 'mongo'
 , databaseUri: 'mongodb://localhost:27017/darkroom'
+
+// Or use S3
+, backend: 'S3'
+, accessKeyId: 'FOOBARCAFEBABE'
+, secretAccessKey: 'opefkofwpokfeaioajfew/efwkoewkfopw'
+, region: 'eu-west-2'
+, bucket: 'darkroom'
 }
 ```
 

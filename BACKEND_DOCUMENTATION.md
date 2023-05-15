@@ -2,13 +2,13 @@
 
 ## MongoDB
 
-Using the mongo backend requires MongoDB >4. Simply provide the database url in the config and set the backend to `mongo`.
+Using the mongo backend requires MongoDB >4. Simply provide the database URL in the config and set the backend to `mongo`.
 
 ## S3
 
-You can use an S3-compatible backend.
+You can use any S3-compatible backend.
 
-In the config, set the backend to S3, and provide the necessary information.
+In the config, set the backend to `S3`, and provide the necessary information.
 
 The permissions your key requires are:
  - ListBucket

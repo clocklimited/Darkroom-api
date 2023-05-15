@@ -4,7 +4,7 @@
 
 Support for S3-compatible backends! :tada:
 
-Please refer to the API documentation on how to set this up.
+Please refer to the [backend documentation](./BACKEND_DOCUMENTATION.md) on how to set this up.
 
 ## Version 11.2.0
 
