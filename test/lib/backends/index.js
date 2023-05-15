@@ -7,6 +7,7 @@ mongoConfig.databaseUri =
   process.env.MONGO_URL || 'mongodb://localhost:27017/darkroom-test'
 
 s3Config.backend = 'S3'
+s3Config.endpoint = process.env.S3_ENDPOINT
 s3Config.accessKeyId = process.env.S3_ACCESS_KEY_ID
 s3Config.secretAccessKey = process.env.S3_SECRET_ACCESS_KEY
 s3Config.region = process.env.S3_REGION

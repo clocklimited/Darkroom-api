@@ -16,6 +16,7 @@ module.exports = function () {
       upload: {},
       apiProcesses: 1,
       backend: locations.backend,
+      endpoint: locations.endpoint,
       accessKeyId: locations.accessKeyId,
       secretAccessKey: locations.secretAccessKey,
       region: locations.region,
