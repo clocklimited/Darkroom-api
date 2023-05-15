@@ -25,12 +25,10 @@ const closeEnough = (actual, expected) => {
 backends().forEach(function (backend) {
   const config = backend.config
 
-  describe.only('Original ' + backend.name + ' backend', function () {
+  describe('Original ' + backend.name + ' backend', function () {
     let imgSrcId, darkroom, factory, dateUploaded
 
     before(function (done) {
-      // eslint-disable-next-line
-      console.log(process.env)
       const sl = mockServiceLocator(config)
       createBackendFactory(sl, function (err, backendFactory) {
         factory = backendFactory
