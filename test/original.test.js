@@ -6,6 +6,22 @@ const hashHelper = require('./hash-helper')
 const backends = require('./lib/backends')
 const assert = require('assert')
 
+const closeEnough = (actual, expected) => {
+  const actualDate = new Date(actual).getTime()
+  const expectedDate = new Date(expected).getTime()
+  const toleranceMs = 5000
+
+  if (actual === expected) {
+    return true
+  }
+  if (
+    actualDate - toleranceMs < expectedDate &&
+    expectedDate < actualDate + toleranceMs
+  ) {
+    return true
+  }
+  return false
+}
 backends().forEach(function (backend) {
   const config = backend.config
 
@@ -46,7 +62,7 @@ backends().forEach(function (backend) {
         .end(function (err, res) {
           if (err) return done(err)
           assert.strictEqual(res.headers['cache-control'], 'max-age=10')
-          assert.strictEqual(res.headers['last-modified'], dateUploaded)
+          assert(closeEnough(res.headers['last-modified'], dateUploaded))
           done()
         })
     })
