@@ -59,6 +59,6 @@
     "dev": "nodemon --ext .js app.js",
     "start": "node app"
   },
-  "author": "Paul Serby",
-  "license": "ISC"
+  "author": "Clock Limited",
+  "license": "MIT"
 }
