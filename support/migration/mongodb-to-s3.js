@@ -19,6 +19,7 @@ async function migrateImages() {
   const gfs = new mongo.GridFSBucket(db)
 
   AWS.config.update({
+    endpoint: config.endpoint,
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey,
     region: config.region
@@ -74,7 +75,11 @@ async function migrateImages() {
       }
       const fileInS3 = await hasFileInS3(gridFsFile)
 
-      console.log({ pivot, fileInS3 })
+      console.log({
+        pivot,
+        fileInS3,
+        key: `${gridFsFile.metadata.type}/${gridFsFile.md5}`
+      })
       if (fileInS3) {
         foundFile = true
       } else {
