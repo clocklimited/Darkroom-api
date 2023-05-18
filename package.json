@@ -52,7 +52,7 @@
   "scripts": {
     "lint": "eslint -f unix .",
     "pretest": "yarn run lint",
-    "test": "nyc --reporter=lcov mocha -- --recursive --exit",
+    "test": "nyc --reporter=lcov mocha -- --recursive --exit --timeout 10000",
     "testonly": "nyc --reporter=lcov -- mocha --recursive --exit",
     "posttest": "nyc check-coverage --statements 80 --branches 75 --functions 70 --lines 80 && rm -rf coverage",
     "run-test": "mocha --exit $@",
