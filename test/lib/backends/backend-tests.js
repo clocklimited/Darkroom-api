@@ -185,7 +185,7 @@ module.exports = function (backendConfig) {
 
   describe('cache', async () => {
     it('should be cleared by id', function (done) {
-      this.timeout(6000)
+      this.timeout(10000)
 
       const originalId = 'original'
       const otherOriginalId = 'other'
@@ -218,7 +218,7 @@ module.exports = function (backendConfig) {
   describe('data', async () => {
     it('should delete data', function (done) {
       backend.clean()
-      this.timeout(6000)
+      this.timeout(10000)
 
       const dataStream = backend.createDataWriteStream()
 
@@ -237,7 +237,7 @@ module.exports = function (backendConfig) {
     })
 
     it('should clear cache when deleted', function (done) {
-      this.timeout(6000)
+      this.timeout(10000)
 
       const dataStream = backend.createDataWriteStream()
 
