@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 12.1.0
+
+/info/ calls now return metadata: size, lastModified, type.
+
+/info/ calls now support non-image entities.
+
+## Version 12.0.1
+
+Patch release to fix python dependency in Docker images.
+
 ## Version 12.0.0
 
 Node 18 - support for any versions except this is no longer supported.
