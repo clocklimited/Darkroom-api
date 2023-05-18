@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 12.1.1
+
+Correct release for 12.1.0
+
 ## Version 12.1.0
 
 /info/ calls now return metadata: size, lastModified, type.
