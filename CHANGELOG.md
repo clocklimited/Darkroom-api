@@ -2,6 +2,8 @@
 
 ## Version 12.0.0
 
+Node 18 - support for any versions except this is no longer supported.
+
 Support for S3-compatible backends! :tada:
 
 Please refer to the [backend documentation](./BACKEND_DOCUMENTATION.md) on how to set this up.
