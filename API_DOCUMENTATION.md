@@ -442,6 +442,9 @@ Note, when running examples for image manipulation, make sure you've uploaded th
     **Content:**
     ```json
     {
+      "type": "image/jpeg; charset=binary",
+      "size": 104680,
+      "lastModified": "2023-05-18T18:05:05.391Z",
       "width": 500,
       "height": 375
     }
