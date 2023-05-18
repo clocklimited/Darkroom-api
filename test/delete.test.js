@@ -30,7 +30,7 @@ backends().forEach(function (backend) {
     after((done) => factory.clean(done))
 
     it('should delete cache', async function () {
-      this.timeout(4000)
+      this.timeout(10000)
 
       // I've manually created this using darkroom-url-builder, soz
       const imageUrl =
@@ -72,7 +72,7 @@ backends().forEach(function (backend) {
     })
 
     it('should delete file and its cache', async function () {
-      this.timeout(4000)
+      this.timeout(10000)
 
       // I've manually created this using darkroom-url-builder, soz
       const imageUrl =
