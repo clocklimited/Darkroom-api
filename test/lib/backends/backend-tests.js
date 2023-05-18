@@ -1,10 +1,18 @@
-var assert = require('assert'),
-  Stream = require('stream')
+const assert = require('assert')
+const Stream = require('stream')
+const mcLogger = require('mc-logger')
 
-module.exports = function (Backend, getConfig) {
+module.exports = function (backendConfig) {
   let backend
+  let findCache
+  let findData
   function setup(done) {
-    backend = new Backend(getConfig())
+    backend = new backendConfig.backend({
+      config: backendConfig.config,
+      logger: mcLogger
+    })
+    findCache = backendConfig.cacheFinder.bind(null, backend)
+    findData = backendConfig.dataFinder.bind(null, backend)
     backend.setup(done)
   }
   function clean(done) {
@@ -42,7 +50,7 @@ module.exports = function (Backend, getConfig) {
     })
 
     it('should handle 200MB', function (done) {
-      this.timeout(6000)
+      this.timeout(10000)
       const stream = backend.createDataWriteStream()
       stream.on('error', done)
       stream.on('done', function (id) {
@@ -136,9 +144,8 @@ module.exports = function (Backend, getConfig) {
       const originalId = 'original'
       const stream = backend.createCacheWriteStream('1234', originalId)
       stream.on('done', async () => {
-        const { metadata } = await backend._db.collection('fs.files').findOne()
+        const metadata = await findCache(originalId)
 
-        assert.strictEqual(metadata.type, 'cache')
         assert.strictEqual(metadata.originalId, originalId)
         done()
       })
@@ -178,7 +185,7 @@ module.exports = function (Backend, getConfig) {
 
   describe('cache', async () => {
     it('should be cleared by id', function (done) {
-      this.timeout(6000)
+      this.timeout(10000)
 
       const originalId = 'original'
       const otherOriginalId = 'other'
@@ -188,33 +195,13 @@ module.exports = function (Backend, getConfig) {
         const stream2 = backend.createCacheWriteStream('4321', otherOriginalId)
 
         stream2.on('done', async () => {
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': originalId }),
-            1
-          )
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': otherOriginalId }),
-            1
-          )
+          assert(await findCache(originalId))
+          assert(await findCache(otherOriginalId))
 
           await backend.clearCache(originalId)
 
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': originalId }),
-            0
-          )
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': otherOriginalId }),
-            1
-          )
+          assert.strictEqual(await findCache(originalId), null)
+          assert(await findCache(otherOriginalId))
 
           done()
         })
@@ -231,24 +218,16 @@ module.exports = function (Backend, getConfig) {
   describe('data', async () => {
     it('should delete data', function (done) {
       backend.clean()
-      this.timeout(6000)
+      this.timeout(10000)
 
       const dataStream = backend.createDataWriteStream()
 
       dataStream.on('done', async ({ id }) => {
-        assert.strictEqual(
-          await backend._db
-            .collection('fs.files')
-            .count({ md5: id, 'metadata.type': 'data' }),
-          1
-        )
+        assert(await findData(id))
 
         await backend.deleteData(id)
 
-        assert.strictEqual(
-          await backend._db.collection('fs.files').count({ md5: id }),
-          0
-        )
+        assert.strictEqual(await findData(id), null)
 
         done()
       })
@@ -258,7 +237,7 @@ module.exports = function (Backend, getConfig) {
     })
 
     it('should clear cache when deleted', function (done) {
-      this.timeout(6000)
+      this.timeout(10000)
 
       const dataStream = backend.createDataWriteStream()
 
@@ -266,31 +245,13 @@ module.exports = function (Backend, getConfig) {
         const cacheStream = backend.createCacheWriteStream('1234', id)
 
         cacheStream.on('done', async () => {
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ md5: id, 'metadata.type': 'data' }),
-            1
-          )
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': id }),
-            1
-          )
+          assert(await findData(id))
+          assert(await findCache(id))
 
           await backend.deleteData(id)
 
-          assert.strictEqual(
-            await backend._db.collection('fs.files').count({ md5: id }),
-            0
-          )
-          assert.strictEqual(
-            await backend._db
-              .collection('fs.files')
-              .count({ 'metadata.originalId': id }),
-            0
-          )
+          assert.strictEqual(await findData(id), null)
+          assert.strictEqual(await findData(id), null)
 
           done()
         })

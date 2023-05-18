@@ -15,6 +15,12 @@ module.exports = function () {
       quality: 85,
       upload: {},
       apiProcesses: 1,
+      backend: locations.backend,
+      endpoint: locations.endpoint,
+      accessKeyId: locations.accessKeyId,
+      secretAccessKey: locations.secretAccessKey,
+      region: locations.region,
+      bucket: locations.bucket,
       databaseUri: locations.databaseUri,
       databaseName: locations.databaseName,
       paths: {

@@ -26,7 +26,11 @@ createBackendFactory(serviceLocator, (error, factory) => {
     return process.exit(1)
   }
 
-  factory.setup(function () {
+  factory.setup(function (error) {
+    if (error) {
+      logger.fatal(error, 'Could not setup backend')
+      process.exit(1)
+    }
     const app = createServer(serviceLocator, factory)
 
     if (process.env.NODE_ENV === undefined) {

@@ -1,5 +1,6 @@
 const MongoBackend = require('../../../lib/backends/MongoBackend')
 const tests = require('./backend-tests')
+const backends = require('./index')
 const assert = require('assert')
 
 function getConfig() {
@@ -10,11 +11,11 @@ function getConfig() {
 }
 
 describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
-  tests(MongoBackend, getConfig)
+  tests(backends().find(({ name }) => name === 'Mongo Grid FS'))
 
   let backend
   function setup(done) {
-    backend = new MongoBackend(getConfig())
+    backend = new MongoBackend({ config: getConfig() })
     backend.setup(done)
   }
   function clean(done) {
