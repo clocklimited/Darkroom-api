@@ -1,7 +1,7 @@
 FROM node:18.16.0-alpine AS build
 
 RUN apk add --update \
-    python \
+    python3 \
     build-base \
     libstdc++ \
     libjpeg-turbo-dev \
