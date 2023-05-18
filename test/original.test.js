@@ -5,23 +5,8 @@ const request = require('supertest')
 const hashHelper = require('./hash-helper')
 const backends = require('./lib/backends')
 const assert = require('assert')
+const closeEnough = require('./lib/close-enough')
 
-const closeEnough = (actual, expected) => {
-  const actualDate = new Date(actual).getTime()
-  const expectedDate = new Date(expected).getTime()
-  const toleranceMs = 5000
-
-  if (actual === expected) {
-    return true
-  }
-  if (
-    actualDate - toleranceMs < expectedDate &&
-    expectedDate < actualDate + toleranceMs
-  ) {
-    return true
-  }
-  return false
-}
 backends().forEach(function (backend) {
   const config = backend.config
 
