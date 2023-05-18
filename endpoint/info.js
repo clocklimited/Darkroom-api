@@ -19,14 +19,24 @@ module.exports = function (serviceLocator, backEndFactory) {
     passThrough.pipe(store)
     logger.debug('info for', req.params.data)
     const stream = backEndFactory.createDataReadStream(req.params.data)
-    stream.pipe(info).pipe(passThrough).pipe(res)
+
+    stream.on('meta', (meta) => {
+      const infoPipe = stream.pipe(info)
+
+      infoPipe.on('data', (data) => {
+        res.json({ ...JSON.parse(data.toString()), ...meta })
+      })
+      infoPipe.on('error', () => {
+        res.json(meta)
+      })
+    })
 
     stream.on('notFound', function () {
       next(new restifyErrors.ResourceNotFoundError('Not Found'))
     })
 
-    info.on('error', function (e) {
-      logger.error(e, 'info.error')
+    stream.on('error', function (e) {
+      logger.error(e, 'stream.error')
       return next(e)
     })
   }
