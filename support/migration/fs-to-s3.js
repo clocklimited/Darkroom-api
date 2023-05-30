@@ -102,41 +102,51 @@ async function migrateImages() {
   const getFileAtIndex = (index) => allFiles[index]
 
   const findStart = async () => {
-    let pivot = count - 1
-    let foundFile = false
-    while (pivot !== 0) {
-      const fsFile = getFileAtIndex(pivot)
-      if (!fsFile) {
-        return pivot
-      }
-      const fileInS3 = await hasFileInS3(fsFile)
+    let low = 0
+    let high = count - 1
+    if (high === -1) {
+      // empty list
+      return 0
+    }
 
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2)
+      console.log({ low, high, mid })
+
+      const fsFile = getFileAtIndex(mid)
+      const nextFsFile = getFileAtIndex(mid + 1)
+
+      const fileInS3 = await hasFileInS3(fsFile)
+      const nextFileInS3 = nextFsFile ? await hasFileInS3(nextFsFile) : true
       console.log({
-        pivot,
+        fsFile: fsFile && fsFile.id,
+        nextFsFile: nextFsFile && nextFsFile.id,
         fileInS3,
-        key: `${fsFile.type}/${fsFile.id}`
+        nextFileInS3
       })
-      if (fileInS3) {
-        foundFile = true
+
+      if (!fileInS3) {
+        // File doesn't exist in S3, return the index
+        return mid + 1
+      } else if (fileInS3 && !nextFileInS3) {
+        // Current file exists in S3, but next file (if any) doesn't exist,
+        // meaning the current file is the last one not present in S3
+        return mid
+      } else if (fileInS3) {
+        // Current file exists in S3, move the search range to the right
+        low = mid + 1
       } else {
-        if (foundFile) {
-          // we went from having files at the pivot index to not
-          // - we found where we should start from!
-          return pivot - 1
-        }
-      }
-      if (foundFile) {
-        // increment until we find the first missing file
-        pivot++
-      } else {
-        pivot = Math.floor(pivot / 2)
+        // Current file doesn't exist in S3, move the search range to the left
+        high = mid - 1
       }
     }
-    return pivot // 0 at this point
+
+    // All files exist in S3
+    return count
   }
 
   const startPoint = await findStart()
-  const files = allFiles.slice(startPoint)
+  const files = allFiles.slice(startPoint - 1)
 
   console.log(
     `${count} entities total - ${files.length} to migrate, ${startPoint} entities already migrated`
