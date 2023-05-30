@@ -58,45 +58,57 @@ async function migrateImages() {
   }
 
   const getFileAtIndex = (index) =>
-    gfs
-      .find()
-      .sort({ _id: -1 })
-      .skip(index - 1)
-      .limit(1)
-      .toArray()
+    gfs.find({}).sort({ _id: -1 }).skip(index).limit(1).toArray()
 
   const findStart = async () => {
-    let pivot = count
-    let foundFile = false
-    while (pivot !== 0) {
-      const [gridFsFile] = await getFileAtIndex(pivot)
-      if (!gridFsFile) {
-        return pivot - 1
-      }
-      const fileInS3 = await hasFileInS3(gridFsFile)
+    let low = 0
+    let high = count - 1
+    if (high === -1) {
+      // empty list
+      return 0
+    }
+
+    const [firstGridFsFile] = await getFileAtIndex(0)
+    const firstFileInS3 = await hasFileInS3(firstGridFsFile)
+    if (!firstFileInS3) {
+      return 0
+    }
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2)
+      console.log({ low, high, mid })
+
+      const [gridFsFile] = await getFileAtIndex(mid)
+      const [nextGridFsFile] = await getFileAtIndex(mid + 1)
 
       console.log({
-        pivot,
-        fileInS3,
-        key: `${gridFsFile.metadata.type}/${gridFsFile.md5}`
+        gridFsFile: gridFsFile && gridFsFile.md5,
+        nextGridFsFile: nextGridFsFile && nextGridFsFile.md5
       })
-      if (fileInS3) {
-        foundFile = true
+      const fileInS3 = await hasFileInS3(gridFsFile)
+      const nextFileInS3 = nextGridFsFile
+        ? await hasFileInS3(nextGridFsFile)
+        : true
+      console.log({
+        fileInS3,
+        nextFileInS3
+      })
+
+      if (fileInS3 && !nextFileInS3) {
+        // Current file exists in S3, but next file (if any) doesn't exist,
+        // meaning the current file is the last one not present in S3
+        return mid - 1
+      } else if (fileInS3) {
+        // Current file exists in S3, move the search range to the right
+        low = mid + 1
       } else {
-        if (foundFile) {
-          // we went from having files at the pivot index to not
-          // - we found where we should start from!
-          return pivot - 1
-        }
-      }
-      if (foundFile) {
-        // increment until we find the first missing file
-        pivot++
-      } else {
-        pivot = Math.floor(pivot / 2)
+        // Current file doesn't exist in S3, move the search range to the left
+        high = mid - 1
       }
     }
-    return pivot // 0 at this point
+
+    // All files exist in S3
+    return count
   }
 
   const startPoint = await findStart()
@@ -107,7 +119,7 @@ async function migrateImages() {
 
   const migrateFile = (file) =>
     new Promise((resolve, reject) => {
-      console.log(`Migrating ${file._id}...`)
+      console.log(`Migrating ${file.md5}...`)
       const readStream = gfsStream.createReadStream({ _id: file._id })
 
       const params = {
