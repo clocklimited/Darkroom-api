@@ -3,6 +3,7 @@ const mongo = require('mongodb')
 const GridStream = require('@appveen/gridfs-stream')
 const AWS = require('aws-sdk')
 const pLimit = require('p-limit')
+const pRetry = require('p-retry')
 
 // Requires full config to be set
 const config = require('con.figure')(require('../../config')())
@@ -111,15 +112,15 @@ async function migrateImages() {
     return count
   }
 
-  const startPoint = await findStart()
+  const startPoint = 1000// await findStart()
   const files = await gfs.find({}).sort({ _id: -1 }).skip(startPoint).toArray()
   console.log(
     `${count} entities total - ${files.length} to migrate, ${startPoint} entities already migrated`
   )
 
-  const migrateFile = (file) =>
+  const migrateFile = (file, i) =>
     new Promise((resolve, reject) => {
-      console.log(`Migrating ${file.md5}...`)
+      console.log(`Migrating #${i} ${file.md5}...`)
       const readStream = gfsStream.createReadStream({ _id: file._id })
 
       const params = {
@@ -139,8 +140,20 @@ async function migrateImages() {
       })
     })
 
-  const limit = pLimit(5)
-  await Promise.all(files.map((file) => limit(migrateFile, file)))
+  const retryableFileMigrator = (file, i) =>
+    pRetry(() => migrateFile(file, i), {
+      retries: 5,
+      onFailedAttempt: (error) => {
+        console.log(
+          `File #${i} ${file.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
+        )
+      }
+    })
+
+  const limit = pLimit(10)
+  await Promise.all(
+    files.map((file, i) => limit(retryableFileMigrator, file, i))
+  )
 
   console.log('Migration completed')
   client.close()
