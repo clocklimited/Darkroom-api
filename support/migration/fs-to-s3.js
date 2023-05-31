@@ -2,6 +2,7 @@
 const fs = require('fs')
 const AWS = require('aws-sdk')
 const pLimit = require('p-limit')
+const pRetry = require('p-retry')
 
 // Requires full config to be set
 const config = require('con.figure')(require('../../config')())
@@ -152,9 +153,9 @@ async function migrateImages() {
     `${count} entities total - ${files.length} to migrate, ${startPoint} entities already migrated`
   )
 
-  const migrateFile = (file) =>
+  const migrateFile = (file, i) =>
     new Promise((resolve, reject) => {
-      console.log(`Migrating ${file.id}...`)
+      console.log(`Migrating #${i} ${file.id}...`)
       const readStream = fs.createReadStream(file.path)
 
       const params = {
@@ -174,8 +175,20 @@ async function migrateImages() {
       })
     })
 
-  const limit = pLimit(5)
-  await Promise.all(files.map((file) => limit(migrateFile, file)))
+  const retryableFileMigrator = (file, i) =>
+    pRetry(() => migrateFile(file, i), {
+      retries: 5,
+      onFailedAttempt: (error) => {
+        console.log(
+          `File #${i} ${file.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
+        )
+      }
+    })
+
+  const limit = pLimit(10)
+  await Promise.all(
+    files.map((file, i) => limit(retryableFileMigrator, file, i))
+  )
 
   console.log('Migration completed')
 }
