@@ -112,7 +112,7 @@ async function migrateImages() {
     return count
   }
 
-  const startPoint = 1000// await findStart()
+  const startPoint = await findStart()
   const files = await gfs.find({}).sort({ _id: -1 }).skip(startPoint).toArray()
   console.log(
     `${count} entities total - ${files.length} to migrate, ${startPoint} entities already migrated`
