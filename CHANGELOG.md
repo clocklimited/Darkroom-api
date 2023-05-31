@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 12.1.2
+
+Improve migration scripts (no functional changes).
+
 ## Version 12.1.1
 
 Correct release for 12.1.0
