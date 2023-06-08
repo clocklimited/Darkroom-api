@@ -78,7 +78,7 @@ async function migrateImages() {
     await getFilesTree('data', config.paths.data())
   ]
     .flat()
-    .sort((a, b) => a.ctime - b.ctime)
+    .sort((a, b) => a.created - b.created)
 
   // list files and count
   const count = allFiles.length
