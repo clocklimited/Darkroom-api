@@ -18,4 +18,5 @@ COPY locations.js.env locations.js
 
 RUN yarn install && yarn cache clean
 
-CMD ["node", "app.js"]
+ENTRYPOINT [ "/bin/sh", "run.sh" ]
+CMD [ "app.js"]
