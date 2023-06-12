@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 12.2.0
+
+Revised entrypoint script to ensure that each clustered process can access the correct amount of memory for heap.
+
 ## Version 12.1.2
 
 Improve migration scripts (no functional changes).
