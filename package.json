@@ -1,7 +1,7 @@
 {
   "name": "darkroom-api",
   "private": true,
-  "version": "12.2.1",
+  "version": "13.0.0",
   "description": "Darkroom API for image manipulation",
   "main": "app.js",
   "dependencies": {
