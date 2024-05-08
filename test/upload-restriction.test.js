@@ -101,7 +101,6 @@ backends().forEach(function (backend) {
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err)
-          console.log(111, res)
           assert.strictEqual(
             res.body.message,
             'Forbidden type detected: image/jpeg; charset=binary'
