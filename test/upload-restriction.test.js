@@ -90,5 +90,34 @@ backends().forEach(function (backend) {
           done()
         })
     })
+
+    it('should reject POST upload of non-whitelisted types with a 415 error', function (done) {
+      request(darkroom)
+        .post('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .attach('file', 'test/fixtures/jpeg.jpeg')
+        .expect(415)
+        .expect('Content-Type', /json/)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(res.body.message, 'Unsupported media type')
+          done()
+        })
+    })
+
+    it('should reject PUT upload of non-whitelisted types with a 415 error', function (done) {
+      request(darkroom)
+        .put('/')
+        .set('x-darkroom-key', 'key')
+        .set('Accept', 'application/json')
+        .send(fs.readFileSync(__dirname + '/fixtures/jpeg.jpeg'))
+        .expect(415)
+        .end(function (err, res) {
+          if (err) return done(err)
+          assert.strictEqual(res.body.message, 'Unsupported media type')
+          done()
+        })
+    })
   })
 })
