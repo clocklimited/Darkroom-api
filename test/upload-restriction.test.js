@@ -33,7 +33,7 @@ backends().forEach(function (backend) {
         .set('x-darkroom-key', 'key')
         .set('Accept', 'application/json')
         .attach('file', 'test/fixtures/test.txt')
-        .expect(403)
+        .expect(415)
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err)
