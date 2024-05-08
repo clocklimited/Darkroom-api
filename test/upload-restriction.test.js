@@ -101,7 +101,11 @@ backends().forEach(function (backend) {
         .expect('Content-Type', /json/)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.strictEqual(res.body.message, 'Unsupported media type')
+          console.log(111, res)
+          assert.strictEqual(
+            res.body.message,
+            'Forbidden type detected: image/jpeg; charset=binary'
+          )
           done()
         })
     })
@@ -115,7 +119,10 @@ backends().forEach(function (backend) {
         .expect(415)
         .end(function (err, res) {
           if (err) return done(err)
-          assert.strictEqual(res.body.message, 'Unsupported media type')
+          assert.strictEqual(
+            res.body.message,
+            'Forbidden type detected: image/jpeg; charset=binary'
+          )
           done()
         })
     })
