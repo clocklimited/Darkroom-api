@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 13.0.0
+
+Updates response code on restricted uploads file types from 403 to 415.
+
 ## Version 12.2.0
 
 Revised entrypoint script to ensure that each clustered process can access the correct amount of memory for heap.
