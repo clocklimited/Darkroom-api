@@ -31,10 +31,12 @@ describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
       writeStream.on('done', function (file) {
         backend._db
           .collection('fs.files')
-          .findOne({ md5: file.id }, function (err, data) {
+          .findOne({ 'metadata.md5': file.id })
+          .then((data) => {
             assert.strictEqual(data.metadata.type, 'data')
             done()
           })
+          .catch(done)
       })
       writeStream.write('hello')
       writeStream.end()
@@ -45,10 +47,12 @@ describe('Mongo Backend using: ' + getConfig().databaseUri, function () {
       writeStream.on('done', function (file) {
         backend._db
           .collection('fs.files')
-          .findOne({ filename: file.id }, function (err, data) {
+          .findOne({ filename: file.id })
+          .then((data) => {
             assert.strictEqual(data.metadata.type, 'cache')
             done()
           })
+          .catch(done)
       })
       writeStream.write('hello')
       writeStream.end()

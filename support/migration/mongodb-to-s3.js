@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 const mongo = require('mongodb')
-const GridStream = require('@appveen/gridfs-stream')
 const AWS = require('aws-sdk')
 const pLimit = require('p-limit')
 const pRetry = require('p-retry')
@@ -16,7 +15,6 @@ async function migrateImages() {
   await client.connect()
 
   const db = client.db(config.databaseName)
-  const gfsStream = new GridStream(db, mongo)
   const gfs = new mongo.GridFSBucket(db)
 
   AWS.config.update({
@@ -46,7 +44,7 @@ async function migrateImages() {
       const s3Object = await s3
         .headObject({
           Bucket: config.bucket,
-          Key: `${file.metadata.type}/${file.md5}`
+          Key: `${file.metadata.type}/${file.metadata.md5}`
         })
         .promise()
       return s3Object !== null
@@ -83,8 +81,8 @@ async function migrateImages() {
       const [nextGridFsFile] = await getFileAtIndex(mid + 1)
 
       console.log({
-        gridFsFile: gridFsFile && gridFsFile.md5,
-        nextGridFsFile: nextGridFsFile && nextGridFsFile.md5
+        gridFsFile: gridFsFile && gridFsFile.metadata.md5,
+        nextGridFsFile: nextGridFsFile && nextGridFsFile.metadata.md5
       })
       const fileInS3 = await hasFileInS3(gridFsFile)
       const nextFileInS3 = nextGridFsFile
@@ -120,13 +118,13 @@ async function migrateImages() {
 
   const migrateFile = (file, i) =>
     new Promise((resolve, reject) => {
-      console.log(`Migrating #${i} ${file.md5}...`)
-      const readStream = gfsStream.createReadStream({ _id: file._id })
+      console.log(`Migrating #${i} ${file.metadata.md5}...`)
+      const readStream = gfs.openDownloadStream(file._id)
 
       const params = {
         Bucket: config.bucket,
-        Key: `${file.metadata.type}/${file.md5}`,
-        ContentType: file.contentType,
+        Key: `${file.metadata.type}/${file.metadata.md5}`,
+        ContentType: file.metadata.contentType,
         ContentLength: file.length,
         Metadata: { type: file.metadata.type },
         Body: readStream
@@ -145,7 +143,7 @@ async function migrateImages() {
       retries: 5,
       onFailedAttempt: (error) => {
         console.log(
-          `File #${i} ${file.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
+          `File #${i} ${file.metadata.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
         )
       }
     })
