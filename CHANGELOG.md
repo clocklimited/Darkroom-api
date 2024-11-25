@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## Version 14.0.0
+
+A major upgrade to the MongoDB driver from 3.7.3 to 6.9.0.
+
+This means MongoDB server versions below 3.6 are **no longer supported**.
+(3.6 support is _deprecated_ in this version).
+
+Additionally, the native GridFS driver removes the `md5` and `contentType` attributes from records.
+These are now stored under `metadata.{md5,contentType}`. No consumer application changes are required - only if other
+supporting applications are interacting directly with the Darkroom database.
+
+This means a database update is required for migrations from v13.0.0 to v14.0.0.
+
+To do this, run the following mongo shell commands in order:
+
+```js
+
+db['fs.files'].updateMany({ md5: { $exists: true } }, { $rename: { 'md5': 'metadata.md5' } })
+db['fs.files'].updateMany({ contentType: { $exists: true } }, { $rename: { 'contentType': 'metadata.contentType' } })
+db['fs.files'].updateMany({ filename: '' }, [{ $set: { 'filename': '$metadata.md5' }] })
+```
+
 ## Version 13.0.0
 
 Updates response code on restricted uploads file types from 403 to 415.

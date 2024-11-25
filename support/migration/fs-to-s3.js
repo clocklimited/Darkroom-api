@@ -161,7 +161,7 @@ async function migrateImages() {
       const params = {
         Bucket: config.bucket,
         Key: `${file.type}/${file.id}`,
-        ContentType: file.contentType,
+        ContentType: file.metadata.contentType,
         ContentLength: file.size,
         Metadata: { type: file.type },
         Body: readStream
@@ -180,7 +180,7 @@ async function migrateImages() {
       retries: 5,
       onFailedAttempt: (error) => {
         console.log(
-          `File #${i} ${file.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
+          `File #${i} ${file.metadata.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
         )
       }
     })
