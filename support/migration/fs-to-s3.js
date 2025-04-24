@@ -30,7 +30,13 @@ async function getFilesTree(type, dir) {
       (await readdir(dir, { withFileTypes: true }))
         .filter((child) => !child.name.startsWith('.')) // skip hidden
         .map(async (child) => {
-          const base = parse(child.name).base
+          let base = parse(child.name).base
+
+          // if base is 'image' then we need to get the base from the parent directory
+          if (base === 'image') {
+            base = parse(dir).base
+          }
+
           const path = resolve(dir, child.name)
           const stats = await stat(path)
           const contentType = await getMime(path)
@@ -161,7 +167,7 @@ async function migrateImages() {
       const params = {
         Bucket: config.bucket,
         Key: `${file.type}/${file.id}`,
-        ContentType: file.metadata.contentType,
+        ContentType: file.contentType,
         ContentLength: file.size,
         Metadata: { type: file.type },
         Body: readStream
@@ -180,7 +186,7 @@ async function migrateImages() {
       retries: 5,
       onFailedAttempt: (error) => {
         console.log(
-          `File #${i} ${file.metadata.md5} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
+          `File #${i} ${file.id} failed attempt #${error.attemptNumber}. ${error.retriesLeft} retries left.`
         )
       }
     })
