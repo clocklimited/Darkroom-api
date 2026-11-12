@@ -1,4 +1,4 @@
-FROM node:18.16.0-alpine AS build
+FROM node:18.20.8-alpine AS build
 
 RUN apk add --update \
     python3 \
